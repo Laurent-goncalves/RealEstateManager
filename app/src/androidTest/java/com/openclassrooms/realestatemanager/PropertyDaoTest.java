@@ -39,12 +39,24 @@ public class PropertyDaoTest {
             "description","address","School, Subway","01/06/2018","Eric");
 
     @Test
-    public void insertAndGetProperty() throws InterruptedException {
+    public void insertAndUpdateProperty() throws InterruptedException {
         // BEFORE : Adding a new property
         this.database.propertyDao().insertProperty(PROPERTY_DEMO);
         // TEST
         Property property = LiveDataTestUtil.getValue(this.database.propertyDao().getProperty(PROPERTY_ID));
 
         assertTrue(property.getType().equals(PROPERTY_DEMO.getType()) && property.getId() == PROPERTY_ID);
+
+        // Change the surface of the property with id = 7
+        PROPERTY_DEMO.setSurface(40d);
+
+        // Update the property on SQLite
+        this.database.propertyDao().updateProperty(PROPERTY_DEMO);
+        // TEST
+        Double surfaceToCheck = LiveDataTestUtil.getValue(this.database.propertyDao().getProperty(PROPERTY_ID)).getSurface();
+
+        assertTrue(surfaceToCheck == 40d);
     }
+
+
 }
