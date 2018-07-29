@@ -20,4 +20,18 @@ public interface PropertyDao {
     @Update
     int updateProperty(Property property);
 
+    @Query("SELECT * FROM Property WHERE Property.sold = :sold AND Property.surface <= :surfaceSup AND Property.surface >= :surfaceInf " +
+    "AND Property.price>= :priceInf AND Property.price<= :priceSup AND Property.type LIKE :typeProp AND Property.roomNumber <= :nbRoomsSup AND Property.roomNumber >= :nbRoomsInf")
+    LiveData<List<Property>> getListProperties(int sold, Double surfaceInf, Double surfaceSup,
+                                             Double priceInf, Double priceSup,
+                                             int nbRoomsInf, int nbRoomsSup, String typeProp);
+                                             //String[] interestPoints, String dateStart);
+
+
+
+
+
+
 }
+
+

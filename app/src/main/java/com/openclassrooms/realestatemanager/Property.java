@@ -2,9 +2,9 @@ package com.openclassrooms.realestatemanager;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.media.Image;
 
-import java.util.Date;
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.List;
 
 /** Le type de bien (appartement, loft, manoir, etc) ;
@@ -37,8 +37,10 @@ public class Property {
     private String dateStart;
     private String dateSold;
     private String estateAgent;
+    private Double Lat;
+    private Double Lng;
 
-    public Property(int id, String type, Double price, Double surface, int roomNumber, String description, String address, String interestPoints, String dateStart, String estateAgent) {
+    public Property(int id, String type, Double price, Double surface, int roomNumber, String description, String address, String interestPoints, Boolean sold, String dateStart, Double Lat, Double Lng,String estateAgent) {
         this.id = id;
         this.type = type;
         this.price = price;
@@ -47,8 +49,11 @@ public class Property {
         this.description = description;
         this.address = address;
         this.interestPoints = interestPoints;
+        this.sold=sold;
         this.dateStart = dateStart;
         this.estateAgent = estateAgent;
+        this.Lat = Lat;
+        this.Lng = Lng;
     }
 
     public int getId() {
@@ -137,6 +142,22 @@ public class Property {
 
     public void setDateSold(String dateSold) {
         this.dateSold = dateSold;
+    }
+
+    public Double getLat() {
+        return Lat;
+    }
+
+    public void setLat(Double lat) {
+        Lat = lat;
+    }
+
+    public Double getLng() {
+        return Lng;
+    }
+
+    public void setLng(Double lng) {
+        Lng = lng;
     }
 
     public String getEstateAgent() {
