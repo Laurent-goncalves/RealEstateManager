@@ -1,55 +1,116 @@
 package com.openclassrooms.realestatemanager;
 
-import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textViewMain;
-    private TextView textViewQuantity;
+    private ImageLoading imageLoading;
+    private Button button;
     private static int RESULT_LOAD_IMAGE = 1;
+    private ImageView imageView;
+    private PropertyDatabase database;
+    private static int PROPERTY_ID = 3;
+    private static Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
+            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //this.textViewMain = findViewById(R.id.activity_main_activity_text_view_main);
-        //this.textViewQuantity = findViewById(R.id.activity_main_activity_text_view_quantity);
+        this.database = PropertyDatabase.getInstance(getApplicationContext());
 
-        //this.configureTextViewMain();
-        //this.configureTextViewQuantity();
-        Button button = findViewById(R.id.button_image_loading);
+        try {
+            Property newProperty = LiveDataTestUtil.getValue(this.database.propertyDao().getProperty(1));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+        database.imageDao().getAllImages().observe(this,ListObserver);
+
+
+        imageView = (ImageView) findViewById(R.id.activity_main_image);
+        button = findViewById(R.id.button_image_loading);
+
+
+
+        Button buttonDEL = findViewById(R.id.delete_image_loading);
+        Button buttonInsert = findViewById(R.id.insert_button);
+        Button buttonUpdate = findViewById(R.id.update_button);
+        Button buttonCANCEL = findViewById(R.id.Cancel_button);
+        Button buttonSQL = findViewById(R.id.sql_image_loading);
+
+        imageLoading = new ImageLoading(this,this.database);
+
         button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
+                loadNewImageFromDevice();
+            }
+        });
 
-                Intent i = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        buttonDEL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageView.setImageBitmap(null);
+                //imageLoading.deleteImageDataBase(1);
+            }
+        });
 
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
+        buttonInsert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                imageLoading.inserNewImageDataBase(1,"description");
+            }
+        });
+        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                imageLoading.updateImageDataBase(1,1,"description");
+            }
+        });
+
+        buttonCANCEL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                imageLoading.reinitializeImageProperty();
+            }
+        });
+
+        buttonSQL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updatedatabase(1);
             }
         });
     }
 
+    // -------------------------------------------------------------------------------------------------------
+    // -------------------------------------- LOADING IMAGE FROM DEVICE --------------------------------------
+    // -------------------------------------------------------------------------------------------------------
+
+    public void loadNewImageFromDevice(){
+        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i, RESULT_LOAD_IMAGE);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -57,43 +118,50 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
-            ImageView imageView = (ImageView) findViewById(R.id.activity_main_image);
 
-            Bitmap bitmap = null;
+            Bitmap bitmap;
+
             try {
-                bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
+                if (selectedImage != null) {
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
+                    imageView.setImageBitmap(bitmap);
+                    imageLoading.setCurrentImageByte(Utils.getBitmapAsByteArray(bitmap));
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            imageView.setImageBitmap(bitmap);
-
-
-           /* String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-            ImageView imageView = (ImageView) findViewById(R.id.activity_main_image);
-            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));*/
         }
     }
 
-    private void configureTextViewMain(){
-        this.textViewMain.setTextSize(15);
-        this.textViewMain.setText("Le premier bien immobilier enregistré vaut ");
+    public void updatedatabase(int idImage){
+        database.imageDao().getImage(idImage).observe(this,nameObserver);
     }
 
-    private void configureTextViewQuantity(){
-        int quantity = Utils.convertDollarToEuro(100);
-        this.textViewQuantity.setTextSize(20);
-        this.textViewQuantity.setText(String.valueOf(quantity));
+    final Observer<ImageProperty> nameObserver = new Observer<ImageProperty>() {
+        @Override
+        public void onChanged(@Nullable final ImageProperty newName) {
+            // Update the UI, in this case, a TextView.
+            if(newName!=null) {
+                Bitmap imageBitmap=BitmapFactory.decodeByteArray(newName.getImage(), 0, newName.getImage().length);
+                imageView.setImageBitmap(imageBitmap);
+            }
+        }
+    };
+
+    final Observer<List<ImageProperty>> ListObserver = new Observer<List<ImageProperty>>() {
+        @Override
+        public void onChanged(@Nullable final List<ImageProperty> newName) {
+
+            for(ImageProperty img : newName)
+                System.out.println("eee list=" + img.getId());
+        }
+    };
+
+    public Button getButton() {
+        return button;
     }
 
-
-
+    public ImageView getImageView() {
+        return imageView;
+    }
 }

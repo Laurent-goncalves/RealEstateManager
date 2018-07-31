@@ -1,8 +1,10 @@
 package com.openclassrooms.realestatemanager;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.wifi.WifiManager;
 
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,5 +55,11 @@ public class Utils {
     public static Boolean isInternetAvailable(Context context){
         WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         return wifi.isWifiEnabled();
+    }
+
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return outputStream.toByteArray();
     }
 }

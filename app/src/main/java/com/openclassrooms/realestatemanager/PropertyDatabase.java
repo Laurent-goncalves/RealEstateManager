@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager;
 
 
 import android.arch.persistence.db.SupportSQLiteDatabase;
+import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Room;
@@ -11,11 +12,12 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 
-@Database(entities = {Property.class}, version = 1, exportSchema = false)
+@Database(entities = {Property.class, ImageProperty.class}, version = 1, exportSchema = false)
 public abstract class PropertyDatabase extends RoomDatabase {
 
     private static volatile PropertyDatabase INSTANCE;
     public abstract PropertyDao propertyDao();
+    public abstract ImageDao imageDao();
 
     // Create a single instance of property database
     public static PropertyDatabase getInstance(Context context) {
@@ -25,6 +27,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             PropertyDatabase.class, "MyDatabase.db")
                             .addCallback(prepopulateDatabase())
+                            .allowMainThreadQueries()
                             .build();
                 }
             }

@@ -12,15 +12,24 @@ public class ImageProperty {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private Bitmap image;
+    private byte[] image;
     private String description;
     private int idProperty;
 
-    public ImageProperty(int id, Bitmap image, String description, int idProperty) {
+    public ImageProperty(int id, byte[] image, String description, int idProperty) {
         this.id = id;
         this.image = image;
         this.description = description;
         this.idProperty = idProperty;
+    }
+
+    public ImageProperty(byte[] image, String description, int idProperty) {
+        this.image = image;
+        this.description = description;
+        this.idProperty = idProperty;
+    }
+
+    public ImageProperty() {
     }
 
     public int getId() {
@@ -31,11 +40,11 @@ public class ImageProperty {
         this.id = id;
     }
 
-    public Bitmap getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 

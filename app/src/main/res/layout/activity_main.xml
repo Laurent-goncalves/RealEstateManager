@@ -8,11 +8,44 @@
     tools:context="com.openclassrooms.realestatemanager.MainActivity"
     android:gravity="center">
 
-        <Button
-            android:id="@+id/button_image_loading"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="sélectionner une image "/>
+            android:orientation="vertical">
+                <Button
+                    android:id="@+id/button_image_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="select image ordi"/>
+                <Button
+                    android:id="@+id/delete_image_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="suppr image"/>
+                <Button
+                    android:id="@+id/sql_image_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="select image SQL"/>
+
+                <Button
+                    android:id="@+id/insert_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="insert"/>
+                <Button
+                    android:id="@+id/update_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="update"/>
+                <Button
+                    android:id="@+id/Cancel_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CANCEL"/>
+
+        </LinearLayout>
+
 
         <ImageView
             android:id="@+id/activity_main_image"
