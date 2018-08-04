@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
+    <string name="image_property">Image_property</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="media">Media</string>
+    <string name="description">Description</string>
+    <string name="add_a_description">Add a description</string>
 </resources>
