@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="transports">
+        <item>bus_station</item>
+        <item>train_station</item>
+        <item>airport</item>
+        <item>taxi_stand</item>
+        <item>subway_station</item>
+        <item>transit_station</item>
+    </string-array>
+
+    <string-array name="cultural">
+        <item>art_gallery</item>
+        <item>movie_theater</item>
+        <item>museum</item>
+    </string-array>
+
+    <string-array name="shops">
+        <item>beauty_salon</item>
+        <item>book_store</item>
+        <item>bakery</item>
+        <item>clothing_store</item>
+        <item>convenience_store</item>
+        <item>department_store</item>
+        <item>electronics_store</item>
+        <item>hardware_store</item>
+        <item>florist</item>
+        <item>furniture_store</item>
+        <item>hair_care</item>
+        <item>shopping_mall</item>
+        <item>liquor_store</item>
+        <item>bicycle_store</item>
+        <item>movie_rental</item>
+        <item>store</item>
+        <item>supermarket</item>
+        <item>jewelry_store</item>
+        <item>home_goods_store</item>
+        <item>shoe_store</item>
+        <item>pet_store</item>
+        <item>car_dealer</item>
+        <item>car_wash</item>
+        <item>gas_station</item>
+        <item>laundry</item>
+    </string-array>
+
+    <string-array name="restaurant">
+        <item>bar</item>
+        <item>restaurant</item>
+        <item>cafe</item>
+        <item>meal_delivery</item>
+        <item>meal_takeaway</item>
+    </string-array>
+
+    <string-array name="religious">
+        <item>church</item>
+        <item>hindu_temple</item>
+        <item>mosque</item>
+        <item>synagogue</item>
+    </string-array>
+
+    <string-array name="medical">
+        <item>doctor</item>
+        <item>dentist</item>
+        <item>hospital</item>
+        <item>pharmacy</item>
+        <item>physiotherapist</item>
+        <item>veterinary_care</item>
+    </string-array>
+
+    <string-array name="sports_facilities">
+        <item>gym</item>
+        <item>stadium</item>
+    </string-array>
+
+    <string-array name="parks">
+        <item>amusement_park</item>
+        <item>aquarium</item>
+        <item>park</item>
+        <item>zoo</item>
+    </string-array>
+
+    <string-array name="institutions">
+        <item>embassy</item>
+        <item>lawyer</item>
+        <item>fire_station</item>
+        <item>local_government_office</item>
+        <item>accounting</item>
+        <item>bank</item>
+        <item>atm</item>
+        <item>insurance_agency</item>
+        <item>police</item>
+        <item>post_office</item>
+        <item>city_hall</item>
+        <item>courthouse</item>
+    </string-array>
+
+    <string-array name="travel_agencies">
+        <item>car_rental</item>
+        <item>moving_company</item>
+        <item>travel_agency</item>
+    </string-array>
+
+    <string-array name="fun">
+        <item>casino</item>
+        <item>bowling_alley</item>
+        <item>night_club</item>
+        <item>spa</item>
+        <item>campground</item>
+    </string-array>
+
+    <string-array name="library">
+        <item>library</item>
+    </string-array>
+
+    <string-array name="school">
+        <item>school</item>
+    </string-array>
+
+    <string-array name="parking">
+        <item>rv_park</item>
+        <item>parking</item>
+    </string-array>
+
+    <string-array name="repair_store">
+        <item>electrician</item>
+        <item>plumber</item>
+        <item>car_repair</item>
+    </string-array>
+
+</resources>

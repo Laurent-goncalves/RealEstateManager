@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
+import android.app.FragmentTransaction;
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,18 +10,15 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ModifPropFragment;
 import com.openclassrooms.realestatemanager.Utils.ImageLoading;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
-import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.database = PropertyDatabase.getInstance(getApplicationContext());
+        /*this.database = PropertyDatabase.getInstance(getApplicationContext());
 
         try {
             Property newProperty = LiveDataTestUtil.getValue(this.database.propertyDao().getProperty(1));
@@ -107,7 +105,27 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 updatedatabase(1);
             }
-        });
+        });*/
+        configure_and_show_modif_fragment();
+
+
+
+    }
+
+
+    public void configure_and_show_modif_fragment(){
+
+        ModifPropFragment modifPropFragment = new ModifPropFragment();
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.mainactivity_xml, modifPropFragment);
+        fragmentTransaction.commit();
+
+
+        /*
+        https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.613032,2.482217&radius=1000&key=AIzaSyCAzX1ILkJlqSsTMkRJHSGEMAQWuqxSxKA
+         */
+
     }
 
     // -------------------------------------------------------------------------------------------------------

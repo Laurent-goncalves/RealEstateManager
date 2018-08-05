@@ -1,10 +1,30 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
     <string name="image_property">Image_property</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="media">Media</string>
     <string name="description">Description</string>
     <string name="add_a_description">Add a description</string>
+    <string name="static_mapview">static_mapview</string>
+    <string name="type_of_property">Type of property</string>
+    <string name="select_type_of_property">Select a type of property</string>
+    <string name="price">Price ($)</string>
+    <string name="overview">Overview</string>
+    <string name="surface">Surface (m²)</string>
+    <string name="localization">Localization</string>
+    <string name="address">Address</string>
+    <string name="short_description">Short description</string>
+    <string name="interest_points_nearby">Interest points nearby</string>
+    <string name="number_of_rooms">Number of rooms</string>
+    <string name="sold">Sold</string>
+    <string name="publication_date">Publication date</string>
+    <string name="date_of_sale">Date of sale</string>
+    <string name="cancel">CANCEL</string>
+    <string name="save">SAVE</string>
+
+    <string-array name="type_property">
+        <item>Apartment</item>
+        <item>House</item>
+        <item>Office</item>
+    </string-array>
+
 </resources>

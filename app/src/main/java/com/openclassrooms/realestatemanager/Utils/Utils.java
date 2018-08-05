@@ -62,4 +62,23 @@ public class Utils {
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         return outputStream.toByteArray();
     }
+
+    public String create_string_date(int year, int month, int dayOfMonth){
+
+        String Day;
+        int Month = month + 1;
+        String new_month;
+
+        if(dayOfMonth<10)
+            Day = "0" + dayOfMonth;
+        else
+            Day = String.valueOf(dayOfMonth);
+
+        if(Month<10)
+            new_month = "0" + Month;
+        else
+            new_month = String.valueOf(Month);
+
+        return Day + "/" + new_month + "/" + year;
+    }
 }
