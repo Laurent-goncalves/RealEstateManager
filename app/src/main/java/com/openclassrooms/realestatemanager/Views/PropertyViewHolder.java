@@ -19,7 +19,6 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder implements View.
     @BindView(R.id.property_location_view) TextView locTextView;
     @BindView(R.id.property_cost_view) TextView costTextView;
 
-
     public PropertyViewHolder(View itemView) {
         super(itemView);
         this.view=itemView;

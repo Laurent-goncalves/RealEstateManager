@@ -20,6 +20,9 @@
     <string name="date_of_sale">Date of sale</string>
     <string name="cancel">CANCEL</string>
     <string name="save">SAVE</string>
+    <string name="select_an_image">Select an image</string>
+    <string name="write_a_description">Write a description</string>
+    <string name="add_a_photo">Add a photo</string>
 
     <string-array name="type_property">
         <item>Apartment</item>
@@ -27,4 +30,11 @@
         <item>Office</item>
     </string-array>
 
+    <!-- IMAGES VIEWHOLDER-->
+    <string name="delete_image">Image deletion</string>
+    <string name="delete_confirmation">Are you sure that you want to delete this image ?</string>
+    <string name="confirm">Confirm</string>
+    <string name="no_image_saved">No image saved</string>
+    <string name="image_saved">Image saved !</string>
+    <string name="image_updated">Image updated !</string>
 </resources>

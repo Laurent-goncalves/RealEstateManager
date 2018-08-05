@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,20 +20,25 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
+import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Views.ImagesRecyclerViewAdapter;
+import com.openclassrooms.realestatemanager.Views.ImagesViewHolder;
+
+import org.mozilla.javascript.tools.jsc.Main;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ModifPropFragment extends Fragment {
+public class EditFragment extends Fragment implements CallbackImageSelect {
 
     @BindView(R.id.switch_sold) Switch switchSold;
     @BindView(R.id.list_type_properties) Spinner listProperties;
@@ -51,11 +57,15 @@ public class ModifPropFragment extends Fragment {
     private TextView datePublish;
     private TextView dateSold;
     private static final String PROPERTY_JSON = "property_json";
+    private static final String IMAGES_JSON = "images_json";
     private Property propertyInit;
+    private List<ImageProperty> listImages;
     private Property propertyFinal;
     private int roomNb;
+    private CallbackImageSelect mCallbackImageSelect;
+    private MainActivity mainActivity;
 
-    public ModifPropFragment() {
+    public EditFragment() {
         // Required empty public constructor
     }
 
@@ -63,16 +73,25 @@ public class ModifPropFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_modif_prop, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit, container, false);
+
+        // Set the mainActivity
+        mainActivity = (MainActivity) getActivity();
 
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
             Gson gson = new Gson();
-            String json = getArguments().getString(PROPERTY_JSON,null);
+            String propJSON = getArguments().getString(PROPERTY_JSON,null);
+            String imgJSON = getArguments().getString(IMAGES_JSON,null);
+
             Type propertyType = new TypeToken<Property>(){}.getType();
-            propertyInit = gson.fromJson(json,propertyType);
+            Type imagesType = new TypeToken<List<ImageProperty>>(){}.getType();
+
+            propertyInit = gson.fromJson(propJSON,propertyType);
+            listImages= gson.fromJson(imgJSON,imagesType);
         }
 
+        mCallbackImageSelect = this;
         configureAllAreas();
         return view;
     }
@@ -147,6 +166,13 @@ public class ModifPropFragment extends Fragment {
 
 
 
+
+    }
+
+    private void configureImagesProperty(){
+
+
+
     }
 
     private void configurePropertyType(){
@@ -170,5 +196,10 @@ public class ModifPropFragment extends Fragment {
             switchSold.setChecked(true);
         else
             switchSold.setChecked(false);
+    }
+
+    @Override
+    public void getImageFromGallery(ImagesViewHolder imagesViewHolder) {
+        mainActivity.getImageFromGallery(imagesViewHolder);
     }
 }

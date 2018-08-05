@@ -12,25 +12,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.ModifPropFragment;
+
+import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Utils.ImageLoading;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Views.ImagesViewHolder;
+
 import java.io.FileNotFoundException;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     private ImageLoading imageLoading;
     private Button button;
     private static int RESULT_LOAD_IMAGE = 1;
+    private static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     private ImageView imageView;
     private PropertyDatabase database;
     private static int PROPERTY_ID = 3;
+    private ImagesViewHolder imagesViewHolder;
+
     private static Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
             "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric");
 
@@ -38,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         /*this.database = PropertyDatabase.getInstance(getApplicationContext());
 
         try {
@@ -115,10 +121,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void configure_and_show_modif_fragment(){
 
-        ModifPropFragment modifPropFragment = new ModifPropFragment();
+        EditFragment editFragment = new EditFragment();
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.mainactivity_xml, modifPropFragment);
+        fragmentTransaction.replace(R.id.mainactivity_xml, editFragment);
         fragmentTransaction.commit();
 
 
@@ -151,6 +157,20 @@ public class MainActivity extends AppCompatActivity {
                     bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
                     imageView.setImageBitmap(bitmap);
                     imageLoading.setCurrentImageByte(Utils.getBitmapAsByteArray(bitmap));
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else if (requestCode == RESULT_LOAD_IMAGE_VIEWHOLDER && resultCode == RESULT_OK && null != data){
+
+            Uri selectedImage = data.getData();
+
+            Bitmap bitmap;
+
+            try {
+                if (selectedImage != null) {
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
+                    imagesViewHolder.setImage(bitmap);
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -188,5 +208,11 @@ public class MainActivity extends AppCompatActivity {
 
     public ImageView getImageView() {
         return imageView;
+    }
+
+    public void getImageFromGallery(ImagesViewHolder imagesViewHolder) {
+        this.imagesViewHolder=imagesViewHolder;
+        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
     }
 }

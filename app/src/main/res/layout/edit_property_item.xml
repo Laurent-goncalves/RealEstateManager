@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="110dp"
+            android:layout_height="140dp"
+            android:background="@color/colorPrimaryDark">
+
+            <ImageView
+                android:id="@+id/image_property"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/image_property" />
+
+            <!-- DELETE ACTION -->
+            <ImageView
+                android:id="@+id/delete_icon_symbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_delete_outline_white_24"
+                android:layout_gravity="end"
+                android:layout_marginEnd="30dp"
+                android:layout_marginTop="3dp"/>
+
+            <!-- EDIT ACTION -->
+            <ImageView
+                android:id="@+id/edit_icon_symbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_edit_white_24"
+                android:layout_gravity="end"
+                android:layout_marginEnd="3dp"
+                android:layout_marginTop="3dp"/>
+
+            <LinearLayout
+                android:id="@+id/icon_add_photo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <!-- OVERVIEW IMAGEVIEW -->
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/baseline_add_a_photo_white_24"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="@string/add_a_photo"
+                    android:textColor="@android:color/white"/>
+
+            </LinearLayout>
+
+            <!-- TITLE IMAGEVIEW -->
+            <TextView
+                android:id="@+id/title_image_property"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_gravity="bottom"
+                android:background="#AA000000"
+                android:gravity="center"/>
+
+        </FrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/extra_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="140dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/select_image_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/select_an_image"
+                android:layout_alignBaseline="@id/icon_folder_open"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"/>
+
+            <Button
+                android:id="@+id/icon_folder_open"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/select_image_textview"
+                android:background="@drawable/background_button_folder_open" />
+
+            <TextView
+                android:id="@+id/write_description_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/write_a_description"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@id/select_image_textview"
+                android:layout_alignParentStart="true"/>
+
+            <EditText
+                android:id="@+id/description_image_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@id/write_description_textview"
+                android:background="@drawable/background_edittext"
+                android:inputType = "text"
+                android:maxLength="30"
+                android:maxLines="1"/>
+
+            <Button
+                android:id="@+id/buttonImageCancel"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_below="@id/description_image_edit_text"
+                android:layout_toStartOf="@id/buttonImageSave"
+                android:background="@android:color/white"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="@string/cancel"/>
+
+            <Button
+                android:id="@+id/buttonImageSave"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_below="@id/description_image_edit_text"
+                android:layout_alignParentEnd="true"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@android:color/white"
+                android:text="@string/save"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

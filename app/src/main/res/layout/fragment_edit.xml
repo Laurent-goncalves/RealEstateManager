@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controllers.Fragments.ModifPropFragment"
+    tools:context=".Controllers.Fragments.EditFragment"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -116,7 +116,9 @@
                 android:layout_alignParentTop="true"
                 android:background="@drawable/background_edittext"
                 android:gravity="end"
-                android:inputType="number" />
+                android:inputType="number"
+                android:maxLength="15"
+                android:maxLines="1"/>
 
         </RelativeLayout>
 
@@ -200,7 +202,9 @@
                 android:layout_alignParentEnd="true"
                 android:inputType = "number"
                 android:background="@drawable/background_edittext"
-                android:gravity="end"/>
+                android:gravity="end"
+                android:maxLength="7"
+                android:maxLines="1"/>
 
         </RelativeLayout>
 
@@ -270,7 +274,8 @@
                 android:layout_height="30dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/background_edittext"
-                android:inputType = "text"/>
+                android:inputType = "text"
+                android:maxLines="1"/>
 
             <!-- DESCRIPTION PROPERTY -->
             <TextView
