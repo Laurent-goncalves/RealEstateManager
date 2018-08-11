@@ -20,6 +20,9 @@
             </intent-filter>
         </activity>
         <activity android:name="com.openclassrooms.realestatemanager.Controllers.Activities.SecondActivity"></activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
     </application>
 
 </manifest>

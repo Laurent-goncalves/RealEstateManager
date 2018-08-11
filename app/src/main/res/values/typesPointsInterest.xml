@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="pointinterest_1">
+        <item>transports</item>
+        <item>bus_station</item>
+    </array>
+    <array name="pointinterest_2">
+        <item>transports</item>
+        <item>train_station</item>
+    </array>
+    <array name="pointinterest_3">
+        <item>transports</item>
+        <item>airport</item>
+    </array>
+    <array name="pointinterest_4">
+        <item>transports</item>
+        <item>taxi_stand</item>
+    </array>
+    <array name="pointinterest_5">
+        <item>transports</item>
+        <item>subway_station</item>
+    </array>
+    <array name="pointinterest_6">
+        <item>transports</item>
+        <item>transit_station</item>
+    </array>
+    <array name="pointinterest_7">
+        <item>cultural</item>
+        <item>art_gallery</item>
+    </array>
+    <array name="pointinterest_8">
+        <item>cultural</item>
+        <item>movie_theater</item>
+    </array>
+    <array name="pointinterest_9">
+        <item>cultural</item>
+        <item>museum</item>
+    </array>
+    <array name="pointinterest_10">
+        <item>shops</item>
+        <item>beauty_salon</item>
+    </array>
+    <array name="pointinterest_11">
+        <item>shops</item>
+        <item>book_store</item>
+    </array>
+    <array name="pointinterest_12">
+        <item>shops</item>
+        <item>bakery</item>
+    </array>
+    <array name="pointinterest_13">
+        <item>shops</item>
+        <item>clothing_store</item>
+    </array>
+    <array name="pointinterest_14">
+        <item>shops</item>
+        <item>convenience_store</item>
+    </array>
+    <array name="pointinterest_15">
+        <item>shops</item>
+        <item>department_store</item>
+    </array>
+    <array name="pointinterest_16">
+        <item>shops</item>
+        <item>electronics_store</item>
+    </array>
+    <array name="pointinterest_17">
+        <item>shops</item>
+        <item>hardware_store</item>
+    </array>
+    <array name="pointinterest_18">
+        <item>shops</item>
+        <item>florist</item>
+    </array>
+    <array name="pointinterest_19">
+        <item>shops</item>
+        <item>furniture_store</item>
+    </array>
+    <array name="pointinterest_20">
+        <item>shops</item>
+        <item>hair_care</item>
+    </array>
+    <array name="pointinterest_21">
+        <item>shops</item>
+        <item>shopping_mall</item>
+    </array>
+    <array name="pointinterest_22">
+        <item>shops</item>
+        <item>liquor_store</item>
+    </array>
+    <array name="pointinterest_23">
+        <item>shops</item>
+        <item>bicycle_store</item>
+    </array>
+    <array name="pointinterest_24">
+        <item>shops</item>
+        <item>movie_rental</item>
+    </array>
+    <array name="pointinterest_25">
+        <item>shops</item>
+        <item>store</item>
+    </array>
+    <array name="pointinterest_26">
+        <item>shops</item>
+        <item>supermarket</item>
+    </array>
+    <array name="pointinterest_27">
+        <item>shops</item>
+        <item>jewelry_store</item>
+    </array>
+    <array name="pointinterest_28">
+        <item>shops</item>
+        <item>home_goods_store</item>
+    </array>
+    <array name="pointinterest_29">
+        <item>shops</item>
+        <item>shoe_store</item>
+    </array>
+    <array name="pointinterest_30">
+        <item>shops</item>
+        <item>pet_store</item>
+    </array>
+    <array name="pointinterest_31">
+        <item>shops</item>
+        <item>car_dealer</item>
+    </array>
+    <array name="pointinterest_32">
+        <item>shops</item>
+        <item>car_wash</item>
+    </array>
+    <array name="pointinterest_33">
+        <item>shops</item>
+        <item>gas_station</item>
+    </array>
+    <array name="pointinterest_34">
+        <item>shops</item>
+        <item>laundry</item>
+    </array>
+    <array name="pointinterest_35">
+        <item>restaurant</item>
+        <item>bar</item>
+    </array>
+    <array name="pointinterest_36">
+        <item>restaurant</item>
+        <item>restaurant</item>
+    </array>
+    <array name="pointinterest_37">
+        <item>restaurant</item>
+        <item>cafe</item>
+    </array>
+    <array name="pointinterest_38">
+        <item>restaurant</item>
+        <item>meal_delivery</item>
+    </array>
+    <array name="pointinterest_39">
+        <item>restaurant</item>
+        <item>meal_takeaway</item>
+    </array>
+    <array name="pointinterest_40">
+        <item>religious</item>
+        <item>church</item>
+    </array>
+    <array name="pointinterest_41">
+        <item>religious</item>
+        <item>hindu_temple</item>
+    </array>
+    <array name="pointinterest_42">
+        <item>religious</item>
+        <item>mosque</item>
+    </array>
+    <array name="pointinterest_43">
+        <item>religious</item>
+        <item>synagogue</item>
+    </array>
+    <array name="pointinterest_44">
+        <item>medical</item>
+        <item>doctor</item>
+    </array>
+    <array name="pointinterest_45">
+        <item>medical</item>
+        <item>dentist</item>
+    </array>
+    <array name="pointinterest_46">
+        <item>medical</item>
+        <item>hospital</item>
+    </array>
+    <array name="pointinterest_47">
+        <item>medical</item>
+        <item>pharmacy</item>
+    </array>
+    <array name="pointinterest_48">
+        <item>medical</item>
+        <item>physiotherapist</item>
+    </array>
+    <array name="pointinterest_49">
+        <item>medical</item>
+        <item>veterinary_care</item>
+    </array>
+    <array name="pointinterest_50">
+        <item>sports_facilities</item>
+        <item>gym</item>
+    </array>
+    <array name="pointinterest_51">
+        <item>sports_facilities</item>
+        <item>stadium</item>
+    </array>
+    <array name="pointinterest_52">
+        <item>parks</item>
+        <item>amusement_park</item>
+    </array>
+    <array name="pointinterest_53">
+        <item>parks</item>
+        <item>aquarium</item>
+    </array>
+    <array name="pointinterest_54">
+        <item>parks</item>
+        <item>park</item>
+    </array>
+    <array name="pointinterest_55">
+        <item>parks</item>
+        <item>zoo</item>
+    </array>
+    <array name="pointinterest_56">
+        <item>institutions</item>
+        <item>embassy</item>
+    </array>
+    <array name="pointinterest_57">
+        <item>institutions</item>
+        <item>lawyer</item>
+    </array>
+    <array name="pointinterest_58">
+        <item>institutions</item>
+        <item>fire_station</item>
+    </array>
+    <array name="pointinterest_59">
+        <item>institutions</item>
+        <item>local_government_office</item>
+    </array>
+    <array name="pointinterest_60">
+        <item>institutions</item>
+        <item>accounting</item>
+    </array>
+    <array name="pointinterest_61">
+        <item>institutions</item>
+        <item>bank</item>
+    </array>
+    <array name="pointinterest_62">
+        <item>institutions</item>
+        <item>atm</item>
+    </array>
+    <array name="pointinterest_63">
+        <item>institutions</item>
+        <item>insurance_agency</item>
+    </array>
+    <array name="pointinterest_64">
+        <item>institutions</item>
+        <item>police</item>
+    </array>
+    <array name="pointinterest_65">
+        <item>institutions</item>
+        <item>post_office</item>
+    </array>
+    <array name="pointinterest_66">
+        <item>institutions</item>
+        <item>city_hall</item>
+    </array>
+    <array name="pointinterest_67">
+        <item>travel_agencies</item>
+        <item>car_rental</item>
+    </array>
+    <array name="pointinterest_68">
+        <item>travel_agencies</item>
+        <item>moving_company</item>
+    </array>
+    <array name="pointinterest_69">
+        <item>travel_agencies</item>
+        <item>travel_agency</item>
+    </array>
+    <array name="pointinterest_70">
+        <item>fun</item>
+        <item>casino</item>
+    </array>
+    <array name="pointinterest_71">
+        <item>fun</item>
+        <item>bowling_alley</item>
+    </array>
+    <array name="pointinterest_72">
+        <item>fun</item>
+        <item>night_club</item>
+    </array>
+    <array name="pointinterest_73">
+        <item>fun</item>
+        <item>spa</item>
+    </array>
+    <array name="pointinterest_74">
+        <item>fun</item>
+        <item>campground</item>
+    </array>
+    <array name="pointinterest_75">
+        <item>library</item>
+        <item>library</item>
+    </array>
+    <array name="pointinterest_76">
+        <item>school</item>
+        <item>school</item>
+    </array>
+    <array name="pointinterest_77">
+        <item>parking</item>
+        <item>rv_park</item>
+    </array>
+    <array name="pointinterest_78">
+        <item>parking</item>
+        <item>parking</item>
+    </array>
+    <array name="pointinterest_79">
+        <item>repair_store</item>
+        <item>electrician</item>
+    </array>
+    <array name="pointinterest_80">
+        <item>repair_store</item>
+        <item>plumber</item>
+    </array>
+    <array name="pointinterest_81">
+        <item>repair_store</item>
+        <item>car_repair</item>
+    </array>
+
+</resources>
+
+
+<!--
+
+ <string-array name="transports">
+        <item name = "transports">bus_station</item>
+        <item name = "transports">train_station</item>
+        <item name = "transports">airport</item>
+        <item name = "transports">taxi_stand</item>
+        <item name = "transports">subway_station</item>
+        <item name = "transports">transit_station</item>
+    </string-array>
+
+    <string-array name="cultural">
+        <item>art_gallery</item>
+        <item>movie_theater</item>
+        <item>museum</item>
+    </string-array>
+
+    <string-array name="shops">
+        <item>beauty_salon</item>
+        <item>book_store</item>
+        <item>bakery</item>
+        <item>clothing_store</item>
+        <item>convenience_store</item>
+        <item>department_store</item>
+        <item>electronics_store</item>
+        <item>hardware_store</item>
+        <item>florist</item>
+        <item>furniture_store</item>
+        <item>hair_care</item>
+        <item>shopping_mall</item>
+        <item>liquor_store</item>
+        <item>bicycle_store</item>
+        <item>movie_rental</item>
+        <item>store</item>
+        <item>supermarket</item>
+        <item>jewelry_store</item>
+        <item>home_goods_store</item>
+        <item>shoe_store</item>
+        <item>pet_store</item>
+        <item>car_dealer</item>
+        <item>car_wash</item>
+        <item>gas_station</item>
+        <item>laundry</item>
+    </string-array>
+
+    <string-array name="restaurant">
+        <item>bar</item>
+        <item>restaurant</item>
+        <item>cafe</item>
+        <item>meal_delivery</item>
+        <item>meal_takeaway</item>
+    </string-array>
+
+    <string-array name="religious">
+        <item>church</item>
+        <item>hindu_temple</item>
+        <item>mosque</item>
+        <item>synagogue</item>
+    </string-array>
+
+    <string-array name="medical">
+        <item>doctor</item>
+        <item>dentist</item>
+        <item>hospital</item>
+        <item>pharmacy</item>
+        <item>physiotherapist</item>
+        <item>veterinary_care</item>
+    </string-array>
+
+    <string-array name="sports_facilities">
+        <item>gym</item>
+        <item>stadium</item>
+    </string-array>
+
+    <string-array name="parks">
+        <item>amusement_park</item>
+        <item>aquarium</item>
+        <item>park</item>
+        <item>zoo</item>
+    </string-array>
+
+    <string-array name="institutions">
+        <item>embassy</item>
+        <item>lawyer</item>
+        <item>fire_station</item>
+        <item>local_government_office</item>
+        <item>accounting</item>
+        <item>bank</item>
+        <item>atm</item>
+        <item>insurance_agency</item>
+        <item>police</item>
+        <item>post_office</item>
+        <item>city_hall</item>
+        <item>courthouse</item>
+    </string-array>
+
+    <string-array name="travel_agencies">
+        <item>car_rental</item>
+        <item>moving_company</item>
+        <item>travel_agency</item>
+    </string-array>
+
+    <string-array name="fun">
+        <item>casino</item>
+        <item>bowling_alley</item>
+        <item>night_club</item>
+        <item>spa</item>
+        <item>campground</item>
+    </string-array>
+
+    <string-array name="library">
+        <item>library</item>
+    </string-array>
+
+    <string-array name="school">
+        <item>school</item>
+    </string-array>
+
+    <string-array name="parking">
+        <item>rv_park</item>
+        <item>parking</item>
+    </string-array>
+
+    <string-array name="repair_store">
+        <item>electrician</item>
+        <item>plumber</item>
+        <item>car_repair</item>
+    </string-array>
+
+
+ -->

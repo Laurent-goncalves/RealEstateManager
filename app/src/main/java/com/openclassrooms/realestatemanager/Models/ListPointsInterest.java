@@ -1,0 +1,86 @@
+package com.openclassrooms.realestatemanager.Models;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import com.google.android.gms.maps.model.LatLng;
+import com.openclassrooms.realestatemanager.Models.PlaceNearby.PlaceNearby;
+import com.openclassrooms.realestatemanager.Models.PlaceNearby.Result;
+import com.openclassrooms.realestatemanager.Utils.ApiStream;
+import com.openclassrooms.realestatemanager.Utils.Utils;
+import java.util.ArrayList;
+import java.util.List;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+
+
+public class ListPointsInterest implements Disposable {
+
+    private List<String> listPointsInterest;
+    private List<String> listPointsInterestTemp;
+    private Disposable disposable;
+    private Context context;
+
+    public ListPointsInterest(String api_key, LatLng latLng, String radius, Context context) {
+        listPointsInterest = new ArrayList<>();
+        listPointsInterestTemp = new ArrayList<>();
+        this.context = context;
+        getListPlacesNearby(api_key, latLng, radius);
+    }
+
+    private void getListPlacesNearby(String api_key, LatLng latLng, String radius) {
+
+        String location = String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude);
+
+        this.disposable = ApiStream.streamFetchgetSearchNearbyPlaces(api_key,radius,location).subscribeWith(new DisposableObserver<PlaceNearby>() {
+
+            @Override
+            public void onNext(PlaceNearby placeNearby) {
+                buildPointInterest(placeNearby);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                System.out.println("eee error - " + e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+                listPointsInterest.addAll(Utils.removeDuplicates(listPointsInterestTemp));
+            }
+        });
+    }
+
+    @SuppressLint("ResourceType")
+    private void buildPointInterest(PlaceNearby placeNearby){
+
+        List<String> listTypes = new ArrayList<>();
+
+        // For each place nearby, recover the list of types (point of interest)
+        if(placeNearby !=null){
+            if(placeNearby.getResults()!=null){
+                for(Result result : placeNearby.getResults()){
+                    if(result.getTypes()!=null){
+                        listTypes.addAll(result.getTypes());
+                    }
+                }
+            }
+        }
+
+        listPointsInterestTemp.addAll(Utils.getInterestPoints(listTypes, context));
+
+    }
+
+    @Override
+    public void dispose() {
+        if (this.disposable != null && !this.disposable.isDisposed()) this.disposable.dispose();
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return false;
+    }
+
+    public List<String> getListPointsInterest() {
+        return listPointsInterest;
+    }
+}
