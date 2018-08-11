@@ -10,9 +10,11 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Utils.ImageLoading;
@@ -20,6 +22,7 @@ import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImagesViewHolder;
 
@@ -37,6 +40,8 @@ public class MainActivity extends AppCompatActivity  {
     private PropertyDatabase database;
     private static int PROPERTY_ID = 3;
     private ImagesViewHolder imagesViewHolder;
+    private static final String PROPERTY_JSON = "property_json";
+    private EditFragment editFragment;
 
     private static Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
             "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric");
@@ -45,22 +50,22 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*this.database = PropertyDatabase.getInstance(getApplicationContext());
+        this.database = PropertyDatabase.getInstance(getApplicationContext());
 
-        try {
+
+
+
+       /* try {
             Property newProperty = LiveDataTestUtil.getValue(this.database.propertyDao().getProperty(1));
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-
         database.imageDao().getAllImages().observe(this,ListObserver);
-
 
         imageView = (ImageView) findViewById(R.id.activity_main_image);
         button = findViewById(R.id.button_image_loading);
-
 
 
         Button buttonDEL = findViewById(R.id.delete_image_loading);
@@ -112,17 +117,27 @@ public class MainActivity extends AppCompatActivity  {
                 updatedatabase(1);
             }
         });*/
-        configure_and_show_modif_fragment();
+
+
+        configure_and_show_edit_fragment();
 
 
 
     }
 
 
-    public void configure_and_show_modif_fragment(){
+    public void configure_and_show_edit_fragment(){
 
-        EditFragment editFragment = new EditFragment();
+        editFragment = new EditFragment();
 
+        Bundle bundle = new Bundle();
+
+        Gson gson = new Gson();
+        String property_json = gson.toJson(PROPERTY_DEMO);
+        bundle.putString(PROPERTY_JSON, property_json);
+
+
+        editFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.mainactivity_xml, editFragment);
         fragmentTransaction.commit();
@@ -165,16 +180,7 @@ public class MainActivity extends AppCompatActivity  {
 
             Uri selectedImage = data.getData();
 
-            Bitmap bitmap;
-
-            try {
-                if (selectedImage != null) {
-                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
-                    imagesViewHolder.setImage(bitmap);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            editFragment.setImage(selectedImage, data.getIntExtra("VIEWHOLDERPOSITION",0));
         }
     }
 
@@ -198,7 +204,7 @@ public class MainActivity extends AppCompatActivity  {
         public void onChanged(@Nullable final List<ImageProperty> newName) {
 
             for(ImageProperty img : newName)
-                System.out.println("eee list=" + img.getId());
+                System.out.println("eee list=" + img.getId() + "       propertyId=" + img.getIdProperty());
         }
     };
 
@@ -210,9 +216,9 @@ public class MainActivity extends AppCompatActivity  {
         return imageView;
     }
 
-    public void getImageFromGallery(ImagesViewHolder imagesViewHolder) {
-        this.imagesViewHolder=imagesViewHolder;
+    public void getImageFromGallery(int viewHolderPosition) {
         Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        i.putExtra("VIEWHOLDERPOSITION",viewHolderPosition);
         startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
     }
 }

@@ -70,6 +70,7 @@
                 android:layout_height="32dp"
                 android:layout_gravity="bottom"
                 android:background="#AA000000"
+                android:textColor="@android:color/white"
                 android:gravity="center"/>
 
         </FrameLayout>
@@ -115,6 +116,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginBottom="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:layout_below="@id/write_description_textview"
                 android:background="@drawable/background_edittext"
                 android:inputType = "text"

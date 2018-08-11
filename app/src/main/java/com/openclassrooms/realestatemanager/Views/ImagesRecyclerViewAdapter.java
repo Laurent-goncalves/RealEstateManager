@@ -1,11 +1,14 @@
 package com.openclassrooms.realestatemanager.Views;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
@@ -38,11 +41,19 @@ public class ImagesRecyclerViewAdapter extends RecyclerView.Adapter<ImagesViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ImagesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ImagesViewHolder holder, final int position) {
+
         if(listImages!=null) {
             if(listImages.get(position)!=null && property!=null)
-            holder.configureImagesViews(listImages.get(position),property.getId(),context, mCallbackImageSelect);
+            holder.configureImagesViews(listImages.get(position),property.getId(),context);
         }
+
+        holder.selectPhotoIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallbackImageSelect.getImageFromGallery(holder.getAdapterPosition());
+            }
+        });
     }
 
     @Override

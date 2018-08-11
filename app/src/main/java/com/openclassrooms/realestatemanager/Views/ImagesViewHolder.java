@@ -6,9 +6,11 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -25,14 +27,17 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
+
 public class ImagesViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.image_property) private ImageView image;
-    @BindView(R.id.edit_icon_symbol) private ImageView editIcon;
-    @BindView(R.id.delete_icon_symbol) private ImageView deleteIcon;
-    @BindView(R.id.icon_add_photo) private LinearLayout addPhotoPanel;
-    @BindView(R.id.title_image_property) private TextView titleImage;
-    @BindView(R.id.extra_panel) private RelativeLayout extraPanel;
+    @BindView(R.id.image_property) ImageView image;
+    @BindView(R.id.edit_icon_symbol) ImageView editIcon;
+    @BindView(R.id.delete_icon_symbol) ImageView deleteIcon;
+    @BindView(R.id.icon_add_photo) LinearLayout addPhotoPanel;
+    @BindView(R.id.title_image_property) TextView titleImage;
+    @BindView(R.id.extra_panel) RelativeLayout extraPanel;
+    @BindView(R.id.icon_folder_open) Button selectPhotoIcon;
+
     private int propertyId;
     private View view;
     private PropertyDatabase database;
@@ -41,7 +46,7 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
     private static String UPDATE_IMAGE = "updateExistingImage";
     private String typeChange;
     private ImageProperty imageProperty;
-    private CallbackImageSelect mCallbackImageSelect;
+    //private CallbackImageSelect mCallbackImageSelect;
 
     ImagesViewHolder(View itemView) {
         super(itemView);
@@ -54,7 +59,7 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
     // ---------------------------------------------------------------------------------------------------
 
     @OnClick(R.id.delete_icon_symbol)
-    private void deleteImage(){
+    public void deleteImage(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true);
@@ -81,7 +86,7 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
     }
 
     @OnTextChanged(value=R.id.description_image_edit_text, callback = AFTER_TEXT_CHANGED)
-    private void changeTitleImage(Editable s){
+    public void changeTitleImage(Editable s){
         if(s.length()==0)
             titleImage.setVisibility(View.GONE);
         else {
@@ -91,12 +96,12 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
     }
 
     @OnClick(R.id.edit_icon_symbol)
-    private void configureEditButton() {
+    public void configureEditButton() {
         openExtraPanel();
     }
 
     @OnClick(R.id.buttonImageSave)
-    private void save(){
+    public void save(){
         if(typeChange.equals(NEW_IMAGE)) {
 
             // Insert the new image in database
@@ -127,7 +132,7 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
     }
 
     @OnClick(R.id.buttonImageCancel)
-    private void cancel(){
+    public void cancel(){
 
         if(imageProperty.getImage()!=null){
             // Re-initialize the views
@@ -157,27 +162,26 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
         extraPanel.setVisibility(View.GONE);
     }
 
-    @OnClick(R.id.icon_folder_open)
-    private void selectNewImageFromDevice(){
+    /*@OnClick(R.id.icon_folder_open)
+    public void selectNewImageFromDevice(){
         mCallbackImageSelect.getImageFromGallery(this);
-    }
+    }*/
 
     @OnClick(R.id.icon_add_photo)
-    private void openExtraPanelToAddPhoto(){
+    public void openExtraPanelToAddPhoto(){
         extraPanel.setVisibility(View.VISIBLE);
     }
-
 
     // ---------------------------------------------------------------------------------------------------
     // ------------------------------------- CONFIGURATION VIEW ------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
-    public void configureImagesViews(ImageProperty imageProperty, int propertyId, Context context, CallbackImageSelect mCallbackImageSelect) {
+    public void configureImagesViews(ImageProperty imageProperty, int propertyId, Context context) {
 
         // Initialize variables
         this.context=context;
         this.propertyId=propertyId;
-        this.mCallbackImageSelect=mCallbackImageSelect;
+        //this.mCallbackImageSelect=mCallbackImageSelect;
         this.database = PropertyDatabase.getInstance(context);
 
         if(imageProperty.getImage()!=null){ // if an image exist
@@ -207,6 +211,9 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
             extraPanel.setVisibility(View.GONE);
 
         } else {
+
+            this.imageProperty =new ImageProperty();
+
             // set type of change (NEW IMAGE)
             typeChange = NEW_IMAGE;
 
@@ -224,6 +231,13 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
 
     public void setImage(Bitmap bitmap){
         image.setImageBitmap(bitmap);
+        addPhotoPanel.setVisibility(View.GONE);
+    }
+
+    public void setImage(Uri imageUri){
+        image.postInvalidate();
+        image.setImageURI(imageUri);
+
         addPhotoPanel.setVisibility(View.GONE);
     }
 

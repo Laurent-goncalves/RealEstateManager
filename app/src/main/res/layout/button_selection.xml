@@ -10,7 +10,7 @@
         android:id="@+id/less_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@android:color/darker_gray"
+        android:tint="@drawable/button_plus_less_bg"
         android:src="@drawable/baseline_remove_circle_outline_white_24"/>
 
     <TextView
@@ -29,7 +29,7 @@
         android:id="@+id/plus_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@android:color/darker_gray"
+        android:tint="@drawable/button_plus_less_bg"
         android:src="@drawable/baseline_add_circle_outline_white_24"/>
 
 </LinearLayout>
