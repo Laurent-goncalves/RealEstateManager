@@ -38,4 +38,10 @@
     <string name="no_image_saved">No image saved</string>
     <string name="image_saved">Image saved !</string>
     <string name="image_updated">Image updated !</string>
+
+
+    <!-- EDIT FRAGMENT-->
+    <string name="enter_address">Enter an address</string>
+
+
 </resources>

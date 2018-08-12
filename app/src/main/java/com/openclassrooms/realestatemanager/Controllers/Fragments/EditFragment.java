@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
+import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Views.ImagesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Views.ImagesViewHolder;
@@ -69,7 +71,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     @BindView(R.id.calendar) CalendarView calendarView;
     @BindView(R.id.surface_edit_text) EditText surfaceEdit;
     @BindView(R.id.nbrooms_property_layout) RelativeLayout relativeLayoutNbRooms;
-    @BindView(R.id.address_edit_text) EditText addressEdit;
+    @BindView(R.id.address_edit_text) android.support.v7.widget.SearchView addressEdit;
     @BindView(R.id.description_edit_text) EditText descriptionEdit;
     @BindView(R.id.buttonCancel) Button buttonCancel;
     @BindView(R.id.buttonSave) Button buttonSave;
@@ -156,7 +158,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
             nbRooms.setText(String.valueOf(roomNb));
 
             // configure address
-            addressEdit.setText(propertyInit.getAddress());
+            new SearchAddress(this, context);
 
             // configure description
             descriptionEdit.setText(propertyInit.getDescription());
@@ -285,6 +287,11 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     @Override
     public void getImageFromGallery(int viewHolderPosition) {
         mainActivity.getImageFromGallery(viewHolderPosition);
+    }
+
+
+    public android.support.v7.widget.SearchView getAddressEdit() {
+        return addressEdit;
     }
 
     public void setImage(Uri imageUri, int holderPosition){

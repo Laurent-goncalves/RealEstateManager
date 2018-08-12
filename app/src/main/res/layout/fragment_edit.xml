@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Controllers.Fragments.EditFragment"
     android:background="@android:color/white"
     android:orientation="vertical">
@@ -267,16 +268,14 @@
                 android:layout_marginBottom="2dp"
                 android:text="@string/address" />
 
-            <EditText
+            <android.support.v7.widget.SearchView
                 android:id="@+id/address_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginBottom="10dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
+                android:icon="@drawable/baseline_search_white_24"
                 android:gravity="start|center_vertical"
                 android:background="@drawable/background_edittext"
-                android:inputType = "text"
                 android:maxLines="1"/>
 
             <!-- DESCRIPTION PROPERTY -->
