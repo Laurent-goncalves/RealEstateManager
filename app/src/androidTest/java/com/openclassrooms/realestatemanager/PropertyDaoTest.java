@@ -42,7 +42,7 @@ public class PropertyDaoTest {
 
     private static int PROPERTY_ID = 7;
     private static Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
-            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric");
+            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric",null);
 
     @Test
     public void insertAndUpdateProperty() throws InterruptedException {
@@ -69,19 +69,19 @@ public class PropertyDaoTest {
 
         Property PROPERTY_DEMO1 = new Property(1, "Appartment", 361000d,38.25,2,
                 "description","address","Swimming pool, gardens, Theater",false,
-                "01/07/2018",0d,0d,"Kevin");
+                "01/07/2018",0d,0d,"Kevin",null);
         Property PROPERTY_DEMO2 = new Property(2, "Appartment", 400000d,37.57,1,
                 "description","address","College, Bus station",false,
-                "02/07/2018",0d,0d,"Gaetan");
+                "02/07/2018",0d,0d,"Gaetan",null);
         Property PROPERTY_DEMO3 = new Property(3, "Appartment", 545000d,60.62,3,
                 "description","address","School, Lake, High school, Theater",false,
-                "03/07/2018",0d,0d,"Yannick");
+                "03/07/2018",0d,0d,"Yannick",null);
         Property PROPERTY_DEMO4 = new Property(4, "Appartment", 660000d,60.44,3,
                 "description","address","School, Subway, College, Swimming pool",false,
-                "04/07/2018",0d,0d,"Kevin");
+                "04/07/2018",0d,0d,"Kevin",null);
         Property PROPERTY_DEMO5 = new Property(5, "Appartment", 720000d,65d,4,
                 "description","address","School, Subway, Library, Bowling",false,
-                "05/07/2018",0d,0d,"Michelle");
+                "05/07/2018",0d,0d,"Michelle",null);
 
         this.database.propertyDao().insertProperty(PROPERTY_DEMO1);
         this.database.propertyDao().insertProperty(PROPERTY_DEMO2);

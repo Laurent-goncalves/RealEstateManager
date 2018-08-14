@@ -59,6 +59,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     private TextView dateSold;
     private static final String PROPERTY_JSON = "property_json";
     private static final String MODE_SELECTED = "mode_selected";
+    private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     private static final String IMAGES_JSON = "images_json";
     private String mode;
     private Property propertyInit;
@@ -71,6 +72,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     private PropertyDatabase database;
     private View view;
     private ImagesEditAdapter adapter;
+    private int lastPropertyIdDisplayed;
 
     public EditFragment() {
         // Required empty public constructor
@@ -93,6 +95,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         if(getArguments()!=null){
 
             mode=getArguments().getString(MODE_SELECTED,null);
+            lastPropertyIdDisplayed=getArguments().getInt(LAST_PROPERTY_SELECTED,-1);
 
             if(mode!=null){
 
@@ -172,15 +175,12 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
 
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
-
-        mainActivity.changeToDisplayMode(propertyInit.getId());
-
+        mainActivity.changeToDisplayMode(lastPropertyIdDisplayed);
     }
 
     @OnClick(R.id.buttonCancel)
     public void onClickListenerButtonCancel() {
-
-
+        mainActivity.changeToDisplayMode(lastPropertyIdDisplayed);
     }
 
     // -------------------------------------------------------------------------------------------

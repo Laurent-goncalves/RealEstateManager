@@ -34,6 +34,13 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     public void onBindViewHolder(@NonNull PropertyViewHolder holder, int position) {
         if(listProperties!=null)
             holder.configurePropertiesViews(listProperties.get(position));
+
+        holder.propertyLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override

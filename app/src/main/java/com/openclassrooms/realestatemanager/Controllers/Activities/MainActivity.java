@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.Utils.ImageLoading;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -26,6 +27,7 @@ import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImagesEditViewHolder;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,12 +42,16 @@ public class MainActivity extends AppCompatActivity  {
     private static int PROPERTY_ID = 3;
     private ImagesEditViewHolder imagesViewHolder;
     private static final String PROPERTY_JSON = "property_json";
+    private static final String MODE_SELECTED = "mode_selected";
+    private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     private EditFragment editFragment;
     private DisplayFragment displayFragment;
     private List<Property> listProperties;
+    private ToolbarManager toolbarManager;
 
-    private static Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
-            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric",null);
+    private Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
+            "Nice appartment closed to subway station. \nBig kitchen, 2 bathrooms, 2 WC. \nNice garden with a view on the lake. \nMany shops nearby.",
+            "12 Kennedy street","School, Subway",true,"01/06/2018",0d,0d,"Eric",null);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +65,25 @@ public class MainActivity extends AppCompatActivity  {
             e.printStackTrace();
         }
 
-        configureAndShowEditFragment(PROPERTY_DEMO);
+        listProperties = new ArrayList<>(); // TODO: to be removed later
+        listProperties.add(PROPERTY_DEMO); // TODO: to be removed later
+
+        // Configure toolbar
+        toolbarManager = new ToolbarManager(this);
+        toolbarManager.configure_toolbar();
+
+        // Show editFragment
+        configureAndShowDisplayFragment(PROPERTY_DEMO);
     }
 
     public void changeToDisplayMode(int propertyId){
 
         // remove the editFragment
-        this.getFragmentManager().beginTransaction().remove(editFragment).commit();
+        if(editFragment!=null)
+            this.getFragmentManager().beginTransaction().remove(editFragment).commit();
+
+        // add necessary icons
+        toolbarManager.addIconsToolbar();
 
         // show displayFragment
         configureAndShowDisplayFragment(getPropertyFromId(propertyId));
@@ -74,7 +92,11 @@ public class MainActivity extends AppCompatActivity  {
     public void changeToEditMode(int propertyId){
 
         // remove the editFragment
-        this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
+        if(displayFragment!=null)
+            this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
+
+        // remove unecessary icons
+        toolbarManager.removeIconsToolbar();
 
         // show displayFragment
         configureAndShowEditFragment(getPropertyFromId(propertyId));
@@ -82,14 +104,17 @@ public class MainActivity extends AppCompatActivity  {
 
     private Property getPropertyFromId(int propertyId){
 
-        for(Property property : listProperties){
-            if(property!=null){
-                if(property.getId() == propertyId){
-                    return property;
+        if(propertyId!=-1 && listProperties!=null){
+            for(Property property : listProperties){
+                if(property!=null){
+                    if(property.getId() == propertyId){
+                        return PROPERTY_DEMO; // TODO : mettre property à la place de PROPERTY_DEMO
+                    }
                 }
             }
         }
-        return null;
+
+        return PROPERTY_DEMO; // TODO to modify after tests
     }
 
     public void configureAndShowDisplayFragment(Property property){
@@ -107,7 +132,7 @@ public class MainActivity extends AppCompatActivity  {
             // configure and show the editFragment
             displayFragment.setArguments(bundle);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.mainactivity_xml, displayFragment);
+            fragmentTransaction.replace(R.id.fragment_position, displayFragment);
             fragmentTransaction.commit();
         }
     }
@@ -120,14 +145,22 @@ public class MainActivity extends AppCompatActivity  {
         Bundle bundle = new Bundle();
         Gson gson = new Gson();
 
-        // Add the property to the bundle in json format
-        String property_json = gson.toJson(property);
-        bundle.putString(PROPERTY_JSON, property_json);
+        bundle.putInt(LAST_PROPERTY_SELECTED, 3);
+
+        if(property==null){
+            bundle.putString(PROPERTY_JSON, "NEW");
+        } else {
+            // Add the property to the bundle in json format
+            String property_json = gson.toJson(property);
+            bundle.putString(PROPERTY_JSON, property_json);
+
+            bundle.putString(MODE_SELECTED, "UPDATE");
+        }
 
         // configure and show the editFragment
         editFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.mainactivity_xml, editFragment);
+        fragmentTransaction.replace(R.id.fragment_position, editFragment);
         fragmentTransaction.commit();
     }
 
@@ -170,6 +203,11 @@ public class MainActivity extends AppCompatActivity  {
     // -------------------------------------------------------------------------------------------------------
     // ------------------------------------------ GETTER AND SETTER ------------------------------------------
     // -------------------------------------------------------------------------------------------------------
+
+    public int getCurrentPropertyDisplayed(){
+
+        return PROPERTY_DEMO.getId();
+    }
 
     public Button getButton() {
         return button;

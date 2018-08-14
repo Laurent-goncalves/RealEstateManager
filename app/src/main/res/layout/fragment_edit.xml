@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Controllers.Fragments.EditFragment"
     android:background="@android:color/white"
     android:orientation="vertical">
@@ -54,7 +53,8 @@
             android:layout_alignBaseline="@id/overview_textview"
             android:layout_toStartOf="@id/switch_sold"
             android:textSize="20sp"
-            android:layout_marginEnd="5dp"/>
+            android:layout_marginEnd="5dp"
+            tools:ignore="RelativeOverlap" />
 
         <Switch
             android:id="@+id/switch_sold"
@@ -294,8 +294,9 @@
                 android:paddingEnd="10dp"
                 android:paddingTop="5dp"
                 android:gravity="start|top"
+                android:maxLength="34"
                 android:background="@drawable/background_edittext"
-                android:inputType = "text"
+                android:inputType = "text|textMultiLine|textCapSentences"
                 android:layout_marginBottom="10dp"/>
 
         </LinearLayout>

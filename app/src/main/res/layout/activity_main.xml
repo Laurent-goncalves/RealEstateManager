@@ -1,58 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/mainactivity_xml"
-    tools:context="com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity"
-    android:gravity="center">
-
-    <!--
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-                <Button
-                    android:id="@+id/button_image_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="select image ordi"/>
-                <Button
-                    android:id="@+id/delete_image_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="suppr image"/>
-                <Button
-                    android:id="@+id/sql_image_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="select image SQL"/>
-
-                <Button
-                    android:id="@+id/insert_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="insert"/>
-                <Button
-                    android:id="@+id/update_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="update"/>
-                <Button
-                    android:id="@+id/Cancel_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CANCEL"/>
-
-        </LinearLayout>
+    tools:context="com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity">
 
 
-        <ImageView
-            android:id="@+id/activity_main_image"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/activity_main_toolbar"
+        android:minHeight="?android:attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolBarStyle">
+
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/toolbar_relativelayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
--->
+            android:layout_height="match_parent">
 
-</ScrollView>
+            <ImageButton
+                android:id="@+id/button_hamburger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_alignParentStart="true"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/ic_menu_white_24dp"
+                android:contentDescription="@string/menu_hamburger" />
+
+            <!-- Title toolbar -->
+            <TextView
+                android:id="@+id/title_toolbar"
+                android:layout_toEndOf="@id/button_hamburger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginStart="7dp"
+                android:textSize="20sp"
+                android:maxLength="40"
+                android:textColor="@color/colorWhite"/>
+
+            <!-- Button ADD -->
+            <ImageButton
+                android:id="@+id/add_property_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/edit_property_button"
+                android:layout_marginEnd="7dp"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/baseline_add_white_24"
+                android:contentDescription="@string/button_add" />
+
+            <!-- Button EDIT -->
+            <ImageButton
+                android:id="@+id/edit_property_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/search_property_button"
+                android:layout_marginEnd="7dp"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/baseline_edit_white_24"
+                android:contentDescription="@string/button_edit" />
+
+            <!-- Button SEARCH -->
+            <ImageButton
+                android:id="@+id/search_property_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="7dp"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/baseline_search_white_24"
+                android:contentDescription="@string/button_search" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:id="@+id/fragment_position"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </ScrollView>
+
+
+</LinearLayout>

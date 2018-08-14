@@ -42,7 +42,7 @@ public class PointInterestTest {
     public void TEST_API_interestPoints(){
 
         ListPointsInterest listPointsInterest = new ListPointsInterest(mActivityTestRule.getActivity().getResources().getString(R.string.google_maps_key2),
-                new LatLng(48.857327,2.336151),"500",mActivityTestRule.getActivity().getApplicationContext());
+                new LatLng(48.857327,2.336151),"500",mActivityTestRule.getActivity().getApplicationContext(),null);
 
         waiting_time(5000);
 

@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
@@ -25,6 +26,7 @@ import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Views.ImagesDisplayAdapter;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -83,6 +85,7 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
         database.imageDao().getAllImages().observeForever(ListImagesObserver);
 
         callbackImageChange = this;
+        listImages = new ArrayList<>();
 
         configureViews();
 
@@ -103,7 +106,8 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
         surfaceView.setText(surface);
 
         // set the number of rooms
-        roomsView.setText(property.getRoomNumber());
+        String roomNb = String.valueOf(property.getRoomNumber());
+        roomsView.setText(roomNb);
 
         // set the address
         String address = property.getAddress();
@@ -114,20 +118,25 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
         interestView.setText(points);
 
         // set static mapView
-        Bitmap bitmap = BitmapFactory.decodeByteArray(property.getMap(), 0, property.getMap().length);
-        mapStaticView.setImageBitmap(bitmap);
+        if(property.getMap()!=null){
+            Bitmap bitmap = BitmapFactory.decodeByteArray(property.getMap(), 0, property.getMap().length);
+            mapStaticView.setImageBitmap(bitmap);
+        }
     }
 
     final Observer<List<ImageProperty>> ListImagesObserver = new Observer<List<ImageProperty>>() {
         @Override
         public void onChanged(@Nullable final List<ImageProperty> newName) {
-            if (newName != null) {
-                if(newName.size() != 0){
-                    listImages.addAll(newName);
+
+            if(listImages!=null){
+                if (newName != null) {
+                    if(newName.size() != 0){
+                        listImages.addAll(newName);
+                    }
                 }
+                listImages.add(new ImageProperty());
+                configureImagesProperty();
             }
-            listImages.add(new ImageProperty());
-            configureImagesProperty();
         }
     };
 
@@ -150,7 +159,8 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
     }
 
     public void changeMainImage(int position){
-        mainImageView.setImageURI(listImages.get(position).getImage());
+        Uri imageURI = Uri.parse(listImages.get(position).getImageUri());
+        mainImageView.setImageURI(imageURI);
     }
 
 }

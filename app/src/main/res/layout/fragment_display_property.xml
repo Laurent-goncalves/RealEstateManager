@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
     tools:context=".Controllers.Fragments.DisplayFragment">
 
     <FrameLayout
@@ -28,7 +30,9 @@
     <!-- DESCRIPTION TEXT + PRICE -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp">
 
         <!-- DESCRIPTION TEXTVIEW-->
         <TextView
@@ -37,8 +41,7 @@
             android:layout_height="wrap_content"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_alignParentTop="true"
             android:text="@string/description"/>
 
         <!-- PRICE PROPERTY -->
@@ -47,6 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
             android:textSize="22sp"
             android:textStyle="bold"
             android:text="285.000 $"
@@ -60,12 +64,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
+        android:textColor="@color/colorAccent"
         android:text="@string/description"/>
 
     <!-- SURFACE and NUMBER OF ROOMS -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -79,6 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:layout_marginStart="3dp"
             android:layout_gravity="center_vertical"
             android:text="@string/surface_display"/>
 
@@ -87,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="40dp"
+            android:layout_marginEnd="20dp"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"
             android:text="32m²"/>
@@ -103,6 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textSize="14sp"
+            android:layout_marginStart="3dp"
             android:text="@string/number_of_rooms_display"/>
 
         <TextView
@@ -161,6 +170,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:textColor="@color/colorAccent"
                 android:layout_below="@id/address_textview"
                 android:layout_toEndOf="@id/location_icon"
                 android:text="@string/address"/>
@@ -172,7 +182,7 @@
             android:id="@+id/interest_points_relativelayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="80dp">
+            android:layout_marginStart="50dp">
 
             <ImageView
                 android:id="@+id/interest_icon"
@@ -195,6 +205,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:textColor="@color/colorAccent"
                 android:layout_below="@id/interest_points_text"
                 android:layout_toEndOf="@id/interest_icon"
                 android:text="Centres d'intérêt"/>

@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -31,12 +32,12 @@ import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 public class ImagesEditViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.image_property) ImageView image;
-    @BindView(R.id.edit_icon_symbol) ImageView editIcon;
-    @BindView(R.id.delete_icon_symbol) ImageView deleteIcon;
+    @BindView(R.id.edit_icon_symbol) ImageButton editIcon;
+    @BindView(R.id.delete_icon_symbol) ImageButton deleteIcon;
     @BindView(R.id.icon_add_photo) LinearLayout addPhotoPanel;
     @BindView(R.id.title_image_property) TextView titleImage;
     @BindView(R.id.extra_panel) RelativeLayout extraPanel;
-    @BindView(R.id.icon_folder_open) Button selectPhotoIcon;
+    @BindView(R.id.icon_folder_open) ImageButton selectPhotoIcon;
 
     private int propertyId;
     private View view;
@@ -134,9 +135,10 @@ public class ImagesEditViewHolder extends RecyclerView.ViewHolder {
     @OnClick(R.id.buttonImageCancel)
     public void cancel(){
 
-        if(imageProperty.getImage()!=null){
+        if(imageProperty.getImageUri()!=null){
             // Re-initialize the views
-            image.setImageURI(imageProperty.getImage());
+            Uri imageURI = Uri.parse(imageProperty.getImageUri());
+            image.setImageURI(imageURI);
             titleImage.setText(imageProperty.getDescription());
 
             // display the icon to edit and delete, image, title
@@ -183,14 +185,15 @@ public class ImagesEditViewHolder extends RecyclerView.ViewHolder {
         //this.mCallbackImageSelect=mCallbackImageSelect;
         this.database = PropertyDatabase.getInstance(context);
 
-        if(imageProperty.getImage()!=null){ // if an image exist
+        if(imageProperty.getImageUri()!=null){ // if an image exist
 
             // set type of change (UPDATE IMAGE)
             typeChange = UPDATE_IMAGE;
             this.imageProperty = imageProperty;
 
             // insert image in the imageView
-            image.setImageURI(imageProperty.getImage());
+            Uri imageURI = Uri.parse(imageProperty.getImageUri());
+            image.setImageURI(imageURI);
 
             // insert title under the image
             if(imageProperty.getDescription()!=null){

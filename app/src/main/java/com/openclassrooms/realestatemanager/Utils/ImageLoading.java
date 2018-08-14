@@ -45,7 +45,7 @@ public class ImageLoading {
     // -------------------------------------------------------------------------------------------------------
     // ------------------------------------ INSERT NEW IMAGE IN DATABASE -------------------------------------
     // -------------------------------------------------------------------------------------------------------
-
+/*
     public void inserNewImageDataBase(int idProperty, String description){
         // create a new imageProperty
         ImageProperty imageProperty = new ImageProperty(currentImageByte,description,idProperty);
@@ -62,7 +62,7 @@ public class ImageLoading {
         ImageProperty imageProperty = new ImageProperty(idImage, currentImageByte, description, idProperty);
         // update the imageProperty in database
         database.imageDao().updateImage(imageProperty);
-    }
+    }*/
 
     // -------------------------------------------------------------------------------------------------------
     // --------------------------------------- DELETE IMAGE IN DATABASE --------------------------------------

@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.Views;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,7 +24,10 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
     public void configureImagesViews(ImageProperty imageProperty) {
 
         // set image
-        image.setImageURI(imageProperty.getImage());
+        if(imageProperty.getImageUri()!=null){
+            Uri imageURI = Uri.parse(imageProperty.getImageUri());
+            image.setImageURI(imageURI);
+        }
 
         // set title
         String title = imageProperty.getDescription();

@@ -49,7 +49,9 @@ public class ListPointsInterest implements Disposable {
             @Override
             public void onComplete() {
                 listPointsInterest.addAll(Utils.removeDuplicates(listPointsInterestTemp));
-                editFragment.setInterestPoints(listPointsInterest.toString());
+
+                if(editFragment!=null)
+                    editFragment.setInterestPoints(listPointsInterest.toString());
             }
         });
     }

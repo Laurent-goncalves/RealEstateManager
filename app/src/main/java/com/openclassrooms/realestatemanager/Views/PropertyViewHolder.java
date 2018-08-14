@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Views;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -18,6 +19,7 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder implements View.
     @BindView(R.id.property_type_view) TextView typeTextView;
     @BindView(R.id.property_location_view) TextView locTextView;
     @BindView(R.id.property_cost_view) TextView costTextView;
+    @BindView(R.id.item_property_layout) LinearLayout propertyLayout;
 
     public PropertyViewHolder(View itemView) {
         super(itemView);

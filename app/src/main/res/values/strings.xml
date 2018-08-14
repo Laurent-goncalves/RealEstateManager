@@ -46,6 +46,10 @@
     <string name="enter_address">Enter an address</string>
     <string name="image_main">image_main</string>
     <string name="interest_points">Interest points:</string>
+    <string name="menu_hamburger">menu hamburger</string>
+    <string name="button_add">button add</string>
+    <string name="button_edit">button edit</string>
+    <string name="button_search">button search</string>
 
 
 </resources>

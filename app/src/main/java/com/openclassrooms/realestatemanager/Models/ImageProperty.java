@@ -12,19 +12,19 @@ public class ImageProperty {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private Uri image;
+    private String imageUri;
     private String description;
     private int idProperty;
 
-    public ImageProperty(int id, Uri image, String description, int idProperty) {
+    public ImageProperty(int id, String imageUri, String description, int idProperty) {
         this.id = id;
-        this.image = image;
+        this.imageUri = imageUri;
         this.description = description;
         this.idProperty = idProperty;
     }
 
-    public ImageProperty(Uri image, String description, int idProperty) {
-        this.image = image;
+    public ImageProperty(String imageUri, String description, int idProperty) {
+        this.imageUri = imageUri;
         this.description = description;
         this.idProperty = idProperty;
     }
@@ -40,12 +40,12 @@ public class ImageProperty {
         this.id = id;
     }
 
-    public Uri getImage() {
-        return image;
+    public String getImageUri() {
+        return imageUri;
     }
 
-    public void setImage(Uri image) {
-        this.image = image;
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
     }
 
     public String getDescription() {
