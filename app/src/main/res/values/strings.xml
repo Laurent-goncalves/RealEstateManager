@@ -10,11 +10,13 @@
     <string name="price">Price ($)</string>
     <string name="overview">Overview</string>
     <string name="surface">Surface (m²)</string>
+    <string name="surface_display">Surface : </string>
     <string name="localization">Localization</string>
     <string name="address">Address</string>
     <string name="short_description">Short description</string>
     <string name="interest_points_nearby">Interest points nearby</string>
     <string name="number_of_rooms">Number of rooms</string>
+    <string name="number_of_rooms_display">Number of rooms :</string>
     <string name="sold">Sold</string>
     <string name="publication_date">Publication date</string>
     <string name="date_of_sale">Date of sale</string>
@@ -42,6 +44,8 @@
 
     <!-- EDIT FRAGMENT-->
     <string name="enter_address">Enter an address</string>
+    <string name="image_main">image_main</string>
+    <string name="interest_points">Interest points:</string>
 
 
 </resources>

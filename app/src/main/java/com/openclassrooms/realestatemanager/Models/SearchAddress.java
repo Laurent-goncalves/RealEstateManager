@@ -1,24 +1,18 @@
 package com.openclassrooms.realestatemanager.Models;
 
 import android.content.Context;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-
+import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Models.LatLngAddress.LatLngAddress;
 import com.openclassrooms.realestatemanager.Models.SuggestionsLatLng.Prediction;
 import com.openclassrooms.realestatemanager.Models.SuggestionsLatLng.Suggestions;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ApiStream;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import io.reactivex.disposables.Disposable;
@@ -36,6 +30,7 @@ public class SearchAddress implements Disposable{
     private String apiKey;
     private SearchView.SearchAutoComplete searchAutoComplete;
     private List<String> listSuggestions;
+    private LatLng latLng;
 
     public SearchAddress(EditFragment editFragment, Context context) {
         this.editFragment=editFragment;
@@ -106,7 +101,52 @@ public class SearchAddress implements Disposable{
         // when clicking on an item from the list autocomplete
         searchAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
             searchAutoComplete.setText(listSuggestions.get(position));
+            launchLatLngSearch(listSuggestions.get(position));
         });
+    }
+
+    private void getLatLngAddress(String api_key, String address) {
+
+        dispose();
+
+        this.disposable = ApiStream.streamFetchgetLatLngAddress(api_key,address).subscribeWith(new DisposableObserver<LatLngAddress>() {
+
+            @Override
+            public void onNext(LatLngAddress latLngAddress) {
+                if(latLngAddress!=null){
+                    if(latLngAddress.getResults()!=null){
+                        if(latLngAddress.getResults().get(0)!=null) {
+                            if (latLngAddress.getResults().get(0).getGeometry() != null) {
+                                if (latLngAddress.getResults().get(0).getGeometry().getLocation() != null) {
+
+                                    latLng = new LatLng(latLngAddress.getResults().get(0).getGeometry().getLocation().getLat(),
+                                            latLngAddress.getResults().get(0).getGeometry().getLocation().getLng());
+
+                                    editFragment.getPropertyInit().setLat(latLng.latitude);
+                                    editFragment.getPropertyInit().setLng(latLng.longitude);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                System.out.println("eee error - " + e.toString());
+            }
+
+            @Override
+            public void onComplete() {
+                launchSearchInterestPoints(editFragment,latLng);
+                dispose();
+            }
+        });
+    }
+
+    private void launchSearchInterestPoints(EditFragment editFragment, LatLng latLng){
+        new ListPointsInterest(apiKey,latLng,"1000",context, editFragment);
+
     }
 
     private void configureSearchView(){
@@ -117,22 +157,30 @@ public class SearchAddress implements Disposable{
         // Assign searchAutoComplete
         searchAutoComplete = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
 
-
-
-
+        // Keep open the searchView
         searchView.setIconifiedByDefault(true);
-        //searchView.setFocusable(true);
         searchView.setIconified(false);
         searchView.clearFocus();
-        //searchView.requestFocusFromTouch();
 
         // Hide close button
-        ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
+        ImageView closeButton = searchView.findViewById(R.id.search_close_btn);
         closeButton.setVisibility(View.GONE);
 
         // set onclick listeners
         setOnClickListenerItemSelectionSearchView();
         setOnQueryTextListenerSearchView();
+    }
+
+    private void launchLatLngSearch(String address){
+
+        // the address selected is written in the searchView
+        searchAutoComplete.setText(address);
+
+        // the button save is disabled
+        editFragment.getButtonSave().setEnabled(false);
+
+        // launch of API request to get Lat and Lng of the address
+        getLatLngAddress(apiKey,address);
     }
 
     public void displayListPredictions(Boolean submit) {
@@ -142,7 +190,10 @@ public class SearchAddress implements Disposable{
         searchAutoComplete.setAdapter(autocomplete_adapter);
 
         if(submit && listSuggestions.size()==1){
+            // the unique item of the list is written in the searchView
             searchAutoComplete.setText(listSuggestions.get(0));
+
+            launchLatLngSearch(listSuggestions.get(0));
         }
     }
 

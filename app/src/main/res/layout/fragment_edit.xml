@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="30dp"
-        android:id="@+id/list_images_property">
+        android:id="@+id/list_images_property_edit">
     </android.support.v7.widget.RecyclerView>
 
 

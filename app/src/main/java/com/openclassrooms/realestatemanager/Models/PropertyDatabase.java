@@ -11,7 +11,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 
-@Database(entities = {Property.class, ImageProperty.class}, version = 1, exportSchema = false)
+@Database(entities = {Property.class, ImageProperty.class}, version = 2, exportSchema = false)
 public abstract class PropertyDatabase extends RoomDatabase {
 
     private static volatile PropertyDatabase INSTANCE;
@@ -27,6 +27,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                             PropertyDatabase.class, "MyDatabase.db")
                             .addCallback(prepopulateDatabase())
                             .allowMainThreadQueries()
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
@@ -119,5 +120,6 @@ public abstract class PropertyDatabase extends RoomDatabase {
             }
         };
     }
+
 
 }

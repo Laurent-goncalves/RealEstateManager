@@ -1,20 +1,12 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
-import android.annotation.SuppressLint;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,12 +18,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
@@ -41,20 +30,10 @@ import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.R;
-import com.openclassrooms.realestatemanager.Views.ImagesRecyclerViewAdapter;
-import com.openclassrooms.realestatemanager.Views.ImagesViewHolder;
-import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
-
-import org.mozilla.javascript.tools.jsc.Main;
-
-import java.io.File;
+import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -75,13 +54,13 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     @BindView(R.id.description_edit_text) EditText descriptionEdit;
     @BindView(R.id.buttonCancel) Button buttonCancel;
     @BindView(R.id.buttonSave) Button buttonSave;
-    private ImageView buttonPlus;
-    private ImageView buttonLess;
     private TextView nbRooms;
     private TextView datePublish;
     private TextView dateSold;
     private static final String PROPERTY_JSON = "property_json";
+    private static final String MODE_SELECTED = "mode_selected";
     private static final String IMAGES_JSON = "images_json";
+    private String mode;
     private Property propertyInit;
     private List<ImageProperty> listImages;
     private int roomNb;
@@ -91,7 +70,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     private RecyclerView recyclerView;
     private PropertyDatabase database;
     private View view;
-    private ImagesRecyclerViewAdapter adapter;
+    private ImagesEditAdapter adapter;
 
     public EditFragment() {
         // Required empty public constructor
@@ -102,22 +81,36 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_edit, container, false);
-        recyclerView=view.findViewById(R.id.list_images_property);
+        recyclerView=view.findViewById(R.id.list_images_property_edit);
         ButterKnife.bind(this,view);
 
         // Set the mainActivity
         mainActivity = (MainActivity) getActivity();
         this.context=mainActivity.getApplicationContext();
+        this.database = PropertyDatabase.getInstance(context);
 
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
-            Gson gson = new Gson();
-            String propJSON = getArguments().getString(PROPERTY_JSON,null);
-            Type propertyType = new TypeToken<Property>(){}.getType();
-            propertyInit = gson.fromJson(propJSON,propertyType);
+
+            mode=getArguments().getString(MODE_SELECTED,null);
+
+            if(mode!=null){
+
+                if(mode.equals("UPDATE")){ // mode update property
+
+                    // Recover the property datas
+                    Gson gson = new Gson();
+                    String propJSON = getArguments().getString(PROPERTY_JSON,null);
+                    Type propertyType = new TypeToken<Property>(){}.getType();
+                    propertyInit = gson.fromJson(propJSON,propertyType);
+
+                    // Recover list of imagesProperty from database and configure images inside recyclerView
+                    database.imageDao().getAllImages().observeForever(ListImagesObserver);
+                }
+            }
         }
 
-        listImages = new ArrayList<ImageProperty>();
+        listImages = new ArrayList<>();
         mCallbackImageSelect = this;
         configureAllAreas();
         configure_date_selectors();
@@ -127,10 +120,6 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     private void configureAllAreas(){
 
         if(propertyInit!=null){
-
-            // Recover list of imagesProperty from database and configure images inside recyclerView
-            this.database = PropertyDatabase.getInstance(context);
-            database.imageDao().getAllImages().observeForever(ListImagesObserver);
 
             // configure switch (sold ?)
             configureSwitchSold();
@@ -163,40 +152,40 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
             // configure description
             descriptionEdit.setText(propertyInit.getDescription());
         }
-        configureButtonsPlusAndLess();
-        configureButtonsCancelAndSave();
     }
 
-    @SuppressLint("CutPasteId")
-    private void configureButtonsPlusAndLess(){
-        buttonPlus= relativeLayoutNbRooms.findViewById(R.id.room_number_selector).findViewById(R.id.plus_button);
-
-        buttonPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(roomNb<10) {
-                    roomNb++;
-                    nbRooms.setText(String.valueOf(roomNb));
-                }
-            }
-        });
-
-        buttonLess= relativeLayoutNbRooms.findViewById(R.id.room_number_selector).findViewById(R.id.less_button);
-
-        buttonLess.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(roomNb>=1) {
-                    roomNb--;
-                    nbRooms.setText(String.valueOf(roomNb));
-                }
-            }
-        });
+    @OnClick(R.id.plus_button)
+    public void onClickListenerButtonPlus() {
+        if(roomNb<10) {
+            roomNb++;
+            nbRooms.setText(String.valueOf(roomNb));
+        }
     }
 
-    private void configureButtonsCancelAndSave(){
+    @OnClick(R.id.less_button)
+    public void onClickListenerButtonLess() {
+        if(roomNb>=1) {
+            roomNb--;
+            nbRooms.setText(String.valueOf(roomNb));
+        }
+    }
+
+    @OnClick(R.id.buttonSave)
+    public void onClickListenerButtonSave() {
+
+        mainActivity.changeToDisplayMode(propertyInit.getId());
 
     }
+
+    @OnClick(R.id.buttonCancel)
+    public void onClickListenerButtonCancel() {
+
+
+    }
+
+    // -------------------------------------------------------------------------------------------
+    // ----------------------------------- CONFIGURATION VIEWS -----------------------------------
+    // -------------------------------------------------------------------------------------------
 
     private void configureImagesProperty(){
 
@@ -207,7 +196,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
                     = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
             // Create adapter passing in the sample user data
-            adapter = new ImagesRecyclerViewAdapter(listImages,propertyInit,context,mCallbackImageSelect);
+            adapter = new ImagesEditAdapter(listImages,propertyInit,context,mCallbackImageSelect);
             // Attach the adapter to the recyclerview to populate items
             recyclerView.setAdapter(adapter);
             // Set layout manager to position the items
@@ -218,8 +207,10 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     final Observer<List<ImageProperty>> ListImagesObserver = new Observer<List<ImageProperty>>() {
         @Override
         public void onChanged(@Nullable final List<ImageProperty> newName) {
-            if (newName.size() != 0) {
-                listImages.addAll(newName);
+            if (newName != null) {
+                if(newName.size() != 0){
+                    listImages.addAll(newName);
+                }
             }
             listImages.add(new ImageProperty());
             configureImagesProperty();
@@ -258,14 +249,11 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
 
         calendarView.setVisibility(View.GONE);
 
-        expandPublish.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(calendarView.getVisibility()==View.VISIBLE)
-                    calendarView.setVisibility(View.GONE);
-                else
-                    calendarView.setVisibility(View.VISIBLE);
-            }
+        expandPublish.setOnClickListener(v -> {
+            if(calendarView.getVisibility()==View.VISIBLE)
+                calendarView.setVisibility(View.GONE);
+            else
+                calendarView.setVisibility(View.VISIBLE);
         });
 
         ImageView expandSold = linearLayoutDates
@@ -273,15 +261,20 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
                 .findViewById(R.id.relativelayout_sold)
                 .findViewById(R.id.icon_expand);
 
-        expandSold.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(calendarView.getVisibility()==View.VISIBLE)
-                    calendarView.setVisibility(View.GONE);
-                else
-                    calendarView.setVisibility(View.VISIBLE);
-            }
+        expandSold.setOnClickListener(v -> {
+            if(calendarView.getVisibility()==View.VISIBLE)
+                calendarView.setVisibility(View.GONE);
+            else
+                calendarView.setVisibility(View.VISIBLE);
         });
+    }
+
+    public void setInterestPoints(String interestPoints){
+
+        propertyInit.setInterestPoints(interestPoints);
+
+        // Enable button save
+        this.getButtonSave().setEnabled(true);
     }
 
     @Override
@@ -289,13 +282,23 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         mainActivity.getImageFromGallery(viewHolderPosition);
     }
 
+    // ---------------------------------------------------------------------------------------
+    // -------------------------------- GETTER and SETTER ------------------------------------
+    // ---------------------------------------------------------------------------------------
 
     public android.support.v7.widget.SearchView getAddressEdit() {
         return addressEdit;
     }
 
-    public void setImage(Uri imageUri, int holderPosition){
+    public Button getButtonSave() {
+        return buttonSave;
+    }
 
+    public Property getPropertyInit() {
+        return propertyInit;
+    }
+
+    public void setImage(Uri imageUri, int holderPosition){
 
         View view = recyclerView.findViewHolderForAdapterPosition(holderPosition).itemView;
         ImageView image = view.findViewById(R.id.image_property);
@@ -305,6 +308,10 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         linearLayout.setVisibility(View.GONE);
 
         image.setImageURI(imageUri);
+
+        // Add new empty photo
+
+
 
         /*Glide.with(context)
                 .load(new File(String.valueOf(imageUri))) // Uri of the picture

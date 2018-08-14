@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Models;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import com.google.android.gms.maps.model.LatLng;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.PlaceNearby.PlaceNearby;
 import com.openclassrooms.realestatemanager.Models.PlaceNearby.Result;
 import com.openclassrooms.realestatemanager.Utils.ApiStream;
@@ -19,11 +20,13 @@ public class ListPointsInterest implements Disposable {
     private List<String> listPointsInterestTemp;
     private Disposable disposable;
     private Context context;
+    private EditFragment editFragment;
 
-    public ListPointsInterest(String api_key, LatLng latLng, String radius, Context context) {
+    public ListPointsInterest(String api_key, LatLng latLng, String radius, Context context, EditFragment editFragment) {
         listPointsInterest = new ArrayList<>();
         listPointsInterestTemp = new ArrayList<>();
         this.context = context;
+        this.editFragment=editFragment;
         getListPlacesNearby(api_key, latLng, radius);
     }
 
@@ -46,6 +49,7 @@ public class ListPointsInterest implements Disposable {
             @Override
             public void onComplete() {
                 listPointsInterest.addAll(Utils.removeDuplicates(listPointsInterestTemp));
+                editFragment.setInterestPoints(listPointsInterest.toString());
             }
         });
     }
@@ -65,9 +69,7 @@ public class ListPointsInterest implements Disposable {
                 }
             }
         }
-
         listPointsInterestTemp.addAll(Utils.getInterestPoints(listTypes, context));
-
     }
 
     @Override

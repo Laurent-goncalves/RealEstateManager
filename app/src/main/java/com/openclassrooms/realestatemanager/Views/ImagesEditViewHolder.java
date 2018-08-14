@@ -28,7 +28,7 @@ import butterknife.OnTextChanged;
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 
-public class ImagesViewHolder extends RecyclerView.ViewHolder {
+public class ImagesEditViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.image_property) ImageView image;
     @BindView(R.id.edit_icon_symbol) ImageView editIcon;
@@ -48,7 +48,7 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
     private ImageProperty imageProperty;
     //private CallbackImageSelect mCallbackImageSelect;
 
-    ImagesViewHolder(View itemView) {
+    ImagesEditViewHolder(View itemView) {
         super(itemView);
         this.view=itemView;
         ButterKnife.bind(this, itemView);
@@ -136,8 +136,7 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
 
         if(imageProperty.getImage()!=null){
             // Re-initialize the views
-            image.setImageBitmap(BitmapFactory.decodeByteArray(imageProperty.getImage(), 0,
-                    imageProperty.getImage().length));
+            image.setImageURI(imageProperty.getImage());
             titleImage.setText(imageProperty.getDescription());
 
             // display the icon to edit and delete, image, title
@@ -191,8 +190,7 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
             this.imageProperty = imageProperty;
 
             // insert image in the imageView
-            image.setImageBitmap(BitmapFactory.decodeByteArray(imageProperty.getImage(), 0,
-                    imageProperty.getImage().length));
+            image.setImageURI(imageProperty.getImage());
 
             // insert title under the image
             if(imageProperty.getDescription()!=null){
@@ -242,8 +240,9 @@ public class ImagesViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void modifyImageProperty(){
-        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
-        imageProperty = new ImageProperty(Utils.getBitmapAsByteArray(bitmap), titleImage.getText().toString(), propertyId);
+       // TODO modify here - replace by URI ?
+        // Uri  bitmap = ((BitmapDrawable) image.getDrawable()).g
+        //imageProperty = new ImageProperty(image, titleImage.getText().toString(), propertyId);
     }
 
     private void openExtraPanel(){

@@ -10,13 +10,12 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
-import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Utils.ImageLoading;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -24,7 +23,7 @@ import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
 import com.openclassrooms.realestatemanager.Utils.Utils;
-import com.openclassrooms.realestatemanager.Views.ImagesViewHolder;
+import com.openclassrooms.realestatemanager.Views.ImagesEditViewHolder;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -39,12 +38,14 @@ public class MainActivity extends AppCompatActivity  {
     private ImageView imageView;
     private PropertyDatabase database;
     private static int PROPERTY_ID = 3;
-    private ImagesViewHolder imagesViewHolder;
+    private ImagesEditViewHolder imagesViewHolder;
     private static final String PROPERTY_JSON = "property_json";
     private EditFragment editFragment;
+    private DisplayFragment displayFragment;
+    private List<Property> listProperties;
 
     private static Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
-            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric");
+            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric",null);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,110 +53,92 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
         this.database = PropertyDatabase.getInstance(getApplicationContext());
 
-
-
-
-       /* try {
-            Property newProperty = LiveDataTestUtil.getValue(this.database.propertyDao().getProperty(1));
-
+        try {
+            listProperties = LiveDataTestUtil.getValue(this.database.propertyDao().getAllProperties());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        database.imageDao().getAllImages().observe(this,ListObserver);
-
-        imageView = (ImageView) findViewById(R.id.activity_main_image);
-        button = findViewById(R.id.button_image_loading);
-
-
-        Button buttonDEL = findViewById(R.id.delete_image_loading);
-        Button buttonInsert = findViewById(R.id.insert_button);
-        Button buttonUpdate = findViewById(R.id.update_button);
-        Button buttonCANCEL = findViewById(R.id.Cancel_button);
-        Button buttonSQL = findViewById(R.id.sql_image_loading);
-
-        imageLoading = new ImageLoading(this,this.database);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                loadNewImageFromDevice();
-            }
-        });
-
-        buttonDEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageView.setImageBitmap(null);
-                //imageLoading.deleteImageDataBase(1);
-            }
-        });
-
-        buttonInsert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                imageLoading.inserNewImageDataBase(1,"description");
-            }
-        });
-        buttonUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                imageLoading.updateImageDataBase(1,1,"description");
-            }
-        });
-
-        buttonCANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                imageLoading.reinitializeImageProperty();
-            }
-        });
-
-        buttonSQL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updatedatabase(1);
-            }
-        });*/
-
-
-        configure_and_show_edit_fragment();
-
-
-
+        configureAndShowEditFragment(PROPERTY_DEMO);
     }
 
+    public void changeToDisplayMode(int propertyId){
 
-    public void configure_and_show_edit_fragment(){
+        // remove the editFragment
+        this.getFragmentManager().beginTransaction().remove(editFragment).commit();
+
+        // show displayFragment
+        configureAndShowDisplayFragment(getPropertyFromId(propertyId));
+    }
+
+    public void changeToEditMode(int propertyId){
+
+        // remove the editFragment
+        this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
+
+        // show displayFragment
+        configureAndShowEditFragment(getPropertyFromId(propertyId));
+    }
+
+    private Property getPropertyFromId(int propertyId){
+
+        for(Property property : listProperties){
+            if(property!=null){
+                if(property.getId() == propertyId){
+                    return property;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void configureAndShowDisplayFragment(Property property){
+        if(property!=null){
+            displayFragment = new DisplayFragment();
+
+            // create a bundle
+            Bundle bundle = new Bundle();
+            Gson gson = new Gson();
+
+            // Add the property to the bundle in json format
+            String property_json = gson.toJson(property);
+            bundle.putString(PROPERTY_JSON, property_json);
+
+            // configure and show the editFragment
+            displayFragment.setArguments(bundle);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.mainactivity_xml, displayFragment);
+            fragmentTransaction.commit();
+        }
+    }
+
+    public void configureAndShowEditFragment(Property property){
 
         editFragment = new EditFragment();
 
+        // create a bundle
         Bundle bundle = new Bundle();
-
         Gson gson = new Gson();
-        String property_json = gson.toJson(PROPERTY_DEMO);
+
+        // Add the property to the bundle in json format
+        String property_json = gson.toJson(property);
         bundle.putString(PROPERTY_JSON, property_json);
 
-
+        // configure and show the editFragment
         editFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.mainactivity_xml, editFragment);
         fragmentTransaction.commit();
-
-
-        /*
-        https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.613032,2.482217&radius=1000&key=AIzaSyCAzX1ILkJlqSsTMkRJHSGEMAQWuqxSxKA
-         */
-
     }
 
     // -------------------------------------------------------------------------------------------------------
     // -------------------------------------- LOADING IMAGE FROM DEVICE --------------------------------------
     // -------------------------------------------------------------------------------------------------------
 
-    public void loadNewImageFromDevice(){
+    public void getImageFromGallery(int viewHolderPosition) {
         Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(i, RESULT_LOAD_IMAGE);
+        i.putExtra("VIEWHOLDERPOSITION",viewHolderPosition);
+        startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
     }
 
     @Override
@@ -184,29 +167,9 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
-    public void updatedatabase(int idImage){
-        database.imageDao().getImage(idImage).observe(this,nameObserver);
-    }
-
-    final Observer<ImageProperty> nameObserver = new Observer<ImageProperty>() {
-        @Override
-        public void onChanged(@Nullable final ImageProperty newName) {
-            // Update the UI, in this case, a TextView.
-            if(newName!=null) {
-                Bitmap imageBitmap=BitmapFactory.decodeByteArray(newName.getImage(), 0, newName.getImage().length);
-                imageView.setImageBitmap(imageBitmap);
-            }
-        }
-    };
-
-    final Observer<List<ImageProperty>> ListObserver = new Observer<List<ImageProperty>>() {
-        @Override
-        public void onChanged(@Nullable final List<ImageProperty> newName) {
-
-            for(ImageProperty img : newName)
-                System.out.println("eee list=" + img.getId() + "       propertyId=" + img.getIdProperty());
-        }
-    };
+    // -------------------------------------------------------------------------------------------------------
+    // ------------------------------------------ GETTER AND SETTER ------------------------------------------
+    // -------------------------------------------------------------------------------------------------------
 
     public Button getButton() {
         return button;
@@ -214,11 +177,5 @@ public class MainActivity extends AppCompatActivity  {
 
     public ImageView getImageView() {
         return imageView;
-    }
-
-    public void getImageFromGallery(int viewHolderPosition) {
-        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        i.putExtra("VIEWHOLDERPOSITION",viewHolderPosition);
-        startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
     }
 }

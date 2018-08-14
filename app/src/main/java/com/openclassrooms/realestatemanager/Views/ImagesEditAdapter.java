@@ -1,16 +1,12 @@
 package com.openclassrooms.realestatemanager.Views;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -18,14 +14,14 @@ import com.openclassrooms.realestatemanager.R;
 
 import java.util.List;
 
-public class ImagesRecyclerViewAdapter extends RecyclerView.Adapter<ImagesViewHolder> {
+public class ImagesEditAdapter extends RecyclerView.Adapter<ImagesEditViewHolder> {
 
     private final List<ImageProperty> listImages;
     private Context context;
     private Property property;
     private CallbackImageSelect mCallbackImageSelect;
 
-    public ImagesRecyclerViewAdapter(List<ImageProperty> listImages, Property property, Context context, CallbackImageSelect mCallbackImageSelect) {
+    public ImagesEditAdapter(List<ImageProperty> listImages, Property property, Context context, CallbackImageSelect mCallbackImageSelect) {
         this.listImages= listImages;
         this.context=context;
         this.property=property;
@@ -34,26 +30,21 @@ public class ImagesRecyclerViewAdapter extends RecyclerView.Adapter<ImagesViewHo
 
     @NonNull
     @Override
-    public ImagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ImagesEditViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.edit_property_item, parent, false);
-        return new ImagesViewHolder(view);
+        View view = inflater.inflate(R.layout.edit_image_item, parent, false);
+        return new ImagesEditViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ImagesViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ImagesEditViewHolder holder, final int position) {
 
         if(listImages!=null) {
             if(listImages.get(position)!=null && property!=null)
             holder.configureImagesViews(listImages.get(position),property.getId(),context);
         }
 
-        holder.selectPhotoIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallbackImageSelect.getImageFromGallery(holder.getAdapterPosition());
-            }
-        });
+        holder.selectPhotoIcon.setOnClickListener(v -> mCallbackImageSelect.getImageFromGallery(holder.getAdapterPosition()));
     }
 
     @Override

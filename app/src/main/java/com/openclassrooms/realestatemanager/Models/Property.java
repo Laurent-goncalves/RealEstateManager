@@ -39,8 +39,9 @@ public class Property {
     private String estateAgent;
     private Double Lat;
     private Double Lng;
+    private byte[] map;
 
-    public Property(int id, String type, Double price, Double surface, int roomNumber, String description, String address, String interestPoints, Boolean sold, String dateStart, Double Lat, Double Lng,String estateAgent) {
+    public Property(int id, String type, Double price, Double surface, int roomNumber, String description, String address, String interestPoints, Boolean sold, String dateStart, Double Lat, Double Lng,String estateAgent, byte[] map) {
         this.id = id;
         this.type = type;
         this.price = price;
@@ -54,6 +55,7 @@ public class Property {
         this.estateAgent = estateAgent;
         this.Lat = Lat;
         this.Lng = Lng;
+        this.map = map;
     }
 
     public int getId() {
@@ -166,5 +168,13 @@ public class Property {
 
     public void setEstateAgent(String estateAgent) {
         this.estateAgent = estateAgent;
+    }
+
+    public byte[] getMap() {
+        return map;
+    }
+
+    public void setMap(byte[] map) {
+        this.map = map;
     }
 }

@@ -1,43 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controllers.Fragments.DisplayPropFragment">
+    android:orientation="vertical"
+    tools:context=".Controllers.Fragments.DisplayFragment">
 
-    <!-- MEDIA TEXTVIEW-->
-    <TextView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/media"/>
+        android:layout_height="wrap_content">
 
-    <!-- LIST IMAGES PROPERTY -->
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/list_images_property">
-    </android.support.v7.widget.RecyclerView>
+        <ImageView
+            android:id="@+id/big_image_display"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/image_main" />
 
-    <!-- DESCRIPTION TEXTVIEW-->
-    <TextView
+        <!-- LIST IMAGES PROPERTY -->
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list_images_property_display">
+        </android.support.v7.widget.RecyclerView>
+
+    </FrameLayout>
+
+    <!-- DESCRIPTION TEXT + PRICE -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/description"/>
+        android:layout_height="wrap_content">
+
+        <!-- DESCRIPTION TEXTVIEW-->
+        <TextView
+            android:id="@+id/text_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/description"/>
+
+        <!-- PRICE PROPERTY -->
+        <TextView
+            android:id="@+id/price_property"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:text="285.000 $"
+            android:textColor="@color/colorAccent"/>
+
+    </RelativeLayout>
 
     <!-- DESCRIPTION -->
     <TextView
-        android:id="@+id/description_text"
+        android:id="@+id/description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="@string/description"/>
 
+    <!-- SURFACE and NUMBER OF ROOMS -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
 
+        <!-- SURFACE -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_settings_overscan_black_24"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/surface_display"/>
+
+        <TextView
+            android:id="@+id/surface_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="40dp"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            android:text="32m²"/>
+
+        <!-- NUMBER OF ROOMS -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_home_black_24"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textSize="14sp"
+            android:text="@string/number_of_rooms_display"/>
+
+        <TextView
+            android:id="@+id/nb_rooms_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorAccent"
+            android:layout_marginEnd="40dp"
+            android:textSize="14sp"
+            android:text="5"/>
+
+    </LinearLayout>
+
+    <!-- LOCALIZATION -->
+    <TextView
+        android:id="@+id/text_localization"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/localization"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center">
 
+        <!-- ADDRESS -->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/location_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/baseline_place_black_24"/>
+
+            <TextView
+                android:id="@+id/address_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/location_icon"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="3dp"
+                android:textStyle="italic"
+                android:text="@string/address"/>
+
+            <TextView
+                android:id="@+id/address_display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_below="@id/address_textview"
+                android:layout_toEndOf="@id/location_icon"
+                android:text="@string/address"/>
+
+        </RelativeLayout>
+
+        <!-- INTEREST POINTS -->
+        <RelativeLayout
+            android:id="@+id/interest_points_relativelayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="80dp">
+
+            <ImageView
+                android:id="@+id/interest_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_near_me_black_24"/>
+
+            <TextView
+                android:id="@+id/interest_points_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="3dp"
+                android:layout_toEndOf="@id/interest_icon"
+                android:textStyle="italic"
+                android:text="@string/interest_points"/>
+
+            <TextView
+                android:id="@+id/interest_points_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_below="@id/interest_points_text"
+                android:layout_toEndOf="@id/interest_icon"
+                android:text="Centres d'intérêt"/>
+
+        </RelativeLayout>
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <!-- STATIC MAPVIEW -->
+    <ImageView
+        android:id="@+id/static_mapview_property"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:contentDescription="@string/static_mapview" />
+
+</LinearLayout>
