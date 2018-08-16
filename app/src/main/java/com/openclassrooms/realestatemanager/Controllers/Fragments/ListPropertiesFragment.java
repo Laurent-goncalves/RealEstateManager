@@ -2,7 +2,7 @@ package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,19 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
 import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ListPropertiesFragment extends Fragment {
+public class ListPropertiesFragment extends Fragment implements CallbackListProperties {
 
     private static final String PROPERTIES_JSON = "list_properties_json";
     private List<Property> listProperties;
+    private CallbackListProperties callbackListProperties;
+    private MainActivity mainActivity;
 
     public ListPropertiesFragment() {
     }
@@ -42,6 +45,9 @@ public class ListPropertiesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        callbackListProperties = this;
+        mainActivity = (MainActivity) getActivity();
 
         if (getArguments() != null) {
 
@@ -65,7 +71,7 @@ public class ListPropertiesFragment extends Fragment {
             if(context!=null){
 
                 // Create adapter passing in the sample user data
-                PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties,context);
+                PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties,context, callbackListProperties);
                 // Attach the adapter to the recyclerview to populate items
                 recyclerView.setAdapter(adapter);
                 // Set layout manager to position the items
@@ -75,4 +81,8 @@ public class ListPropertiesFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void showDisplayFragment(int position) {
+        mainActivity.configureAndShowDisplayFragment(listProperties.get(position));
+    }
 }

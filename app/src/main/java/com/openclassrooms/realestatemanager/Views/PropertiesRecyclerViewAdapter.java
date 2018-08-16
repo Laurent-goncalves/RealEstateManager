@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 
@@ -17,10 +18,12 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
     private final List<Property> listProperties;
     private Context context;
+    private CallbackListProperties callbackListProperties;
 
-    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context) {
+    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, CallbackListProperties callbackListProperties) {
         this.listProperties = listProperties;
         this.context=context;
+        this.callbackListProperties=callbackListProperties;
     }
 
     @Override
@@ -35,12 +38,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
         if(listProperties!=null)
             holder.configurePropertiesViews(listProperties.get(position));
 
-        holder.propertyLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        holder.propertyLayout.setOnClickListener(v -> callbackListProperties.showDisplayFragment(position));
     }
 
     @Override

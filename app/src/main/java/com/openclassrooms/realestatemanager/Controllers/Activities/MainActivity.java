@@ -1,53 +1,54 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
-import android.arch.lifecycle.Observer;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.Utils.ImageLoading;
-import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
 import com.openclassrooms.realestatemanager.Utils.Utils;
-import com.openclassrooms.realestatemanager.Views.ImagesEditViewHolder;
+import com.openclassrooms.realestatemanager.Views.ImageUpdateViewHolder;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity  {
 
-    private ImageLoading imageLoading;
-    private Button button;
-    private static int RESULT_LOAD_IMAGE = 1;
     private static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
-    private ImageView imageView;
+    private static int RESULT_LOAD_MAIN_IMAGE_ = 3;
     private PropertyDatabase database;
     private static int PROPERTY_ID = 3;
-    private ImagesEditViewHolder imagesViewHolder;
     private static final String PROPERTY_JSON = "property_json";
     private static final String MODE_SELECTED = "mode_selected";
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
+    private static final String VIEWHOLDER_POSITION = "viewholder_position";
     private EditFragment editFragment;
     private DisplayFragment displayFragment;
+    private ListPropertiesFragment listPropertiesFragment;
     private List<Property> listProperties;
     private ToolbarManager toolbarManager;
+    private int viewHolderPosition;
 
     private Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
             "Nice appartment closed to subway station. \nBig kitchen, 2 bathrooms, 2 WC. \nNice garden with a view on the lake. \nMany shops nearby.",
@@ -72,8 +73,33 @@ public class MainActivity extends AppCompatActivity  {
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configure_toolbar();
 
-        // Show editFragment
-        configureAndShowDisplayFragment(PROPERTY_DEMO);
+
+        // Show ListPropertiesFragment
+        configureAndShowListPropertiesFragment();
+
+
+        // Show editFragment/**/
+        //configureAndShowEditFragment(PROPERTY_DEMO);
+    }
+
+    public void displayAlertDeletion(int viewHolderPosition){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(getResources().getString(R.string.delete_image));
+        builder.setMessage(getResources().getString(R.string.delete_confirmation));
+        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                editFragment.alertDeletion(viewHolderPosition);
+            }
+        })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) { }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void changeToDisplayMode(int propertyId){
@@ -164,13 +190,34 @@ public class MainActivity extends AppCompatActivity  {
         fragmentTransaction.commit();
     }
 
+    public void configureAndShowListPropertiesFragment(){
+
+        try {
+            listProperties = LiveDataTestUtil.getValue(this.database.propertyDao().getAllProperties());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        listPropertiesFragment = ListPropertiesFragment.newInstance(listProperties);
+
+        // configure and show the listPropertiesFragment
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment);
+        fragmentTransaction.commit();
+    }
+
     // -------------------------------------------------------------------------------------------------------
     // -------------------------------------- LOADING IMAGE FROM DEVICE --------------------------------------
     // -------------------------------------------------------------------------------------------------------
 
-    public void getImageFromGallery(int viewHolderPosition) {
+    public void getMainImage() {
         Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        i.putExtra("VIEWHOLDERPOSITION",viewHolderPosition);
+        startActivityForResult(i, RESULT_LOAD_MAIN_IMAGE_);
+    }
+
+    public void getExtraImage(int viewHolderPosition) {
+        this.viewHolderPosition= viewHolderPosition;
+        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
     }
 
@@ -178,25 +225,12 @@ public class MainActivity extends AppCompatActivity  {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+        if (requestCode == RESULT_LOAD_IMAGE_VIEWHOLDER && resultCode == RESULT_OK && data != null){
             Uri selectedImage = data.getData();
-
-            Bitmap bitmap;
-
-            try {
-                if (selectedImage != null) {
-                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
-                    imageView.setImageBitmap(bitmap);
-                    imageLoading.setCurrentImageByte(Utils.getBitmapAsByteArray(bitmap));
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else if (requestCode == RESULT_LOAD_IMAGE_VIEWHOLDER && resultCode == RESULT_OK && null != data){
-
+            editFragment.setExtraImage(selectedImage, viewHolderPosition);
+        } else if (requestCode == RESULT_LOAD_MAIN_IMAGE_ && null != data){
             Uri selectedImage = data.getData();
-
-            editFragment.setImage(selectedImage, data.getIntExtra("VIEWHOLDERPOSITION",0));
+            editFragment.setMainImage(selectedImage);
         }
     }
 
@@ -205,15 +239,6 @@ public class MainActivity extends AppCompatActivity  {
     // -------------------------------------------------------------------------------------------------------
 
     public int getCurrentPropertyDisplayed(){
-
         return PROPERTY_DEMO.getId();
-    }
-
-    public Button getButton() {
-        return button;
-    }
-
-    public ImageView getImageView() {
-        return imageView;
     }
 }

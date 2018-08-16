@@ -2,5 +2,7 @@ package com.openclassrooms.realestatemanager.Models;
 
 public interface CallbackImageSelect {
 
-    void  getImageFromGallery(int viewHolderPosition);
+    void getExtraImageFromGallery(int viewHolderPosition);
+
+    void alertDeleteImage(int viewHolderPosition);
 }

@@ -5,14 +5,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
+
+import java.text.NumberFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PropertyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class PropertyViewHolder extends RecyclerView.ViewHolder {
 
     private View view;
     @BindView(R.id.main_image_property) ImageView mainImage;
@@ -31,19 +32,15 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder implements View.
 
         typeTextView.setText(property.getType());
         locTextView.setText(property.getAddress());
-        costTextView.setText(String.valueOf("$ " + property.getPrice()));
 
-        // Load the image using Glide
-        /*Glide.with(view)
-                .load(link)
-                .apply(new RequestOptions()
-                        .placeholder(R.drawable.placeholder_resto))
-                .into(picture_resto);*/
 
-    }
+        // Price
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        String price = formatter.format(property.getPrice());
+        costTextView.setText(price);
 
-    @Override
-    public void onClick(View v) {
 
+
+        //mainImage.setImageURI();
     }
 }

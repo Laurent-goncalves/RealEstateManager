@@ -28,14 +28,14 @@ public class ImageLoading {
 
     public ImageLoading(MainActivity mainActivity, PropertyDatabase database){
         this.database=database;
-        imageView = mainActivity.getImageView();
+        /*imageView = mainActivity.getImageView();
         Bitmap bitmap = null;
         
         if(imageView.getDrawable()!=null)
             bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
         if(bitmap!=null)
-            initialImageByte = Utils.getBitmapAsByteArray(bitmap);
+            initialImageByte = Utils.getBitmapAsByteArray(bitmap);*/
     }
 
     public void setCurrentImageByte(byte[] currentImageByte) {

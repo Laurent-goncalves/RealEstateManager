@@ -8,9 +8,50 @@
     android:layout_marginEnd="10dp"
     tools:context=".Controllers.Fragments.DisplayFragment">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
+
+        <!-- TYPE OF PROPERTY -->
+        <TextView
+            android:id="@+id/type_property"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:text="Appartment"/>
+
+        <!-- PRICE PROPERTY -->
+        <TextView
+            android:id="@+id/price_property"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_alignParentEnd="true"
+            android:text="285.000 $"
+            android:textColor="@color/colorAccent"/>
+
+    </RelativeLayout>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/sold_text_rotated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rotation="45"
+            android:textSize="25sp"
+            android:text="@string/sold_text"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="end"
+            android:textColor="@color/colorAccent"/>
 
         <ImageView
             android:id="@+id/big_image_display"
@@ -21,42 +62,23 @@
         <!-- LIST IMAGES PROPERTY -->
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="30dp"
             android:id="@+id/list_images_property_display">
         </android.support.v7.widget.RecyclerView>
 
     </FrameLayout>
 
-    <!-- DESCRIPTION TEXT + PRICE -->
-    <RelativeLayout
+    <!-- DESCRIPTION TEXTVIEW-->
+    <TextView
+        android:id="@+id/text_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp">
-
-        <!-- DESCRIPTION TEXTVIEW-->
-        <TextView
-            android:id="@+id/text_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_alignParentTop="true"
-            android:text="@string/description"/>
-
-        <!-- PRICE PROPERTY -->
-        <TextView
-            android:id="@+id/price_property"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:text="285.000 $"
-            android:textColor="@color/colorAccent"/>
-
-    </RelativeLayout>
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentTop="true"
+        android:text="@string/description"/>
 
     <!-- DESCRIPTION -->
     <TextView
@@ -67,16 +89,14 @@
         android:textColor="@color/colorAccent"
         android:text="@string/description"/>
 
-    <!-- SURFACE and NUMBER OF ROOMS -->
+    <!-- SURFACE -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
-        <!-- SURFACE -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -95,12 +115,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="3dp"
             android:layout_marginEnd="20dp"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"
             android:text="32m²"/>
 
-        <!-- NUMBER OF ROOMS -->
+    </LinearLayout>
+
+    <!-- NUMBER OF ROOMS -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -112,7 +142,7 @@
             android:layout_gravity="center_vertical"
             android:textSize="14sp"
             android:layout_marginStart="3dp"
-            android:text="@string/number_of_rooms_display"/>
+            android:text="@string/rooms"/>
 
         <TextView
             android:id="@+id/nb_rooms_display"
@@ -120,9 +150,113 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textColor="@color/colorAccent"
-            android:layout_marginEnd="40dp"
             android:textSize="14sp"
+            android:layout_marginStart="3dp"
             android:text="5"/>
+
+    </LinearLayout>
+
+    <!-- ESTATE AGENT -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_person_black_24"
+            android:contentDescription="@string/icon_estate_agent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:text="@string/estate_agent" />
+
+        <TextView
+            android:id="@+id/estate_agent_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorAccent"
+            android:layout_marginStart="3dp"
+            android:textSize="14sp"
+            android:text="Raphael"/>
+
+    </LinearLayout>
+
+    <!-- PUBLISH DATE-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <!-- PUBLISH DATE -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_date_range_black_24"
+            android:contentDescription="@string/publication_date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:text="@string/published_on" />
+
+        <TextView
+            android:id="@+id/publication_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorAccent"
+            android:layout_marginStart="3dp"
+            android:textSize="14sp"
+            android:text="12/02/2018"/>
+
+    </LinearLayout>
+
+    <!-- SOLD DATE -->
+    <LinearLayout
+        android:id="@+id/sold_date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_check_circle_black_24"
+            android:contentDescription="@string/sold_date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:text="@string/sold_on" />
+
+        <TextView
+            android:id="@+id/sale_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/colorAccent"
+            android:layout_marginStart="3dp"
+            android:textSize="14sp"
+            android:text="22/05/2018"/>
 
     </LinearLayout>
 

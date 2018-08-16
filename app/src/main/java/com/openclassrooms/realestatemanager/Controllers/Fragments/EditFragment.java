@@ -1,11 +1,14 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +33,8 @@ import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Views.ImageUpdateViewHolder;
+import com.openclassrooms.realestatemanager.Views.ImagesAddViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -54,6 +59,8 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     @BindView(R.id.description_edit_text) EditText descriptionEdit;
     @BindView(R.id.buttonCancel) Button buttonCancel;
     @BindView(R.id.buttonSave) Button buttonSave;
+    @BindView(R.id.main_image_selected) ImageView mainImage;
+    @BindView(R.id.estateagent_edit_text) EditText estateAgentEdit;
     private TextView nbRooms;
     private TextView datePublish;
     private TextView dateSold;
@@ -133,6 +140,9 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
             // configure price
             priceEdit.setText(String.valueOf(propertyInit.getPrice()));
 
+            // configure estate agent
+            estateAgentEdit.setText(propertyInit.getEstateAgent());
+
             // configure date publication
             datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
             datePublish.setText(propertyInit.getDateSold());
@@ -183,6 +193,15 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         mainActivity.changeToDisplayMode(lastPropertyIdDisplayed);
     }
 
+    @OnClick(R.id.main_image_selector)
+    public void onClickListener(){
+        mainActivity.getMainImage();
+    }
+
+    public void setMainImage(Uri imageUri){
+        mainImage.setImageURI(imageUri);
+    }
+
     // -------------------------------------------------------------------------------------------
     // ----------------------------------- CONFIGURATION VIEWS -----------------------------------
     // -------------------------------------------------------------------------------------------
@@ -212,7 +231,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
                     listImages.addAll(newName);
                 }
             }
-            listImages.add(new ImageProperty());
+            listImages.add(new ImageProperty()); // Add item for "add a photo"
             configureImagesProperty();
         }
     };
@@ -278,8 +297,21 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     }
 
     @Override
-    public void getImageFromGallery(int viewHolderPosition) {
-        mainActivity.getImageFromGallery(viewHolderPosition);
+    public void getExtraImageFromGallery(int viewHolderPosition) {
+        mainActivity.getExtraImage(viewHolderPosition);
+    }
+
+    @Override
+    public void alertDeleteImage(int viewHolderPosition) {
+        mainActivity.displayAlertDeletion(viewHolderPosition);
+    }
+
+    public void alertDeletion(int viewHolderPosition){
+        ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(viewHolderPosition);
+
+        // destroy item from the list
+        ImageProperty imageProperty = holder.getImageProperty();
+        adapter.deleteImageToList(imageProperty);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -298,29 +330,25 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         return propertyInit;
     }
 
-    public void setImage(Uri imageUri, int holderPosition){
+    public void setExtraImage(Uri imageUri, int holderPosition){
 
         View view = recyclerView.findViewHolderForAdapterPosition(holderPosition).itemView;
         ImageView image = view.findViewById(R.id.image_property);
         image.setVisibility(View.VISIBLE);
 
-        LinearLayout linearLayout = view.findViewById(R.id.icon_add_photo);
-        linearLayout.setVisibility(View.GONE);
-
-        image.setImageURI(imageUri);
-
-        // Add new empty photo
-
-
-
-        /*Glide.with(context)
-                .load(new File(String.valueOf(imageUri))) // Uri of the picture
-                .into(image);*/
-
-        //adapter.notifyDataSetChanged();
-
-
+        if(recyclerView.findViewHolderForAdapterPosition(holderPosition).getItemViewType()==1) {
+            ImagesAddViewHolder holder = (ImagesAddViewHolder) recyclerView.findViewHolderForLayoutPosition(holderPosition);
+            holder.setImageURI(imageUri);
+        } else {
+            ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(holderPosition);
+            holder.setImageURI(imageUri);
+        }
     }
+
+
+
+
+
 
   /*  private void configure_and_show_calendarView(final TextView date_textview, final String type_date) {
 

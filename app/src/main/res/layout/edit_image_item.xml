@@ -2,7 +2,8 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginEnd="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,9 +11,10 @@
         android:orientation="horizontal">
 
         <FrameLayout
+            android:id="@+id/image_panel"
             android:layout_width="110dp"
             android:layout_height="140dp"
-            android:background="@color/colorPrimaryDark">
+            android:background="@color/colorPrimary">
 
             <ImageView
                 android:id="@+id/image_property"
@@ -26,6 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/baseline_delete_outline_white_24"
+                android:background="#00FFFFFF"
                 android:layout_gravity="end"
                 android:layout_marginEnd="30dp"
                 android:layout_marginTop="3dp"/>
@@ -36,32 +39,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/baseline_edit_white_24"
+                android:background="#00FFFFFF"
                 android:layout_gravity="end"
                 android:layout_marginEnd="3dp"
                 android:layout_marginTop="3dp"/>
 
-            <LinearLayout
+
+            <!-- OVERVIEW IMAGEVIEW -->
+            <Button
                 android:id="@+id/icon_add_photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="gone">
+                android:drawableTop="@drawable/baseline_add_a_photo_white_24"
+                android:background="?android:attr/selectableItemBackground"
+                android:text="@string/add_a_photo"
+                android:textColor="@android:color/white"
+                />
 
-                <!-- OVERVIEW IMAGEVIEW -->
-                <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/baseline_add_a_photo_white_24"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="@string/add_a_photo"
-                    android:textColor="@android:color/white"/>
-
-            </LinearLayout>
 
             <!-- TITLE IMAGEVIEW -->
             <TextView
@@ -75,13 +69,14 @@
 
         </FrameLayout>
 
+        <!-- EXTRA PANEL -->
         <RelativeLayout
             android:id="@+id/extra_panel"
             android:layout_width="wrap_content"
             android:layout_height="140dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-            android:visibility="gone">
+            android:animateLayoutChanges="true">
 
             <TextView
                 android:id="@+id/select_image_textview"
@@ -129,20 +124,20 @@
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_below="@id/description_image_edit_text"
-                android:layout_toStartOf="@id/buttonImageSave"
+                android:layout_toStartOf="@id/buttonImageOK"
                 android:background="@android:color/white"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="@string/cancel"/>
 
             <Button
-                android:id="@+id/buttonImageSave"
+                android:id="@+id/buttonImageOK"
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_below="@id/description_image_edit_text"
                 android:layout_alignParentEnd="true"
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@android:color/white"
-                android:text="@string/save"/>
+                android:text="@string/ok"/>
 
         </RelativeLayout>
 

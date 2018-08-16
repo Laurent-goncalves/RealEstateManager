@@ -5,33 +5,62 @@
     android:layout_height="match_parent"
     tools:context=".Controllers.Fragments.EditFragment"
     android:background="@android:color/white"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
     android:orientation="vertical">
 
-    <!-- MEDIA TEXTVIEW-->
+    <!-- MAIN IMAGE TITLE -->
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:text="@string/main_image"
+        android:layout_marginBottom="10dp"
         android:textSize="22sp"
-        android:textStyle="bold"
-        android:text="@string/media"/>
+        android:textStyle="bold"/>
+
+    <FrameLayout
+        android:id="@+id/main_image_selector"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/main_image_selected"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_an_image"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+    <!-- MAIN IMAGE TITLE -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/extra_images"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="22sp"
+        android:textStyle="bold"/>
 
     <!-- LIST IMAGES PROPERTY -->
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="30dp"
+        android:layout_height="140dp"
+        android:layout_marginBottom="20dp"
         android:id="@+id/list_images_property_edit">
     </android.support.v7.widget.RecyclerView>
 
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp">
+        android:layout_height="wrap_content">
 
         <!-- OVERVIEW TEXTVIEW-->
         <TextView
@@ -68,8 +97,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp">
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp">
 
         <!-- TYPE PROPERTY -->
         <RelativeLayout
@@ -83,16 +112,17 @@
                 android:id="@+id/text_type_properties"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textSize="15sp"
                 android:text="@string/type_of_property"/>
 
             <Spinner
                 android:id="@+id/list_type_properties"
-                android:layout_width="130dp"
+                android:layout_width="160dp"
                 android:layout_height="30dp"
                 android:layout_alignBaseline="@id/text_type_properties"
                 android:layout_alignParentEnd="true"
                 android:gravity="center"
-
                 android:entries="@array/type_property"
                 android:prompt="@string/apartment"/>
 
@@ -112,11 +142,44 @@
                 android:id="@+id/price_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="15sp"
                 android:text="@string/price" />
 
             <EditText
                 android:id="@+id/price_edit_text"
-                android:layout_width="130dp"
+                android:layout_width="160dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:gravity="end|center_vertical"
+                android:background="@drawable/background_edittext"
+                android:inputType="number"
+                android:maxLength="15"
+                android:maxLines="1"/>
+
+        </RelativeLayout>
+
+        <!-- ESTATE AGENT -->
+        <RelativeLayout
+            android:id="@+id/estate_agent_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/price_property_layout"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:id="@+id/estate_agent_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/estate_agent" />
+
+            <EditText
+                android:id="@+id/estateagent_edit_text"
+                android:layout_width="160dp"
                 android:layout_height="30dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
@@ -133,7 +196,7 @@
         <!-- DATES PROPERTY SELLING AND PUBLISHING -->
         <LinearLayout
             android:id="@+id/listview_dates"
-            android:layout_below="@id/price_property_layout"
+            android:layout_below="@id/estate_agent_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
