@@ -112,20 +112,28 @@
                 android:id="@+id/text_type_properties"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/framelayout_typeproperty"
                 android:gravity="center_vertical"
                 android:textSize="15sp"
                 android:text="@string/type_of_property"/>
 
-            <Spinner
-                android:id="@+id/list_type_properties"
+            <FrameLayout
                 android:layout_width="160dp"
                 android:layout_height="30dp"
-                android:layout_alignBaseline="@id/text_type_properties"
+                android:id="@+id/framelayout_typeproperty"
                 android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:entries="@array/type_property"
-                android:prompt="@string/apartment"/>
+                android:background="@drawable/background_edittext"
+                android:gravity="center">
 
+                <Spinner
+                    android:id="@+id/list_type_properties"
+                    android:layout_width="160dp"
+                    android:layout_height="30dp"
+                    android:textAlignment="center"
+                    android:entries="@array/type_property"
+                    android:prompt="@string/apartment"/>
+
+            </FrameLayout>
 
         </RelativeLayout>
 
@@ -153,6 +161,7 @@
                 android:layout_alignParentTop="true"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textAlignment="center"
                 android:gravity="end|center_vertical"
                 android:background="@drawable/background_edittext"
                 android:inputType="number"
@@ -185,10 +194,11 @@
                 android:layout_alignParentTop="true"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:textAlignment="center"
                 android:gravity="end|center_vertical"
                 android:background="@drawable/background_edittext"
-                android:inputType="number"
-                android:maxLength="15"
+                android:inputType="text"
+                android:maxLength="30"
                 android:maxLines="1"/>
 
         </RelativeLayout>
@@ -201,20 +211,23 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_horizontal"
             android:baselineAligned="false">
 
             <include
                 android:id="@+id/publishing_date_selector"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 layout="@layout/date_selector_publish"/>
 
             <include
                 android:id="@+id/selling_date_selector"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginStart="20dp"
                 layout="@layout/date_selector_sold"/>
 
         </LinearLayout>
@@ -235,6 +248,7 @@
             android:layout_below="@id/calendar"
             android:layout_width="wrap_content"
             android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
             android:background="#dfdfdf"/>
 
         <TextView
@@ -270,6 +284,7 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:inputType = "number"
+                android:textAlignment="center"
                 android:background="@drawable/background_edittext"
                 android:maxLength="7"
                 android:maxLines="1"/>
@@ -281,6 +296,7 @@
             android:id="@+id/nbrooms_property_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_below="@id/surface_property_layout">
 
             <TextView
@@ -306,6 +322,7 @@
             android:layout_below="@id/nbrooms_property_layout"
             android:layout_width="wrap_content"
             android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
             android:background="#dfdfdf"/>
 
         <LinearLayout
@@ -331,15 +348,22 @@
                 android:layout_marginBottom="2dp"
                 android:text="@string/address" />
 
-            <android.support.v7.widget.SearchView
+            <EditText
                 android:id="@+id/address_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginBottom="10dp"
-                android:icon="@drawable/baseline_search_white_24"
+                android:drawableStart="@drawable/baseline_search_white_24"
                 android:gravity="start|center_vertical"
                 android:background="@drawable/background_edittext"
                 android:maxLines="1"/>
+
+            <ListView
+                android:id="@+id/list_suggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
 
             <!-- DESCRIPTION PROPERTY -->
             <TextView
@@ -357,9 +381,11 @@
                 android:paddingEnd="10dp"
                 android:paddingTop="5dp"
                 android:gravity="start|top"
-                android:maxLength="34"
+                android:singleLine="false"
+                android:textAlignment="textStart"
+                android:imeOptions="actionNext"
                 android:background="@drawable/background_edittext"
-                android:inputType = "text|textMultiLine|textCapSentences"
+                android:inputType = "textMultiLine"
                 android:layout_marginBottom="10dp"/>
 
         </LinearLayout>

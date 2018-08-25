@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
     tools:context=".Controllers.Fragments.DisplayFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp">
 
         <!-- TYPE OF PROPERTY -->
@@ -21,8 +21,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:text="Appartment"/>
+            android:textStyle="bold"/>
 
         <!-- PRICE PROPERTY -->
         <TextView
@@ -32,7 +31,6 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:layout_alignParentEnd="true"
-            android:text="285.000 $"
             android:textColor="@color/colorAccent"/>
 
     </RelativeLayout>
@@ -40,6 +38,14 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/big_image_display"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/image_main" />
 
         <TextView
             android:id="@+id/sold_text_rotated"
@@ -52,12 +58,6 @@
             android:layout_marginTop="20dp"
             android:layout_gravity="end"
             android:textColor="@color/colorAccent"/>
-
-        <ImageView
-            android:id="@+id/big_image_display"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/image_main" />
 
         <!-- LIST IMAGES PROPERTY -->
         <android.support.v7.widget.RecyclerView
@@ -76,8 +76,8 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_alignParentTop="true"
         android:text="@string/description"/>
 
     <!-- DESCRIPTION -->
@@ -87,6 +87,8 @@
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:textColor="@color/colorAccent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:text="@string/description"/>
 
     <!-- SURFACE -->
@@ -94,6 +96,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
@@ -118,8 +121,7 @@
             android:layout_marginStart="3dp"
             android:layout_marginEnd="20dp"
             android:textColor="@color/colorAccent"
-            android:textSize="14sp"
-            android:text="32m²"/>
+            android:textSize="14sp"/>
 
     </LinearLayout>
 
@@ -151,8 +153,7 @@
             android:layout_gravity="center_vertical"
             android:textColor="@color/colorAccent"
             android:textSize="14sp"
-            android:layout_marginStart="3dp"
-            android:text="5"/>
+            android:layout_marginStart="3dp"/>
 
     </LinearLayout>
 
@@ -185,8 +186,7 @@
             android:layout_gravity="center_vertical"
             android:textColor="@color/colorAccent"
             android:layout_marginStart="3dp"
-            android:textSize="14sp"
-            android:text="Raphael"/>
+            android:textSize="14sp"/>
 
     </LinearLayout>
 
@@ -220,8 +220,7 @@
             android:layout_gravity="center_vertical"
             android:textColor="@color/colorAccent"
             android:layout_marginStart="3dp"
-            android:textSize="14sp"
-            android:text="12/02/2018"/>
+            android:textSize="14sp"/>
 
     </LinearLayout>
 
@@ -255,8 +254,7 @@
             android:layout_gravity="center_vertical"
             android:textColor="@color/colorAccent"
             android:layout_marginStart="3dp"
-            android:textSize="14sp"
-            android:text="22/05/2018"/>
+            android:textSize="14sp"/>
 
     </LinearLayout>
 
@@ -268,6 +266,7 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
         android:text="@string/localization"/>
 
@@ -275,6 +274,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:gravity="center">
 
         <!-- ADDRESS -->
@@ -355,5 +356,139 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:contentDescription="@string/static_mapview" />
+
+    <!-- SIMULATION -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_marginBottom="@dimen/margin_top">
+
+        <TextView
+            android:id="@+id/text_monthly_calculation"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_alignParentTop="true"
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimaryDark"
+            android:text="@string/simulation_calculation_monthly_payment"/>
+
+        <!-- INTEREST RATE-->
+        <TextView
+            android:id="@+id/text_interest_rate"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:textSize="@dimen/text_size"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_below="@id/text_monthly_calculation"
+            android:layout_alignParentStart="true"
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary"
+            android:text="@string/interest_rate"/>
+
+        <EditText
+            android:id="@+id/edittext_interest_rate"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:inputType="numberDecimal"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/margin_top"
+            android:layout_marginTop="@dimen/margin_top"
+            android:background="@drawable/background_result"
+            android:layout_below="@id/text_monthly_calculation"
+            android:layout_toEndOf="@+id/text_interest_rate"
+            android:textColor="@color/colorAccent"/>
+
+        <!-- DURATION -->
+        <TextView
+            android:id="@+id/text_duration"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:gravity="center"
+            android:textSize="@dimen/text_size"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_below="@id/text_interest_rate"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:layout_alignParentStart="true"
+            android:text="@string/duration_years"/>
+
+        <EditText
+            android:id="@+id/edittext_duration"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:inputType="number"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_marginStart="@dimen/margin_top"
+            android:background="@drawable/background_result"
+            android:layout_below="@id/edittext_interest_rate"
+            android:layout_toEndOf="@+id/text_duration"
+            android:textColor="@color/colorAccent"/>
+
+        <!-- CONTRIBUTION -->
+        <TextView
+            android:id="@+id/text_contribution"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:gravity="center"
+            android:textSize="@dimen/text_size"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_below="@id/text_duration"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:layout_alignParentStart="true"
+            android:text="@string/contribution"/>
+
+        <EditText
+            android:id="@+id/edittext_contribution"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:inputType="number"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:background="@drawable/background_result"
+            android:layout_marginStart="@dimen/margin_top"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_below="@id/edittext_duration"
+            android:layout_toEndOf="@+id/text_contribution"
+            android:textColor="@color/colorAccent"/>
+
+        <!-- CALCULATION -->
+        <Button
+            android:id="@+id/button_calculation"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:text="@string/calculation"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_alignParentStart="true"
+            android:textColor="@android:color/white"
+            android:layout_below="@id/text_contribution"
+            android:background="@color/colorPrimaryDark"/>
+
+        <TextView
+            android:id="@+id/text_result"
+            android:layout_width="@dimen/views_width"
+            android:layout_height="@dimen/views_height"
+            android:gravity="center"
+            android:padding="3dp"
+            android:background="@drawable/background_edittext"
+            android:layout_marginTop="@dimen/margin_top"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:layout_marginStart="@dimen/margin_top"
+            android:layout_below="@id/edittext_contribution"
+            android:layout_toEndOf="@+id/button_calculation"
+            android:text=""/>
+
+    </RelativeLayout>
 
 </LinearLayout>

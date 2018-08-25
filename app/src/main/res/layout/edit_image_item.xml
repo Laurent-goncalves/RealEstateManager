@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginEnd="5dp">
+    android:layout_marginStart="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
 
         <FrameLayout
             android:id="@+id/image_panel"
-            android:layout_width="110dp"
+            android:layout_width="140dp"
             android:layout_height="140dp"
             android:background="@color/colorPrimary">
 
@@ -44,18 +44,31 @@
                 android:layout_marginEnd="3dp"
                 android:layout_marginTop="3dp"/>
 
-
-            <!-- OVERVIEW IMAGEVIEW -->
-            <Button
+            <!-- BUTTON ADD A PHOTO -->
+            <RelativeLayout
                 android:id="@+id/icon_add_photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:drawableTop="@drawable/baseline_add_a_photo_white_24"
+                android:gravity="center"
+                android:clickable="true"
                 android:background="?android:attr/selectableItemBackground"
-                android:text="@string/add_a_photo"
-                android:textColor="@android:color/white"
-                />
+                android:focusable="true">
 
+                <ImageView
+                    android:id="@+id/image_add_photo"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/baseline_add_a_photo_white_24"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_a_photo"
+                    android:textSize="16sp"
+                    android:layout_below="@+id/image_add_photo"
+                    android:textColor="@android:color/white"/>
+
+            </RelativeLayout>
 
             <!-- TITLE IMAGEVIEW -->
             <TextView
@@ -72,10 +85,11 @@
         <!-- EXTRA PANEL -->
         <RelativeLayout
             android:id="@+id/extra_panel"
-            android:layout_width="wrap_content"
+            android:layout_width="230dp"
             android:layout_height="140dp"
-            android:layout_marginStart="5dp"
+
             android:layout_marginEnd="5dp"
+
             android:animateLayoutChanges="true">
 
             <TextView
@@ -126,6 +140,7 @@
                 android:layout_below="@id/description_image_edit_text"
                 android:layout_toStartOf="@id/buttonImageOK"
                 android:background="@android:color/white"
+                android:layout_alignParentStart="true"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="@string/cancel"/>
 

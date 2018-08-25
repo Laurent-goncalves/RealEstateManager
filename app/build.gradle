@@ -42,6 +42,8 @@ dependencies {
     implementation 'com.android.support:support-v13:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
+    implementation 'pub.devrel:easypermissions:1.1.1'
+
     //BUTTERKNIFE
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'com.android.support:support-v4:27.1.1'
@@ -50,6 +52,9 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     implementation 'com.google.code.gson:gson:2.8.2'
+
+    // Image Loader
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
     // GOOGLE MAPS
     implementation 'com.google.android.gms:play-services-maps:15.0.1'

@@ -1,9 +1,9 @@
 package com.openclassrooms.realestatemanager.Views;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.View;
 import android.widget.Toast;
+import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
 import butterknife.ButterKnife;
@@ -12,7 +12,7 @@ import butterknife.OnClick;
 
 public class ImageUpdateViewHolder extends BaseImageViewHolder {
 
-    private Uri imageUriInit;
+    private String imagePathInit;
     private String descriptionInit;
 
     ImageUpdateViewHolder(View itemView) {
@@ -26,17 +26,18 @@ public class ImageUpdateViewHolder extends BaseImageViewHolder {
     // ---------------------------------------------------------------------------------------------------
 
     @Override
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context) {
+    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, MainActivity mainActivity) {
 
-        super.configureImagesViews(imageProperty, adapter, inEdition, changesOngoing, context);
+        super.configureImagesViews(imageProperty, adapter, inEdition, changesOngoing, context, mainActivity);
 
         this.imageProperty=imageProperty;
 
-        if(imageProperty.getImageUri()!=null){ // if an image exist
-            imageUriInit = Uri.parse(imageProperty.getImageUri());
-            imageUri = Uri.parse(imageProperty.getImageUri());
+        if(imageProperty.getImagePath()!=null){ // if an image exist
+            imagePathInit = imageProperty.getImagePath();
+            imagePath = imageProperty.getImagePath();
             image.setVisibility(View.VISIBLE);
-            image.setImageURI(imageUriInit);
+
+            setExtraImage(imagePath);
         }
 
         // insert title under the image
@@ -54,17 +55,17 @@ public class ImageUpdateViewHolder extends BaseImageViewHolder {
             editIcon.setVisibility(View.GONE);
             deleteIcon.setVisibility(View.GONE);
             extraPanel.setVisibility(View.VISIBLE);
-            view.getLayoutParams().width = 1035;
+            view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_expanded);
         } else if (!inEdition && changesOngoing) {
             editIcon.setVisibility(View.GONE);
             deleteIcon.setVisibility(View.GONE);
             extraPanel.setVisibility(View.GONE);
-            view.getLayoutParams().width = 333;
+            view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_reduced);
         } else {
             editIcon.setVisibility(View.VISIBLE);
             deleteIcon.setVisibility(View.VISIBLE);
             extraPanel.setVisibility(View.GONE);
-            view.getLayoutParams().width = 333;
+            view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_reduced);
         }
 
         // remove the panels uneccessary
@@ -78,13 +79,13 @@ public class ImageUpdateViewHolder extends BaseImageViewHolder {
     @OnClick(R.id.buttonImageOK)
     public void ok(){
 
-        if(imageUri!=null) {
+        if(imagePath!=null) {
             // send a message Toast to the user
             Toast toast = Toast.makeText(context,context.getResources().getString(R.string.image_saved),Toast.LENGTH_LONG);
             toast.show();
 
             // set new image and new description
-            imageProperty.setImageUri(String.valueOf(imageUri));
+            imageProperty.setImagePath(String.valueOf(imagePath));
             imageProperty.setDescription(description);
 
             // Add new image empty to the list and update the list
@@ -104,9 +105,9 @@ public class ImageUpdateViewHolder extends BaseImageViewHolder {
     @OnClick(R.id.buttonImageCancel)
     public void cancel(){
 
-        if(imageUriInit!=null){
+        if(imagePathInit!=null){
             // Re-initialize the views
-            image.setImageURI(imageUriInit);
+            setExtraImage(imagePathInit);
             titleImage.setText(descriptionInit);
 
             // Close extra panel

@@ -40,8 +40,11 @@ public class Property {
     private Double Lat;
     private Double Lng;
     private byte[] map;
+    private String mainImagePath;
 
-    public Property(int id, String type, Double price, Double surface, int roomNumber, String description, String address, String interestPoints, Boolean sold, String dateStart, Double Lat, Double Lng,String estateAgent, byte[] map) {
+    public Property(int id, String type, Double price, Double surface, int roomNumber, String description, String address,
+                    String interestPoints, Boolean sold, String dateStart, String dateSold, Double Lat, Double Lng,
+                    String estateAgent, byte[] map, String mainImagePath) {
         this.id = id;
         this.type = type;
         this.price = price;
@@ -52,10 +55,12 @@ public class Property {
         this.interestPoints = interestPoints;
         this.sold=sold;
         this.dateStart = dateStart;
+        this.dateSold=dateSold;
         this.estateAgent = estateAgent;
         this.Lat = Lat;
         this.Lng = Lng;
         this.map = map;
+        this.mainImagePath=mainImagePath;
     }
 
     public int getId() {
@@ -176,5 +181,13 @@ public class Property {
 
     public void setMap(byte[] map) {
         this.map = map;
+    }
+
+    public String getMainImagePath() {
+        return mainImagePath;
+    }
+
+    public void setMainImagePath(String mainImagePath) {
+        this.mainImagePath = mainImagePath;
     }
 }

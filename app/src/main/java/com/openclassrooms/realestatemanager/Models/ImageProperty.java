@@ -4,6 +4,7 @@ package com.openclassrooms.realestatemanager.Models;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.ContentValues;
 import android.net.Uri;
 
 
@@ -12,19 +13,19 @@ public class ImageProperty {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String imageUri;
+    private String imagePath;
     private String description;
     private int idProperty;
 
-    public ImageProperty(int id, String imageUri, String description, int idProperty) {
+    public ImageProperty(int id, String imagePath, String description, int idProperty) {
         this.id = id;
-        this.imageUri = imageUri;
+        this.imagePath = imagePath;
         this.description = description;
         this.idProperty = idProperty;
     }
 
-    public ImageProperty(String imageUri, String description, int idProperty) {
-        this.imageUri = imageUri;
+    public ImageProperty(String imagePath, String description, int idProperty) {
+        this.imagePath = imagePath;
         this.description = description;
         this.idProperty = idProperty;
     }
@@ -40,12 +41,12 @@ public class ImageProperty {
         this.id = id;
     }
 
-    public String getImageUri() {
-        return imageUri;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public String getDescription() {
@@ -62,5 +63,17 @@ public class ImageProperty {
 
     public void setIdProperty(int idProperty) {
         this.idProperty = idProperty;
+    }
+
+    // --- UTILS ---
+    public static ImageProperty fromContentValues(ContentValues values) {
+
+        final ImageProperty imageProperty = new ImageProperty();
+        if (values.containsKey("id")) imageProperty.setId(values.getAsInteger("id"));
+        if (values.containsKey("imagePath")) imageProperty.setImagePath(values.getAsString("imagePath"));
+        if (values.containsKey("description")) imageProperty.setDescription(values.getAsString("description"));
+        if (values.containsKey("idProperty")) imageProperty.setIdProperty(values.getAsInteger("idProperty"));
+
+        return imageProperty;
     }
 }

@@ -68,8 +68,12 @@
     <string name="extra_images">Extra images</string>
     <string name="ok">OK</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <!-- DISPLAY FRAGMENT-->
+    <string name="interest_rate">Interest rate</string>
+    <string name="duration_years">Duration (years)</string>
+    <string name="contribution">Contribution ($)</string>
+    <string name="calculation">CALCULATION</string>
+    <string name="montly_payment">Your montly payment is:</string>
+    <string name="simulation_calculation_monthly_payment">SIMULATION CALCULATION MONTHLY PAYMENT</string>
 
 </resources>

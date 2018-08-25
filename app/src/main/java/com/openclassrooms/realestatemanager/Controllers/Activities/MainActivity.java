@@ -1,36 +1,47 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.google.gson.Gson;
+import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
-import com.openclassrooms.realestatemanager.Utils.ImageLoading;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
-import com.openclassrooms.realestatemanager.Utils.Utils;
-import com.openclassrooms.realestatemanager.Views.ImageUpdateViewHolder;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import pub.devrel.easypermissions.EasyPermissions;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -38,27 +49,30 @@ public class MainActivity extends AppCompatActivity  {
     private static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     private static int RESULT_LOAD_MAIN_IMAGE_ = 3;
     private PropertyDatabase database;
-    private static int PROPERTY_ID = 3;
     private static final String PROPERTY_JSON = "property_json";
     private static final String MODE_SELECTED = "mode_selected";
+    private static final String MODE_NEW = "NEW";
+    private static final String MODE_UPDATE = "UPDATE";
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
-    private static final String VIEWHOLDER_POSITION = "viewholder_position";
     private EditFragment editFragment;
     private DisplayFragment displayFragment;
-    private ListPropertiesFragment listPropertiesFragment;
     private List<Property> listProperties;
     private ToolbarManager toolbarManager;
     private int viewHolderPosition;
-
-    private Property PROPERTY_DEMO = new Property(PROPERTY_ID, "Appartment", 125000d,30.25,1,
-            "Nice appartment closed to subway station. \nBig kitchen, 2 bathrooms, 2 WC. \nNice garden with a view on the lake. \nMany shops nearby.",
-            "12 Kennedy street","School, Subway",true,"01/06/2018",0d,0d,"Eric",null);
+    private int currentPositionDisplayed;
+    //private static MyAsync obj;
+    //private ImageView imageView;
+    private String file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.database = PropertyDatabase.getInstance(getApplicationContext());
+        listProperties = new ArrayList<>();
+        //database.imageDao().deleteAllImage();
+
+
 
         try {
             listProperties = LiveDataTestUtil.getValue(this.database.propertyDao().getAllProperties());
@@ -66,20 +80,14 @@ public class MainActivity extends AppCompatActivity  {
             e.printStackTrace();
         }
 
-        listProperties = new ArrayList<>(); // TODO: to be removed later
-        listProperties.add(PROPERTY_DEMO); // TODO: to be removed later
-
         // Configure toolbar
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configure_toolbar();
 
+        currentPositionDisplayed=-1;
 
         // Show ListPropertiesFragment
         configureAndShowListPropertiesFragment();
-
-
-        // Show editFragment/**/
-        //configureAndShowEditFragment(PROPERTY_DEMO);
     }
 
     public void displayAlertDeletion(int viewHolderPosition){
@@ -88,15 +96,8 @@ public class MainActivity extends AppCompatActivity  {
         builder.setCancelable(true);
         builder.setTitle(getResources().getString(R.string.delete_image));
         builder.setMessage(getResources().getString(R.string.delete_confirmation));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-
-                editFragment.alertDeletion(viewHolderPosition);
-            }
-        })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) { }
-                });
+        builder.setPositiveButton(getResources().getString(R.string.confirm), (dialog, id) -> editFragment.alertDeletion(viewHolderPosition))
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -134,26 +135,26 @@ public class MainActivity extends AppCompatActivity  {
             for(Property property : listProperties){
                 if(property!=null){
                     if(property.getId() == propertyId){
-                        return PROPERTY_DEMO; // TODO : mettre property à la place de PROPERTY_DEMO
+                        return property;
                     }
                 }
             }
         }
 
-        return PROPERTY_DEMO; // TODO to modify after tests
+        return null; // TODO to modify after tests
     }
 
     public void configureAndShowDisplayFragment(Property property){
         if(property!=null){
+
+            currentPositionDisplayed = property.getId();
             displayFragment = new DisplayFragment();
 
             // create a bundle
             Bundle bundle = new Bundle();
-            Gson gson = new Gson();
 
-            // Add the property to the bundle in json format
-            String property_json = gson.toJson(property);
-            bundle.putString(PROPERTY_JSON, property_json);
+            // Add the property Id to the bundle
+            bundle.putInt(LAST_PROPERTY_SELECTED, currentPositionDisplayed);
 
             // configure and show the editFragment
             displayFragment.setArguments(bundle);
@@ -169,18 +170,12 @@ public class MainActivity extends AppCompatActivity  {
 
         // create a bundle
         Bundle bundle = new Bundle();
-        Gson gson = new Gson();
+        bundle.putInt(LAST_PROPERTY_SELECTED, currentPositionDisplayed);
 
-        bundle.putInt(LAST_PROPERTY_SELECTED, 3);
-
-        if(property==null){
-            bundle.putString(PROPERTY_JSON, "NEW");
+        if(currentPositionDisplayed==-1){
+            bundle.putString(MODE_SELECTED, MODE_NEW);
         } else {
-            // Add the property to the bundle in json format
-            String property_json = gson.toJson(property);
-            bundle.putString(PROPERTY_JSON, property_json);
-
-            bundle.putString(MODE_SELECTED, "UPDATE");
+            bundle.putString(MODE_SELECTED, MODE_UPDATE);
         }
 
         // configure and show the editFragment
@@ -192,18 +187,27 @@ public class MainActivity extends AppCompatActivity  {
 
     public void configureAndShowListPropertiesFragment(){
 
-        try {
-            listProperties = LiveDataTestUtil.getValue(this.database.propertyDao().getAllProperties());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        listPropertiesFragment = ListPropertiesFragment.newInstance(listProperties);
+        ListPropertiesFragment listPropertiesFragment = new ListPropertiesFragment();
 
         // configure and show the listPropertiesFragment
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment);
         fragmentTransaction.commit();
+    }
+
+    private Property findPropertyById(){
+
+        if(listProperties!=null){
+            for(Property property : listProperties){
+                if(property!=null){
+                    if(property.getId()==currentPositionDisplayed)
+                        return property;
+                }
+            }
+            return null;
+        } else {
+            return null;
+        }
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -221,17 +225,58 @@ public class MainActivity extends AppCompatActivity  {
         startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
     }
 
+    /*private PropertyViewHolder propertyViewHolder;
+    private static int GALLERY_IMAGE_PICK = 8;
+
+    public void getImages(PropertyViewHolder propertyViewHolder){
+        this.propertyViewHolder=propertyViewHolder;
+
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, GALLERY_IMAGE_PICK);
+    }*/
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RESULT_LOAD_IMAGE_VIEWHOLDER && resultCode == RESULT_OK && data != null){
             Uri selectedImage = data.getData();
-            editFragment.setExtraImage(selectedImage, viewHolderPosition);
+
+            if(selectedImage!=null){
+                String imagePath = getRealPathFromURI(selectedImage);
+                editFragment.setExtraImage(imagePath, viewHolderPosition);
+            } else
+                editFragment.setExtraImage(null, viewHolderPosition);
+
         } else if (requestCode == RESULT_LOAD_MAIN_IMAGE_ && null != data){
             Uri selectedImage = data.getData();
-            editFragment.setMainImage(selectedImage);
+
+            if(selectedImage!=null){
+                String imagePath = getRealPathFromURI(selectedImage);
+                editFragment.setMainImage(imagePath);
+            } else
+                editFragment.setMainImage(null);
         }
+    }
+
+    public String getRealPathFromURI(Uri uri) {
+
+        String realPath=null;
+
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+
+        if (cursor != null) {
+            if(cursor.moveToFirst()){
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                realPath = cursor.getString(column_index);
+                cursor.moveToFirst();
+            }
+            cursor.close();
+        }
+
+        return realPath;
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -239,6 +284,12 @@ public class MainActivity extends AppCompatActivity  {
     // -------------------------------------------------------------------------------------------------------
 
     public int getCurrentPropertyDisplayed(){
-        return PROPERTY_DEMO.getId();
+        return currentPositionDisplayed;
     }
+
+    public void setListProperties(List<Property> listProperties) {
+        this.listProperties = listProperties;
+    }
+
+
 }

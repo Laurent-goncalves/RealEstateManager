@@ -1,12 +1,18 @@
 package com.openclassrooms.realestatemanager.Utils;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.wifi.WifiManager;
+import android.widget.ImageView;
+
+import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Created by Philippe on 21/02/2018.
@@ -69,7 +77,7 @@ public class Utils {
         return outputStream.toByteArray();
     }
 
-    public String create_string_date(int year, int month, int dayOfMonth){
+    public static String create_string_date(int year, int month, int dayOfMonth){
 
         String Day;
         int Month = month + 1;
@@ -142,5 +150,34 @@ public class Utils {
         listInterestPtsFinal.addAll(hs);
 
         return listInterestPtsFinal;
+    }
+
+    public static Double calculateMonthlyPayment(Double propertyPrice, Double duration, Double interestRate, Double contribution){
+        return (propertyPrice-contribution)*(interestRate/1200)/(1 - Math.pow(1+interestRate/1200, -12*duration));
+    }
+
+    public static void setImageBitmapInView(String imagePath, ImageView imageView, MainActivity mainActivity){
+
+        try {
+            Bitmap bitmap;
+            File f= new File(imagePath);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+            if (EasyPermissions.hasPermissions(mainActivity, galleryPermissions)) {
+
+                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
+                imageView.setImageBitmap(bitmap);
+
+            } else {
+                EasyPermissions.requestPermissions(mainActivity, "Access for storage",
+                        101, galleryPermissions);
+            }
+
+        } catch (Exception e) {
+            System.out.println("eee exception = " + e.toString());
+        }
     }
 }

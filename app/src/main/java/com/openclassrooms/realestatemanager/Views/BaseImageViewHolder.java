@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.Views;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.view.View;
@@ -12,9 +11,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.Utils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -28,7 +29,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.image_property) ImageView image;
     @BindView(R.id.edit_icon_symbol) ImageButton editIcon;
     @BindView(R.id.delete_icon_symbol) ImageButton deleteIcon;
-    @BindView(R.id.icon_add_photo) Button addPhotoButton;
+    @BindView(R.id.icon_add_photo) RelativeLayout addPhotoButton;
     @BindView(R.id.title_image_property) TextView titleImage;
     @BindView(R.id.extra_panel) RelativeLayout extraPanel;
     @BindView(R.id.icon_folder_open) ImageButton selectPhotoIcon;
@@ -39,12 +40,13 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     protected View view;
     protected PropertyDatabase database;
     protected Context context;
-    protected Uri imageUri;
+    protected String imagePath;
     protected String description;
     protected ImageProperty imageProperty;
     protected ImagesEditAdapter adapter;
     protected Boolean inEdition;
     protected Boolean changesOngoing;
+    protected MainActivity mainActivity;
 
     public BaseImageViewHolder(View itemView) {
         super(itemView);
@@ -56,13 +58,40 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     // ------------------------------------- CONFIGURATION VIEW ------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context) {
+    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, MainActivity mainActivity) {
         // Initialize variables
         this.context=context;
         this.adapter=adapter;
         this.inEdition = inEdition;
         this.changesOngoing=changesOngoing;
         this.database = PropertyDatabase.getInstance(context);
+
+        //extraPanel.setX(-600);
+        //extraPanel.setVisibility(View.GONE);
+    }
+
+    public void setExtraImage(String imagePath){
+
+        this.imagePath=imagePath;
+
+        Utils.setImageBitmapInView(imagePath, image, mainActivity);
+
+        /*try {
+
+            Bitmap bitmap;
+            File f= new File(imagePath);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
+            image.setImageBitmap(bitmap);
+
+
+        } catch (Exception e) {
+            System.out.println("eee exception = " + e.toString());
+        }*/
+
+        addPhotoButton.setVisibility(View.GONE);
     }
 
     // ---------------------------------------------------------------------------------------------------
@@ -86,12 +115,6 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void setImageURI(Uri imageUri){
-        image.setImageURI(imageUri);
-        this.imageUri=imageUri;
-        addPhotoButton.setVisibility(View.GONE);
-    }
-
     protected void openExtraPanel(){
 
         // hide the edit icon
@@ -100,23 +123,43 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
         deleteIcon.setVisibility(View.INVISIBLE);
         deleteIcon.setEnabled(false);
 
-        // open the panel with fields for changing image
-        view.getLayoutParams().width = 1035;
+        // open the panel
+        view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_expanded);
         extraPanel.setVisibility(View.VISIBLE);
+
+
+
+        /*ObjectAnimator animX = ObjectAnimator.ofFloat(extraPanel, View.TRANSLATION_X,
+                -1*extraPanel.getWidth(), 0);
+
+animX.setDuration(1000);
+        animX.start();*/
+
+
         adapter.setPositionEdited(getAdapterPosition());
     }
 
     protected void closeExtraPanel(){
 
         // hide the edit icon
+
         editIcon.setVisibility(View.VISIBLE);
         editIcon.setEnabled(true);
         deleteIcon.setVisibility(View.VISIBLE);
         deleteIcon.setEnabled(true);
 
         // close the extra panel
-        view.getLayoutParams().width = 333;
+        view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_reduced);
         extraPanel.setVisibility(View.GONE);
+
+/*
+        ObjectAnimator animX = ObjectAnimator.ofFloat(extraPanel, View.TRANSLATION_X,
+                 extraPanel.getWidth(), 0);
+
+        animX.setDuration(1000);
+        animX.start();
+*/
+
         adapter.setPositionEdited(-1);
     }
 

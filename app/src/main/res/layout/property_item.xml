@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
     android:id="@+id/item_property_layout"
     android:orientation="horizontal">
 
     <!-- PICTURE OF PROPERTY -->
     <ImageView
         android:id="@+id/main_image_property"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"
         android:contentDescription="@string/image_property" />
 
     <LinearLayout

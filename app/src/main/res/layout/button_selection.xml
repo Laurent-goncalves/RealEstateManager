@@ -6,30 +6,28 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/less_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@drawable/button_plus_less_bg"
+        android:background="@android:color/white"
         android:src="@drawable/baseline_remove_circle_outline_white_24"/>
 
     <TextView
         android:id="@+id/text_selection"
         android:layout_width="50dp"
         android:layout_height="30dp"
-        android:paddingBottom="2dp"
-        android:paddingTop="2dp"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"
         android:gravity="center"
-        android:textColor="@color/colorAccent"
+        android:textColor="@android:color/black"
         android:background="@drawable/rounded_corners_text"/>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/plus_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@drawable/button_plus_less_bg"
+        android:background="@android:color/white"
         android:src="@drawable/baseline_add_circle_outline_white_24"/>
 
 </LinearLayout>

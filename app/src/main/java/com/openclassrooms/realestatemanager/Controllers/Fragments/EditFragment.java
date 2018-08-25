@@ -1,16 +1,20 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
-import android.app.AlertDialog;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.net.Uri;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,56 +22,63 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import android.widget.Toast;
+import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
-import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.CheckAndSaveEdit;
+import com.openclassrooms.realestatemanager.Utils.ConfigureEditFragment;
+import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImageUpdateViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesAddViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
-import java.lang.reflect.Type;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EditFragment extends Fragment implements CallbackImageSelect {
+public class EditFragment extends Fragment implements CallbackImageSelect, LifecycleOwner {
 
-    @BindView(R.id.switch_sold) Switch switchSold;
-    @BindView(R.id.list_type_properties) Spinner listProperties;
-    @BindView(R.id.price_edit_text) EditText priceEdit;
-    @BindView(R.id.listview_dates) LinearLayout linearLayoutDates;
+    @BindView(R.id.switch_sold) public Switch switchSold;
+    @BindView(R.id.list_type_properties) public Spinner listProperties;
+    @BindView(R.id.price_edit_text) public EditText priceEdit;
+    @BindView(R.id.listview_dates) public LinearLayout linearLayoutDates;
     @BindView(R.id.calendar) CalendarView calendarView;
-    @BindView(R.id.surface_edit_text) EditText surfaceEdit;
-    @BindView(R.id.nbrooms_property_layout) RelativeLayout relativeLayoutNbRooms;
-    @BindView(R.id.address_edit_text) android.support.v7.widget.SearchView addressEdit;
-    @BindView(R.id.description_edit_text) EditText descriptionEdit;
+    @BindView(R.id.surface_edit_text) public EditText surfaceEdit;
+    @BindView(R.id.nbrooms_property_layout) public RelativeLayout relativeLayoutNbRooms;
+    @BindView(R.id.address_edit_text) public EditText addressEdit;
+    @BindView(R.id.description_edit_text) public EditText descriptionEdit;
     @BindView(R.id.buttonCancel) Button buttonCancel;
     @BindView(R.id.buttonSave) Button buttonSave;
-    @BindView(R.id.main_image_selected) ImageView mainImage;
-    @BindView(R.id.estateagent_edit_text) EditText estateAgentEdit;
-    private TextView nbRooms;
-    private TextView datePublish;
-    private TextView dateSold;
-    private static final String PROPERTY_JSON = "property_json";
+    @BindView(R.id.main_image_selected) public ImageView mainImage;
+    @BindView(R.id.estateagent_edit_text) public EditText estateAgentEdit;
+    @BindView(R.id.plus_button) public ImageButton buttonPlus;
+    @BindView(R.id.less_button) public ImageButton buttonLess;
+    @BindView(R.id.list_suggestions) public ListView listView;
+    public TextView nbRooms;
+    public TextView datePublish;
+    public TextView dateSold;
     private static final String MODE_SELECTED = "mode_selected";
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
-    private static final String IMAGES_JSON = "images_json";
     private String mode;
     private Property propertyInit;
     private List<ImageProperty> listImages;
@@ -80,6 +91,12 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     private View view;
     private ImagesEditAdapter adapter;
     private int lastPropertyIdDisplayed;
+    private String interestPoints;
+    private LatLng latLngAddress;
+    private Bitmap staticMap;
+    private String mainImagePath;
+    private LiveData<Property> propertyLiveData;
+
 
     public EditFragment() {
         // Required empty public constructor
@@ -97,6 +114,8 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         mainActivity = (MainActivity) getActivity();
         this.context=mainActivity.getApplicationContext();
         this.database = PropertyDatabase.getInstance(context);
+        listImages = new ArrayList<>();
+        mCallbackImageSelect = this;
 
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
@@ -107,64 +126,22 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
             if(mode!=null){
 
                 if(mode.equals("UPDATE")){ // mode update property
-
                     // Recover the property datas
-                    Gson gson = new Gson();
-                    String propJSON = getArguments().getString(PROPERTY_JSON,null);
-                    Type propertyType = new TypeToken<Property>(){}.getType();
-                    propertyInit = gson.fromJson(propJSON,propertyType);
+                    propertyLiveData = database.propertyDao().getProperty(lastPropertyIdDisplayed);
+                    propertyLiveData.observeForever(PropertyObserver);
+                } else {
 
-                    // Recover list of imagesProperty from database and configure images inside recyclerView
-                    database.imageDao().getAllImages().observeForever(ListImagesObserver);
+                    // create empyt property
+                    propertyInit = new Property(0,null,0d,0d,0,null,null,
+                            null,false,null,null,0d,0d,null,null,null);
+
+                    // Configuration views
+                    new ConfigureEditFragment(this,context,database);
                 }
             }
         }
 
-        listImages = new ArrayList<>();
-        mCallbackImageSelect = this;
-        configureAllAreas();
-        configure_date_selectors();
         return view;
-    }
-
-    private void configureAllAreas(){
-
-        if(propertyInit!=null){
-
-            // configure switch (sold ?)
-            configureSwitchSold();
-
-            // configure type of property
-            configurePropertyType();
-
-            // configure price
-            priceEdit.setText(String.valueOf(propertyInit.getPrice()));
-
-            // configure estate agent
-            estateAgentEdit.setText(propertyInit.getEstateAgent());
-
-            // configure date publication
-            datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
-            datePublish.setText(propertyInit.getDateSold());
-
-            // configure date sold
-            dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
-            dateSold.setText(propertyInit.getDateSold());
-
-            // configure surface
-            surfaceEdit.setText(String.valueOf(propertyInit.getSurface()));
-
-            // configure number of rooms
-            nbRooms = relativeLayoutNbRooms.findViewById(R.id.room_number_selector).findViewById(R.id.text_selection);
-            roomNb = propertyInit.getRoomNumber();
-            nbRooms.setText(String.valueOf(roomNb));
-
-            // configure address
-            new SearchAddress(this, context);
-
-            // configure description
-            descriptionEdit.setText(propertyInit.getDescription());
-        }
     }
 
     @OnClick(R.id.plus_button)
@@ -173,6 +150,9 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
             roomNb++;
             nbRooms.setText(String.valueOf(roomNb));
         }
+        buttonPlus.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        new Handler().postDelayed(() -> buttonPlus.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
     }
 
     @OnClick(R.id.less_button)
@@ -181,10 +161,15 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
             roomNb--;
             nbRooms.setText(String.valueOf(roomNb));
         }
+
+        buttonLess.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        new Handler().postDelayed(() -> buttonLess.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
     }
 
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
+        new CheckAndSaveEdit(this);
         mainActivity.changeToDisplayMode(lastPropertyIdDisplayed);
     }
 
@@ -198,102 +183,85 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         mainActivity.getMainImage();
     }
 
-    public void setMainImage(Uri imageUri){
-        mainImage.setImageURI(imageUri);
+    public void setMainImage(String imagePath){
+
+        mainImagePath = imagePath;
+        Utils.setImageBitmapInView(imagePath,mainImage,mainActivity);
+
+        /*try {
+            Bitmap bitmap;
+            File f= new File(imagePath);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+            if (EasyPermissions.hasPermissions(mainActivity, galleryPermissions)) {
+
+                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
+                mainImage.setImageBitmap(bitmap);
+
+            } else {
+                EasyPermissions.requestPermissions(this, "Access for storage",
+                        101, galleryPermissions);
+            }
+
+        } catch (Exception e) {
+            System.out.println("eee exception = " + e.toString());
+        }*/
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    File f= new File(mainImagePath);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+                    Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
+                    mainImage.setImageBitmap(bitmap);
+
+                } else {
+                    Toast.makeText(mainActivity, "Please give your permission.", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
     }
 
     // -------------------------------------------------------------------------------------------
     // ----------------------------------- CONFIGURATION VIEWS -----------------------------------
     // -------------------------------------------------------------------------------------------
 
-    private void configureImagesProperty(){
-
-        if(context!=null){
-
-            // Set the recyclerView in horizontal direction
-            LinearLayoutManager layoutManager
-                    = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-
-            // Create adapter passing in the sample user data
-            adapter = new ImagesEditAdapter(listImages,propertyInit,context,mCallbackImageSelect);
-            // Attach the adapter to the recyclerview to populate items
-            recyclerView.setAdapter(adapter);
-            // Set layout manager to position the items
-            recyclerView.setLayoutManager(layoutManager);
-        }
-    }
-
-    final Observer<List<ImageProperty>> ListImagesObserver = new Observer<List<ImageProperty>>() {
+    final Observer<Property> PropertyObserver = new Observer<Property>() {
         @Override
-        public void onChanged(@Nullable final List<ImageProperty> newName) {
-            if (newName != null) {
-                if(newName.size() != 0){
-                    listImages.addAll(newName);
-                }
-            }
-            listImages.add(new ImageProperty()); // Add item for "add a photo"
-            configureImagesProperty();
+        public void onChanged(@Nullable final Property property) {
+            if (property != null)
+                propertyInit = property;
+
+            propertyLiveData.removeObserver(this);
+
+            // Configuration views
+            configureViews();
         }
     };
 
-    private void configurePropertyType(){
-
-        String[] listPropertiesTypes = getResources().getStringArray(R.array.type_property);
-        int i = 0;
-
-        for(String type : listPropertiesTypes){
-            if(type!=null){
-                if(type.equals(propertyInit.getType())){
-                    break;
-                }
-            }
-            i++;
-        }
-        //listProperties.setSelection(i);
-    }
-
-    private void configureSwitchSold(){
-        if(propertyInit.getSold())
-            switchSold.setChecked(true);
-        else
-            switchSold.setChecked(false);
-    }
-
-    private void configure_date_selectors(){
-
-        ImageView expandPublish = linearLayoutDates
-                .findViewById(R.id.publishing_date_selector)
-                .findViewById(R.id.relativelayout_publish)
-                .findViewById(R.id.icon_expand);
-
-        calendarView.setVisibility(View.GONE);
-
-        expandPublish.setOnClickListener(v -> {
-            if(calendarView.getVisibility()==View.VISIBLE)
-                calendarView.setVisibility(View.GONE);
-            else
-                calendarView.setVisibility(View.VISIBLE);
-        });
-
-        ImageView expandSold = linearLayoutDates
-                .findViewById(R.id.selling_date_selector)
-                .findViewById(R.id.relativelayout_sold)
-                .findViewById(R.id.icon_expand);
-
-        expandSold.setOnClickListener(v -> {
-            if(calendarView.getVisibility()==View.VISIBLE)
-                calendarView.setVisibility(View.GONE);
-            else
-                calendarView.setVisibility(View.VISIBLE);
-        });
+    private void configureViews(){
+        new ConfigureEditFragment(this,context,database);
     }
 
     public void setInterestPoints(String interestPoints){
 
-        propertyInit.setInterestPoints(interestPoints);
+        this.interestPoints = interestPoints;
 
         // Enable button save
         this.getButtonSave().setEnabled(true);
+        this.getButtonCancel().setEnabled(true);
     }
 
     @Override
@@ -318,7 +286,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
     // -------------------------------- GETTER and SETTER ------------------------------------
     // ---------------------------------------------------------------------------------------
 
-    public android.support.v7.widget.SearchView getAddressEdit() {
+    public EditText getAddressEdit() {
         return addressEdit;
     }
 
@@ -326,11 +294,11 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
         return buttonSave;
     }
 
-    public Property getPropertyInit() {
-        return propertyInit;
+    public Button getButtonCancel() {
+        return buttonCancel;
     }
 
-    public void setExtraImage(Uri imageUri, int holderPosition){
+    public void setExtraImage(String imagePath, int holderPosition){
 
         View view = recyclerView.findViewHolderForAdapterPosition(holderPosition).itemView;
         ImageView image = view.findViewById(R.id.image_property);
@@ -338,38 +306,84 @@ public class EditFragment extends Fragment implements CallbackImageSelect {
 
         if(recyclerView.findViewHolderForAdapterPosition(holderPosition).getItemViewType()==1) {
             ImagesAddViewHolder holder = (ImagesAddViewHolder) recyclerView.findViewHolderForLayoutPosition(holderPosition);
-            holder.setImageURI(imageUri);
+            holder.setExtraImage(imagePath);
         } else {
             ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(holderPosition);
-            holder.setImageURI(imageUri);
+            holder.setExtraImage(imagePath);
         }
     }
 
+    public PropertyDatabase getDatabase() {
+        return database;
+    }
 
+    public List<ImageProperty> getListImages() {
+        return listImages;
+    }
 
+    public void setListImages(List<ImageProperty> listImages) {
+        this.listImages = listImages;
+    }
 
+    public String getInterestPoints() {
+        return interestPoints;
+    }
 
+    public void setLatLngAddress(LatLng latLngAddress) {
+        this.latLngAddress = latLngAddress;
+    }
 
-  /*  private void configure_and_show_calendarView(final TextView date_textview, final String type_date) {
+    public LatLng getLatLngAddress() {
+        return latLngAddress;
+    }
 
-        calendarView.setVisibility(View.VISIBLE); // show calendarView
+    public Property getPropertyInit() {
+        return propertyInit;
+    }
 
-        calendarView.setOnDateChangeListener((new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+    public String getMode() {
+        return mode;
+    }
 
-                if(is_the_date_ok(type_date,year,month,dayOfMonth)){
-                    date_textview.setText(create_string_date(year, month, dayOfMonth)); // change date selected into string
+    public CallbackImageSelect getCallbackImageSelect() {
+        return mCallbackImageSelect;
+    }
 
-                    if(type_date.equals("Begin date")) // update views with the date selected
-                        update_calendar(type_date, year, month, dayOfMonth);
-                    else
-                        update_calendar(type_date, year, month, dayOfMonth);
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
+    }
 
-                    calendarView.setVisibility(View.GONE); // hide calendar view
-                }
-            }
-        }));
-    }*/
+    public ImagesEditAdapter getAdapter() {
+        return adapter;
+    }
 
+    public void setAdapter(ImagesEditAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public CalendarView getCalendarView() {
+        return calendarView;
+    }
+
+    public void setStaticMap(Bitmap staticMap) {
+        this.staticMap = staticMap;
+    }
+
+    public Bitmap getStaticMap() {
+        return staticMap;
+    }
+
+    public String getMainImageURI() {
+        return mainImagePath;
+    }
+
+    public MainActivity getMainActivity() {
+        return mainActivity;
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return null;
+    }
 }

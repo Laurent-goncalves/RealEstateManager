@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
@@ -19,15 +20,18 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     private final List<Property> listProperties;
     private Context context;
     private CallbackListProperties callbackListProperties;
+    private MainActivity mainActivity;
 
-    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, CallbackListProperties callbackListProperties) {
+    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, CallbackListProperties callbackListProperties, MainActivity mainActivity) {
         this.listProperties = listProperties;
         this.context=context;
         this.callbackListProperties=callbackListProperties;
+        this.mainActivity = mainActivity;
     }
 
+    @NonNull
     @Override
-    public PropertyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PropertyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.property_item, parent, false);
         return new PropertyViewHolder(view);
@@ -36,7 +40,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     @Override
     public void onBindViewHolder(@NonNull PropertyViewHolder holder, int position) {
         if(listProperties!=null)
-            holder.configurePropertiesViews(listProperties.get(position));
+            holder.configurePropertiesViews(listProperties.get(position),context, mainActivity);
 
         holder.propertyLayout.setOnClickListener(v -> callbackListProperties.showDisplayFragment(position));
     }

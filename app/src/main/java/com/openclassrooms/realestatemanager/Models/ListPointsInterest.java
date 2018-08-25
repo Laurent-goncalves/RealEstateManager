@@ -27,7 +27,11 @@ public class ListPointsInterest implements Disposable {
         listPointsInterestTemp = new ArrayList<>();
         this.context = context;
         this.editFragment=editFragment;
-        getListPlacesNearby(api_key, latLng, radius);
+
+        if(editFragment!=null && latLng==null)
+            editFragment.setInterestPoints(listPointsInterest.toString());
+        else
+            getListPlacesNearby(api_key, latLng, radius);
     }
 
     private void getListPlacesNearby(String api_key, LatLng latLng, String radius) {

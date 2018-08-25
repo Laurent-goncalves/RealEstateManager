@@ -5,6 +5,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
+import android.database.Cursor;
 
 import java.util.List;
 
@@ -13,6 +14,9 @@ public interface PropertyDao {
 
     @Query("SELECT * FROM Property WHERE id = :id")
     LiveData<Property> getProperty(int id);
+
+    @Query("SELECT * FROM Property")
+    Cursor getAllPropertiesWithCursor();
 
     @Query("SELECT * FROM Property")
     LiveData<List<Property>> getAllProperties();
