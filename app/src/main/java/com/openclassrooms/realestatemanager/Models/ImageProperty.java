@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 
 
@@ -73,6 +74,32 @@ public class ImageProperty {
         if (values.containsKey("imagePath")) imageProperty.setImagePath(values.getAsString("imagePath"));
         if (values.containsKey("description")) imageProperty.setDescription(values.getAsString("description"));
         if (values.containsKey("idProperty")) imageProperty.setIdProperty(values.getAsInteger("idProperty"));
+
+        return imageProperty;
+    }
+
+    public static ContentValues createContentValuesFromImageProperty(ImageProperty imageProperty) {
+
+        final ContentValues values = new ContentValues();
+
+        values.put("id",imageProperty.getId());
+        values.put("imagePath",imageProperty.getImagePath());
+        values.put("description",imageProperty.getDescription());
+        values.put("idProperty",imageProperty.getIdProperty());
+
+        return values;
+    }
+
+    public static ImageProperty getImagePropertyFromCursor(Cursor cursor){
+
+        final ImageProperty imageProperty = new ImageProperty();
+
+        if(cursor!=null){
+            imageProperty.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            imageProperty.setImagePath(cursor.getString(cursor.getColumnIndexOrThrow("imagePath")));
+            imageProperty.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+            imageProperty.setIdProperty(cursor.getInt(cursor.getColumnIndexOrThrow("idProperty")));
+        }
 
         return imageProperty;
     }

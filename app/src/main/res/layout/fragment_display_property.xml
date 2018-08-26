@@ -59,14 +59,19 @@
             android:layout_gravity="end"
             android:textColor="@color/colorAccent"/>
 
-        <!-- LIST IMAGES PROPERTY -->
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:id="@+id/list_images_property_display">
-        </android.support.v7.widget.RecyclerView>
-
     </FrameLayout>
+
+    <!-- LIST IMAGES PROPERTY -->
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/list_images_property_display">
+    </android.support.v7.widget.RecyclerView>
 
     <!-- DESCRIPTION TEXTVIEW-->
     <TextView
@@ -280,8 +285,9 @@
 
         <!-- ADDRESS -->
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/location_icon"
@@ -315,8 +321,9 @@
         <!-- INTEREST POINTS -->
         <RelativeLayout
             android:id="@+id/interest_points_relativelayout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginStart="50dp">
 
             <ImageView
@@ -352,9 +359,13 @@
     <!-- STATIC MAPVIEW -->
     <ImageView
         android:id="@+id/static_mapview_property"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/static_mapview" />
 
     <!-- SIMULATION -->
@@ -488,6 +499,25 @@
             android:layout_below="@id/edittext_contribution"
             android:layout_toEndOf="@+id/button_calculation"
             android:text=""/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/buttonReturnToList"
+            android:layout_width="190dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:drawableStart="@drawable/baseline_arrow_back_white_24"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@android:color/white"
+            android:text="@string/return_to_the_list"/>
 
     </RelativeLayout>
 

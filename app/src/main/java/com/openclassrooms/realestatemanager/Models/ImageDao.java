@@ -12,14 +12,8 @@ import java.util.List;
 @Dao
 public interface ImageDao {
 
-    @Query("SELECT * FROM ImageProperty WHERE id = :id")
-    LiveData<ImageProperty> getImage(int id);
-
     @Query("SELECT * FROM ImageProperty WHERE idProperty = :userId")
-    Cursor getItemsWithCursor(long userId);
-
-    @Query("SELECT * FROM ImageProperty WHERE idProperty = :id")
-    LiveData<List<ImageProperty>> getAllImagesFromProperty(int id);
+    Cursor getImagesPropertyWithCursor(long userId);
 
     @Insert
     long insertImage(ImageProperty image);

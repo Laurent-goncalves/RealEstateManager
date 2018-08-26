@@ -2,6 +2,8 @@ package com.openclassrooms.realestatemanager.Models;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -61,6 +63,9 @@ public class Property {
         this.Lng = Lng;
         this.map = map;
         this.mainImagePath=mainImagePath;
+    }
+
+    public Property() {
     }
 
     public int getId() {
@@ -189,5 +194,80 @@ public class Property {
 
     public void setMainImagePath(String mainImagePath) {
         this.mainImagePath = mainImagePath;
+    }
+
+    // --- UTILS ---
+    public static Property fromContentValues(ContentValues values) {
+
+        final Property property = new Property();
+
+        if (values.containsKey("id")) property.setId(values.getAsInteger("id"));
+        if (values.containsKey("type")) property.setType(values.getAsString("type"));
+        if (values.containsKey("price")) property.setPrice(values.getAsDouble("price"));
+        if (values.containsKey("surface")) property.setSurface(values.getAsDouble("surface"));
+        if (values.containsKey("roomNumber")) property.setRoomNumber(values.getAsInteger("roomNumber"));
+        if (values.containsKey("description")) property.setDescription(values.getAsString("description"));
+        if (values.containsKey("address")) property.setAddress(values.getAsString("address"));
+        if (values.containsKey("interestPoints")) property.setInterestPoints(values.getAsString("interestPoints"));
+        if (values.containsKey("sold")) property.setSold(values.getAsBoolean("sold"));
+        if (values.containsKey("dateStart")) property.setDateStart(values.getAsString("dateStart"));
+        if (values.containsKey("dateSold")) property.setDateSold(values.getAsString("dateSold"));
+        if (values.containsKey("estateAgent")) property.setEstateAgent(values.getAsString("estateAgent"));
+        if (values.containsKey("Lat")) property.setLat(values.getAsDouble("Lat"));
+        if (values.containsKey("Lng")) property.setLng(values.getAsDouble("Lng"));
+        if (values.containsKey("map")) property.setMap(values.getAsByteArray("map"));
+        if (values.containsKey("mainImagePath")) property.setMainImagePath(values.getAsString("mainImagePath"));
+
+        return property;
+    }
+
+    public static ContentValues createContentValuesFromProperty(Property property) {
+
+        final ContentValues values = new ContentValues();
+
+        values.put("id",property.getId());
+        values.put("type",property.getType());
+        values.put("price",property.getPrice());
+        values.put("surface",property.getSurface());
+        values.put("roomNumber",property.getRoomNumber());
+        values.put("description",property.getDescription());
+        values.put("address",property.getAddress());
+        values.put("interestPoints",property.getInterestPoints());
+        values.put("sold",property.getSold());
+        values.put("dateStart",property.getDateStart());
+        values.put("dateSold",property.getDateSold());
+        values.put("estateAgent",property.getEstateAgent());
+        values.put("Lat",property.getLat());
+        values.put("Lng",property.getLng());
+        values.put("map",property.getMap());
+        values.put("mainImagePath",property.getMainImagePath());
+
+        return values;
+    }
+
+    public static Property getPropertyFromCursor(Cursor cursor){
+
+        final Property property = new Property();
+
+        if(cursor!=null){
+            property.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            property.setType(cursor.getString(cursor.getColumnIndexOrThrow("type")));
+            property.setPrice(cursor.getDouble(cursor.getColumnIndexOrThrow("price")));
+            property.setSurface(cursor.getDouble(cursor.getColumnIndexOrThrow("surface")));
+            property.setRoomNumber(cursor.getInt(cursor.getColumnIndexOrThrow("roomNumber")));
+            property.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+            property.setAddress(cursor.getString(cursor.getColumnIndexOrThrow("address")));
+            property.setInterestPoints(cursor.getString(cursor.getColumnIndexOrThrow("interestPoints")));
+            property.setSold(cursor.getInt(cursor.getColumnIndexOrThrow("sold")) > 0);
+            property.setDateStart(cursor.getString(cursor.getColumnIndexOrThrow("dateStart")));
+            property.setDateSold(cursor.getString(cursor.getColumnIndexOrThrow("dateSold")));
+            property.setEstateAgent(cursor.getString(cursor.getColumnIndexOrThrow("estateAgent")));
+            property.setLat(cursor.getDouble(cursor.getColumnIndexOrThrow("Lat")));
+            property.setLng(cursor.getDouble(cursor.getColumnIndexOrThrow("Lng")));
+            property.setMap(cursor.getBlob(cursor.getColumnIndexOrThrow("map")));
+            property.setMainImagePath(cursor.getString(cursor.getColumnIndexOrThrow("mainImagePath")));
+        }
+
+        return property;
     }
 }

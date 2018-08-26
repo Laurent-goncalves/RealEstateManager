@@ -75,5 +75,6 @@
     <string name="calculation">CALCULATION</string>
     <string name="montly_payment">Your montly payment is:</string>
     <string name="simulation_calculation_monthly_payment">SIMULATION CALCULATION MONTHLY PAYMENT</string>
+    <string name="return_to_the_list">Return to the list</string>
 
 </resources>

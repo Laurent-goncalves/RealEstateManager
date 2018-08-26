@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center"
+    android:layout_marginStart="5dp"
+    android:padding="3dp"
     android:layout_width="80dp"
     android:layout_height="80dp">
 
@@ -9,6 +12,8 @@
         android:id="@+id/image_property"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/image_property" />
 
     <!-- TITLE -->

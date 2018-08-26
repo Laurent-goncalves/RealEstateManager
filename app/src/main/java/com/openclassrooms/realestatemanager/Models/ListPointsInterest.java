@@ -36,6 +36,7 @@ public class ListPointsInterest implements Disposable {
 
     private void getListPlacesNearby(String api_key, LatLng latLng, String radius) {
 
+        dispose();
         String location = String.valueOf(latLng.latitude) + "," + String.valueOf(latLng.longitude);
 
         this.disposable = ApiStream.streamFetchgetSearchNearbyPlaces(api_key,radius,location).subscribeWith(new DisposableObserver<PlaceNearby>() {
@@ -54,8 +55,12 @@ public class ListPointsInterest implements Disposable {
             public void onComplete() {
                 listPointsInterest.addAll(Utils.removeDuplicates(listPointsInterestTemp));
 
+                dispose();
+
                 if(editFragment!=null)
                     editFragment.setInterestPoints(listPointsInterest.toString());
+
+
             }
         });
     }

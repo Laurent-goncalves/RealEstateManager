@@ -4,12 +4,17 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.provider.MediaStore;
+import android.support.annotation.StyleableRes;
 import android.widget.ImageView;
 
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Models.ImageProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -96,10 +101,12 @@ public class Utils {
         return Day + "/" + new_month + "/" + year;
     }
 
-    @SuppressLint("ResourceType")
+
     public static List<String> getInterestPoints(List<String> listTypes, Context context) {
 
         int index;
+        @StyleableRes int indexRes = 1;
+
         List<String> listPointsInterestTemp = new ArrayList<>();
 
         // Get list of interests points by type from xml file
@@ -109,7 +116,7 @@ public class Utils {
         List<TypedArray> listTypedArray = ResourceHelper.getMultiTypedArray(context);
 
         for (TypedArray item : listTypedArray) {
-            listTypesRes.add(item.getString(1));
+            listTypesRes.add(item.getString(indexRes));
             listInterestRes.add(item.getString(0));
         }
 
@@ -122,6 +129,18 @@ public class Utils {
         }
 
         return listPointsInterestTemp;
+    }
+
+    public static String removeHooksFromString(String text){
+
+        String newText = null;
+
+        if(text!=null) {
+            newText = text.replace("[", "");
+            newText = newText.replace("]", "");
+        }
+
+        return newText;
     }
 
     private static int getIndexFromList(String type, List<String> list){
@@ -138,6 +157,25 @@ public class Utils {
         }
 
         return -1; // no value found
+    }
+
+    public static String getRealPathFromURI(MainActivity mainActivity, Uri uri) {
+
+        String realPath=null;
+
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = mainActivity.getContentResolver().query(uri, projection, null, null, null);
+
+        if (cursor != null) {
+            if(cursor.moveToFirst()){
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                realPath = cursor.getString(column_index);
+                cursor.moveToFirst();
+            }
+            cursor.close();
+        }
+
+        return realPath;
     }
 
     public static List<String> removeDuplicates(List<String> listInterestPts){
@@ -178,6 +216,22 @@ public class Utils {
 
         } catch (Exception e) {
             System.out.println("eee exception = " + e.toString());
+        }
+    }
+
+    public static Boolean isInTheList(ImageProperty image, List<ImageProperty> list){
+
+        if(image != null){
+            for(ImageProperty img : list){
+                if(img!=null){
+                    if(img.getId()==image.getId()){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return false;
         }
     }
 }

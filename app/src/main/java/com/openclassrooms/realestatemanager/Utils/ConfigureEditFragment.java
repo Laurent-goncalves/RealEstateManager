@@ -43,21 +43,15 @@ public class ConfigureEditFragment {
     private RecyclerView recyclerView;
     private CalendarView calendarView;
     private List<ImageProperty> listImages;
-    private LiveData<List<ImageProperty>> imagesLiveData;
-    private TextView dateText;
-    private TextView dateSold;
+
 
     public ConfigureEditFragment(EditFragment editFragment, Context context, PropertyDatabase database) {
         this.editFragment = editFragment;
         this.context=context;
-        propertyInit = editFragment.getPropertyInit();
+        propertyInit = editFragment.getProperty();
         listImages = editFragment.getListImages();
-
-        // Recover list of imagesProperty from database and configure images inside recyclerView
-        imagesLiveData = database.imageDao().getAllImagesFromProperty(propertyInit.getId());
-        imagesLiveData.observeForever(ListImagesObserver);
-
         configureAllAreas();
+        configureImagesProperty();
     }
 
     private void configureOnClickListenersDatesSelector() {
@@ -115,22 +109,6 @@ public class ConfigureEditFragment {
         }));
     }
 
-    final Observer<List<ImageProperty>> ListImagesObserver = new Observer<List<ImageProperty>>() {
-        @Override
-        public void onChanged(@Nullable final List<ImageProperty> newName) {
-            if (newName != null) {
-                if(newName.size() != 0){
-                    listImages.addAll(newName);
-                }
-            }
-
-            imagesLiveData.removeObserver(this);
-            listImages.add(new ImageProperty()); // Add item for "add a photo"
-            editFragment.setListImages(listImages);
-            configureImagesProperty();
-        }
-    };
-
     private void configureAllAreas(){
 
         if(propertyInit!=null){
@@ -149,7 +127,7 @@ public class ConfigureEditFragment {
 
             // configure date publication
             editFragment.datePublish = editFragment.linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
-            editFragment.datePublish.setText(propertyInit.getDateSold());
+            editFragment.datePublish.setText(propertyInit.getDateStart());
 
             // configure date sold
             editFragment.dateSold = editFragment.linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
@@ -169,6 +147,13 @@ public class ConfigureEditFragment {
 
             // configure description
             editFragment.descriptionEdit.setText(propertyInit.getDescription());
+
+            // configure static map
+            editFragment.setStaticMap(BitmapFactory.decodeByteArray(propertyInit.getMap(),0, propertyInit.getMap().length));
+
+            // configure interest points
+            editFragment.interestView.setText(propertyInit.getInterestPoints());
+            editFragment.setInterestPoints(propertyInit.getInterestPoints());
         }
 
         editFragment.buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
@@ -176,22 +161,9 @@ public class ConfigureEditFragment {
     }
 
     private void configureMainImage(){
-
         if(propertyInit.getMainImagePath()!=null) {
-            Utils.setImageBitmapInView(propertyInit.getMainImagePath(),editFragment.mainImage,editFragment.getMainActivity());
-            /*try {
-                Bitmap bitmap;
-                File f= new File(propertyInit.getMainImagePath());
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-                editFragment.mainImage.setImageBitmap(bitmap);
-
-
-            } catch (Exception e) {
-                System.out.println("eee exception = " + e.toString());
-            }*/
+            Utils.setImageBitmapInView(propertyInit.getMainImagePath(), editFragment.mainImage, editFragment.getMainActivity());
+            editFragment.setMainImagePath(propertyInit.getMainImagePath());
         }
     }
 

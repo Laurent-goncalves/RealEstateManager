@@ -21,7 +21,7 @@ public class ResourceHelper {
                 field = res.getField("pointinterest_" + counter);
                 array.add(context.getResources().obtainTypedArray(field.getInt(null)));
                 counter++;
-            } while (field != null);
+            } while (counter < 93);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

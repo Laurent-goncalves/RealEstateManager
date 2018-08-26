@@ -28,6 +28,8 @@
             android:id="@+id/main_image_selected"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
             android:background="@color/colorPrimary"/>
 
         <TextView
@@ -348,21 +350,35 @@
                 android:layout_marginBottom="2dp"
                 android:text="@string/address" />
 
-            <EditText
+            <android.support.v7.widget.SearchView
                 android:id="@+id/address_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginBottom="10dp"
-                android:drawableStart="@drawable/baseline_search_white_24"
+                android:icon="@drawable/baseline_search_white_24"
                 android:gravity="start|center_vertical"
                 android:background="@drawable/background_edittext"
                 android:maxLines="1"/>
 
-            <ListView
-                android:id="@+id/list_suggestions"
-                android:layout_width="match_parent"
+            <!-- INTEREST POINTS -->
+            <TextView
+                android:id="@+id/interest_points_textview"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:layout_marginBottom="2dp"
+                android:text="@string/interest_points" />
+
+            <EditText
+                android:id="@+id/interest_points_editview"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="start|center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:inputType = "text"
+                android:background="@drawable/background_edittext"
+                android:maxLines="1"/>
 
 
             <!-- DESCRIPTION PROPERTY -->

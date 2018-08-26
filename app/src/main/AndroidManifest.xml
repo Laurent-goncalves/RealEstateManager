@@ -20,6 +20,11 @@
             android:authorities="com.openclassrooms.realestatemanager.provider"
             android:exported="true"/>
 
+        <provider
+            android:name=".Models.Provider.PropertyContentProvider"
+            android:authorities="com.openclassrooms.realestatemanager.provider"
+            android:exported="true"/>
+
         <activity android:name="com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

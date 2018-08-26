@@ -17,15 +17,17 @@ public class PropertyContentProvider extends ContentProvider {
     public static final String AUTHORITY = "com.openclassrooms.realestatemanager.Models.Provider";
     public static final String TABLE_NAME = Property.class.getSimpleName();
     public static final Uri URI_ITEM = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
+    private Boolean allProperties;
     private Context context;
-
-    public PropertyContentProvider(Context context) {
-        this.context = context;
-    }
 
     @Override
     public boolean onCreate() {
         return true;
+    }
+
+    public void setUtils(Context context, Boolean allProperties){
+        this.allProperties=allProperties;
+        this.context=context;
     }
 
     @Nullable
@@ -33,9 +35,15 @@ public class PropertyContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
 
         if (context != null){
-            final Cursor cursor = PropertyDatabase.getInstance(getContext()).propertyDao().getAllPropertiesWithCursor();
-            //cursor.setNotificationUri(context.getContentResolver(), uri);
-            return cursor;
+            if(allProperties)
+                return PropertyDatabase.getInstance(context).propertyDao().getAllPropertiesWithCursor();
+            else {
+                long idProperty = ContentUris.parseId(uri);
+                final Cursor cursor = PropertyDatabase.getInstance(getContext()).propertyDao().getProperty(idProperty);
+                //cursor.setNotificationUri(context.getContentResolver(), uri);
+                return cursor;
+            }
+
         }
         throw new IllegalArgumentException("Failed to query row for uri " + uri);
     }
@@ -49,7 +57,15 @@ public class PropertyContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
+
+        if (context != null && values !=null){
+            final long id = PropertyDatabase.getInstance(context).propertyDao().insertProperty(Property.fromContentValues(values));
+            if (id != 0){
+                //context.getContentResolver().notifyChange(uri, null);
+                return ContentUris.withAppendedId(uri, id);
+            }
+        }
+        throw new IllegalArgumentException("Failed to insert row into " + uri);
     }
 
     @Override
@@ -59,6 +75,12 @@ public class PropertyContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+
+        if (context!= null && values!=null){
+            final int count = PropertyDatabase.getInstance(context).propertyDao().updateProperty(Property.fromContentValues(values));
+            //context.getContentResolver().notifyChange(uri, null);
+            return count;
+        }
+        throw new IllegalArgumentException("Failed to update row into " + uri);
     }
 }

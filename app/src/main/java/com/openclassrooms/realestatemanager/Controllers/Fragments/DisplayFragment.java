@@ -1,14 +1,13 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
-import android.Manifest;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.content.ContentUris;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
@@ -22,29 +21,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
+import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
+import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
-import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImagesDisplayAdapter;
-
-import java.io.File;
-import java.lang.reflect.Type;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import pub.devrel.easypermissions.EasyPermissions;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -77,8 +70,7 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
     private View view;
     private MainActivity mainActivity;
     private CallbackImageChange callbackImageChange;
-    private LiveData<Property> livedataProp;
-    private LiveData<List<ImageProperty>> livedataImg;
+    private ImagesDisplayAdapter adapter;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -106,31 +98,63 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
             int idProp = getArguments().getInt(LAST_PROPERTY_SELECTED);
 
             // Recover the property datas
+            recoverProperty(idProp);
 
-            livedataProp = database.propertyDao().getProperty(idProp);
-            livedataImg = database.imageDao().getAllImagesFromProperty(idProp);
-
-            livedataProp.observeForever(PropertyObserver);
-
+            // Recover images from the property
+            recoverImagesProperty(idProp);
         }
+
+        configureViews();
+        configureImagesProperty();
 
         return view;
     }
 
-    final Observer<Property> PropertyObserver = new Observer<Property>() {
-        @Override
-        public void onChanged(@Nullable final Property propertySQL) {
-            if (propertySQL != null)
-                property = propertySQL;
+    private void recoverProperty(int idProp){
 
-            livedataProp.removeObserver(this);
+        PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
+        propertyContentProvider.setUtils(context,false);
 
-            livedataImg.observeForever(ListImagesObserver);
+        final Cursor cursor = propertyContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
 
-            // Recover images from property
-            //database.imageDao().getAllImagesFromProperty(property.getId()).observeForever(ListImagesObserver);
+        if (cursor != null){
+            if(cursor.getCount() >0){
+                while (cursor.moveToNext()) {
+                    property=Property.getPropertyFromCursor(cursor);
+                }
+            }
+            cursor.close();
         }
-    };
+    }
+
+    private void recoverImagesProperty(int idProp){
+
+        // mainImage à mettre dans la liste
+        listImages.add(new ImageProperty(0, property.getMainImagePath(), null, property.getId()));
+
+        // Recover images with Content Provider
+        ImageContentProvider imageContentProvider = new ImageContentProvider();
+        imageContentProvider.setUtils(context);
+
+        final Cursor cursor = imageContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
+
+        if (cursor != null){
+            if(cursor.getCount() >0){
+                while (cursor.moveToNext()) {
+                    listImages.add(ImageProperty.getImagePropertyFromCursor(cursor));
+                }
+            }
+            cursor.close();
+        }
+
+        if(listImages.size()==1) // if there is only the mainImage in the list, hide the recyclerView
+            listImagesView.setVisibility(View.GONE);
+    }
+
+    @OnClick(R.id.buttonReturnToList)
+    public void returnToList(){
+        mainActivity.configureAndShowListPropertiesFragment();
+    }
 
     @OnClick(R.id.button_calculation)
     public void calculateMonthlyPayment(){
@@ -151,31 +175,6 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
         }
     }
 
-    final Observer<List<ImageProperty>> ListImagesObserver = new Observer<List<ImageProperty>>() {
-        @Override
-        public void onChanged(@Nullable final List<ImageProperty> newName) {
-
-            if(listImages!=null){
-                if (newName != null) {
-                    if(newName.size() != 0){
-                        listImages.addAll(newName);
-                    }
-                }
-
-                //ImageProperty emptyImageProperty = new ImageProperty();
-                //emptyImageProperty.setIdProperty(property.getId());
-                //listImages.add(emptyImageProperty);
-
-                configureImagesProperty();
-            }
-
-            livedataImg.removeObserver(this);
-
-            // Configuration views
-            configureViews();
-        }
-    };
-
     private void configureViews() {
 
         // set the main image
@@ -190,12 +189,13 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
         descriptionView.setText(property.getDescription());
 
         // Remove textview "sold" if property is not sold
-        if(!property.getSold())
+        if(!property.getSold()) {
             soldDateLayout.setVisibility(View.GONE);
-        else {
+            soldText.setVisibility(View.GONE);
+        } else {
             soldDateLayout.setVisibility(View.VISIBLE);
             String soldDate = property.getDateSold();
-            publishView.setText(soldDate);
+            soldView.setText(soldDate);
         }
 
         // set the price
@@ -223,7 +223,7 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
         addressView.setText(address);
 
         // set the points of interest
-        String points = property.getInterestPoints();
+        String points = Utils.removeHooksFromString(property.getInterestPoints());
         interestView.setText(points);
 
         // set static mapView
@@ -242,7 +242,7 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
                     = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
             // Create adapter passing in the sample user data
-            ImagesDisplayAdapter adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, mainActivity);
+            adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, mainActivity);
 
             // Attach the adapter to the recyclerview to populate items
             listImagesView.setAdapter(adapter);
@@ -252,32 +252,8 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
     }
 
     public void changeMainImage(int position){
-
         if(listImages.get(position)!=null){
-
             Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView,mainActivity);
-
-            /*try {
-                Bitmap bitmap;
-                File f= new File(listImages.get(position).getImagePath());
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-                String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-                if (EasyPermissions.hasPermissions(mainActivity, galleryPermissions)) {
-
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-                    mainImageView.setImageBitmap(bitmap);
-
-                } else {
-                    EasyPermissions.requestPermissions(this, "Access for storage",
-                            101, galleryPermissions);
-                }
-
-            } catch (Exception e) {
-                System.out.println("eee exception = " + e.toString());
-            }*/
         }
     }
 }

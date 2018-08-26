@@ -5,8 +5,10 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -22,11 +24,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -38,6 +38,8 @@ import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
+import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
+import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.CheckAndSaveEdit;
 import com.openclassrooms.realestatemanager.Utils.ConfigureEditFragment;
@@ -65,22 +67,22 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     @BindView(R.id.calendar) CalendarView calendarView;
     @BindView(R.id.surface_edit_text) public EditText surfaceEdit;
     @BindView(R.id.nbrooms_property_layout) public RelativeLayout relativeLayoutNbRooms;
-    @BindView(R.id.address_edit_text) public EditText addressEdit;
+    @BindView(R.id.address_edit_text) public android.support.v7.widget.SearchView searchView;
     @BindView(R.id.description_edit_text) public EditText descriptionEdit;
-    @BindView(R.id.buttonCancel) Button buttonCancel;
-    @BindView(R.id.buttonSave) Button buttonSave;
+    @BindView(R.id.buttonCancel) public Button buttonCancel;
+    @BindView(R.id.buttonSave) public Button buttonSave;
     @BindView(R.id.main_image_selected) public ImageView mainImage;
     @BindView(R.id.estateagent_edit_text) public EditText estateAgentEdit;
     @BindView(R.id.plus_button) public ImageButton buttonPlus;
     @BindView(R.id.less_button) public ImageButton buttonLess;
-    @BindView(R.id.list_suggestions) public ListView listView;
+    @BindView(R.id.interest_points_editview) public EditText interestView;
     public TextView nbRooms;
     public TextView datePublish;
     public TextView dateSold;
     private static final String MODE_SELECTED = "mode_selected";
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     private String mode;
-    private Property propertyInit;
+    private Property property;
     private List<ImageProperty> listImages;
     private int roomNb;
     private CallbackImageSelect mCallbackImageSelect;
@@ -95,8 +97,6 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     private LatLng latLngAddress;
     private Bitmap staticMap;
     private String mainImagePath;
-    private LiveData<Property> propertyLiveData;
-
 
     public EditFragment() {
         // Required empty public constructor
@@ -126,13 +126,15 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
             if(mode!=null){
 
                 if(mode.equals("UPDATE")){ // mode update property
+
                     // Recover the property datas
-                    propertyLiveData = database.propertyDao().getProperty(lastPropertyIdDisplayed);
-                    propertyLiveData.observeForever(PropertyObserver);
+                    recoverProperty(lastPropertyIdDisplayed);
+                    recoverImagesProperty(lastPropertyIdDisplayed);
+
                 } else {
 
                     // create empyt property
-                    propertyInit = new Property(0,null,0d,0d,0,null,null,
+                    property = new Property(0,null,0d,0d,0,null,null,
                             null,false,null,null,0d,0d,null,null,null);
 
                     // Configuration views
@@ -140,6 +142,10 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
                 }
             }
         }
+
+        listImages.add(new ImageProperty()); // Add item for "add a photo"
+
+        configureViews();
 
         return view;
     }
@@ -169,7 +175,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
 
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
-        new CheckAndSaveEdit(this);
+        new CheckAndSaveEdit(this, context);
         mainActivity.changeToDisplayMode(lastPropertyIdDisplayed);
     }
 
@@ -183,32 +189,43 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
         mainActivity.getMainImage();
     }
 
-    public void setMainImage(String imagePath){
+    private void recoverProperty(int idProp){
 
+        PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
+        propertyContentProvider.setUtils(context,false);
+
+        final Cursor cursor = propertyContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
+
+        if (cursor != null){
+            if(cursor.getCount() >0){
+                while (cursor.moveToNext()) {
+                    property=Property.getPropertyFromCursor(cursor);
+                }
+            }
+            cursor.close();
+        }
+    }
+
+    private void recoverImagesProperty(int idProp){
+
+        ImageContentProvider imageContentProvider = new ImageContentProvider();
+        imageContentProvider.setUtils(context);
+
+        final Cursor cursor = imageContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
+
+        if (cursor != null){
+            if(cursor.getCount() >0){
+                while (cursor.moveToNext()) {
+                    listImages.add(ImageProperty.getImagePropertyFromCursor(cursor));
+                }
+            }
+            cursor.close();
+        }
+    }
+
+    public void setMainImage(String imagePath){
         mainImagePath = imagePath;
         Utils.setImageBitmapInView(imagePath,mainImage,mainActivity);
-
-        /*try {
-            Bitmap bitmap;
-            File f= new File(imagePath);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-            String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-            if (EasyPermissions.hasPermissions(mainActivity, galleryPermissions)) {
-
-                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-                mainImage.setImageBitmap(bitmap);
-
-            } else {
-                EasyPermissions.requestPermissions(this, "Access for storage",
-                        101, galleryPermissions);
-            }
-
-        } catch (Exception e) {
-            System.out.println("eee exception = " + e.toString());
-        }*/
     }
 
     @Override
@@ -238,18 +255,6 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     // ----------------------------------- CONFIGURATION VIEWS -----------------------------------
     // -------------------------------------------------------------------------------------------
 
-    final Observer<Property> PropertyObserver = new Observer<Property>() {
-        @Override
-        public void onChanged(@Nullable final Property property) {
-            if (property != null)
-                propertyInit = property;
-
-            propertyLiveData.removeObserver(this);
-
-            // Configuration views
-            configureViews();
-        }
-    };
 
     private void configureViews(){
         new ConfigureEditFragment(this,context,database);
@@ -258,10 +263,16 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     public void setInterestPoints(String interestPoints){
 
         this.interestPoints = interestPoints;
+        interestView.setText(Utils.removeHooksFromString(interestPoints));
 
         // Enable button save
-        this.getButtonSave().setEnabled(true);
-        this.getButtonCancel().setEnabled(true);
+        mainActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                buttonSave.setEnabled(true);
+                buttonCancel.setEnabled(true);
+            }
+        });
     }
 
     @Override
@@ -286,8 +297,8 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     // -------------------------------- GETTER and SETTER ------------------------------------
     // ---------------------------------------------------------------------------------------
 
-    public EditText getAddressEdit() {
-        return addressEdit;
+    public android.support.v7.widget.SearchView getSearchView() {
+        return searchView;
     }
 
     public Button getButtonSave() {
@@ -325,10 +336,6 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
         this.listImages = listImages;
     }
 
-    public String getInterestPoints() {
-        return interestPoints;
-    }
-
     public void setLatLngAddress(LatLng latLngAddress) {
         this.latLngAddress = latLngAddress;
     }
@@ -337,8 +344,8 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
         return latLngAddress;
     }
 
-    public Property getPropertyInit() {
-        return propertyInit;
+    public Property getProperty() {
+        return property;
     }
 
     public String getMode() {
@@ -373,8 +380,12 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
         return staticMap;
     }
 
-    public String getMainImageURI() {
+    public String getMainImagePath() {
         return mainImagePath;
+    }
+
+    public void setMainImagePath(String mainImagePath) {
+        this.mainImagePath = mainImagePath;
     }
 
     public MainActivity getMainActivity() {

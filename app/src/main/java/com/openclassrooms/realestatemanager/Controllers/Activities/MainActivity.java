@@ -1,24 +1,12 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
@@ -26,30 +14,15 @@ import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
-import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
+import com.openclassrooms.realestatemanager.Utils.Utils;
 import java.util.List;
 
-import pub.devrel.easypermissions.EasyPermissions;
 
 
 public class MainActivity extends AppCompatActivity  {
 
     private static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     private static int RESULT_LOAD_MAIN_IMAGE_ = 3;
-    private PropertyDatabase database;
-    private static final String PROPERTY_JSON = "property_json";
     private static final String MODE_SELECTED = "mode_selected";
     private static final String MODE_NEW = "NEW";
     private static final String MODE_UPDATE = "UPDATE";
@@ -60,30 +33,17 @@ public class MainActivity extends AppCompatActivity  {
     private ToolbarManager toolbarManager;
     private int viewHolderPosition;
     private int currentPositionDisplayed;
-    //private static MyAsync obj;
-    //private ImageView imageView;
-    private String file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.database = PropertyDatabase.getInstance(getApplicationContext());
-        listProperties = new ArrayList<>();
-        //database.imageDao().deleteAllImage();
 
-
-
-        try {
-            listProperties = LiveDataTestUtil.getValue(this.database.propertyDao().getAllProperties());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        //PropertyDatabase.getInstance(getApplicationContext()).imageDao().deleteAllImage();
 
         // Configure toolbar
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configure_toolbar();
-
         currentPositionDisplayed=-1;
 
         // Show ListPropertiesFragment
@@ -195,21 +155,6 @@ public class MainActivity extends AppCompatActivity  {
         fragmentTransaction.commit();
     }
 
-    private Property findPropertyById(){
-
-        if(listProperties!=null){
-            for(Property property : listProperties){
-                if(property!=null){
-                    if(property.getId()==currentPositionDisplayed)
-                        return property;
-                }
-            }
-            return null;
-        } else {
-            return null;
-        }
-    }
-
     // -------------------------------------------------------------------------------------------------------
     // -------------------------------------- LOADING IMAGE FROM DEVICE --------------------------------------
     // -------------------------------------------------------------------------------------------------------
@@ -225,17 +170,6 @@ public class MainActivity extends AppCompatActivity  {
         startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
     }
 
-    /*private PropertyViewHolder propertyViewHolder;
-    private static int GALLERY_IMAGE_PICK = 8;
-
-    public void getImages(PropertyViewHolder propertyViewHolder){
-        this.propertyViewHolder=propertyViewHolder;
-
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(galleryIntent, GALLERY_IMAGE_PICK);
-    }*/
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -244,7 +178,7 @@ public class MainActivity extends AppCompatActivity  {
             Uri selectedImage = data.getData();
 
             if(selectedImage!=null){
-                String imagePath = getRealPathFromURI(selectedImage);
+                String imagePath = Utils.getRealPathFromURI(this,selectedImage);
                 editFragment.setExtraImage(imagePath, viewHolderPosition);
             } else
                 editFragment.setExtraImage(null, viewHolderPosition);
@@ -253,30 +187,11 @@ public class MainActivity extends AppCompatActivity  {
             Uri selectedImage = data.getData();
 
             if(selectedImage!=null){
-                String imagePath = getRealPathFromURI(selectedImage);
+                String imagePath = Utils.getRealPathFromURI(this,selectedImage);
                 editFragment.setMainImage(imagePath);
             } else
                 editFragment.setMainImage(null);
         }
-    }
-
-    public String getRealPathFromURI(Uri uri) {
-
-        String realPath=null;
-
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-
-        if (cursor != null) {
-            if(cursor.moveToFirst()){
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                realPath = cursor.getString(column_index);
-                cursor.moveToFirst();
-            }
-            cursor.close();
-        }
-
-        return realPath;
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -290,6 +205,4 @@ public class MainActivity extends AppCompatActivity  {
     public void setListProperties(List<Property> listProperties) {
         this.listProperties = listProperties;
     }
-
-
 }

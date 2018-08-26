@@ -30,7 +30,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.edit_icon_symbol) ImageButton editIcon;
     @BindView(R.id.delete_icon_symbol) ImageButton deleteIcon;
     @BindView(R.id.icon_add_photo) RelativeLayout addPhotoButton;
-    @BindView(R.id.title_image_property) TextView titleImage;
+    @BindView(R.id.title_image_property_edit) TextView titleImage;
     @BindView(R.id.extra_panel) RelativeLayout extraPanel;
     @BindView(R.id.icon_folder_open) ImageButton selectPhotoIcon;
     @BindView(R.id.image_panel) FrameLayout imagePanel;
@@ -65,32 +65,15 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
         this.inEdition = inEdition;
         this.changesOngoing=changesOngoing;
         this.database = PropertyDatabase.getInstance(context);
+        this.mainActivity = mainActivity;
 
         //extraPanel.setX(-600);
         //extraPanel.setVisibility(View.GONE);
     }
 
     public void setExtraImage(String imagePath){
-
         this.imagePath=imagePath;
-
         Utils.setImageBitmapInView(imagePath, image, mainActivity);
-
-        /*try {
-
-            Bitmap bitmap;
-            File f= new File(imagePath);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-            bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-            image.setImageBitmap(bitmap);
-
-
-        } catch (Exception e) {
-            System.out.println("eee exception = " + e.toString());
-        }*/
-
         addPhotoButton.setVisibility(View.GONE);
     }
 

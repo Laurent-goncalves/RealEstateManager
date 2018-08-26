@@ -1,34 +1,20 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
-import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
-import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +24,8 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private List<Property> listProperties;
     private CallbackListProperties callbackListProperties;
     private MainActivity mainActivity;
-    private PropertyDatabase database;
     private View view;
-    private LiveData<List<Property>> liveData;
-    private ContentResolver mContentResolver;
-    private List<String> URIimages;
+
 
     public ListPropertiesFragment() {
     }
@@ -53,46 +36,30 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
         callbackListProperties = this;
         mainActivity = (MainActivity) getActivity();
-        this.database = PropertyDatabase.getInstance(mainActivity.getApplicationContext());
         listProperties = new ArrayList<>();
 
-        PropertyContentProvider propertyContentProvider = new PropertyContentProvider(mainActivity.getApplicationContext());
-        URIimages = new ArrayList<>();
-
-        //ContentUris.withAppendedId(ImageContentProvider.URI_ITEM, 0)
-        /*ImageView imageView = mainActivity.findViewById(R.id.image_test);
+        PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
+        propertyContentProvider.setUtils(mainActivity.getApplicationContext(),true);
 
         final Cursor cursor = propertyContentProvider.query(null, null, null, null, null);
 
         if (cursor != null){
-            if(cursor.getCount() > 0){
+            if(cursor.getCount() >0){
                 while (cursor.moveToNext()) {
-
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(mainActivity.getApplicationContext().getContentResolver(), Uri.parse(cursor.getString(cursor.getColumnIndex("mainImageURI"))));
-                        imageView.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
-
+                    listProperties.add(Property.getPropertyFromCursor(cursor));
                 }
             }
             cursor.close();
         }
 
-        System.out.println("eee LIST URI = " + URIimages.toString());*/
-
-        liveData=database.propertyDao().getAllProperties();
-        liveData.observeForever(ListPropertiesObserver);
+        mainActivity.setListProperties(listProperties);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.property_item_list, container, false);
+        configureListProperties();
         return view;
     }
 
@@ -119,16 +86,4 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     public void showDisplayFragment(int position) {
         mainActivity.configureAndShowDisplayFragment(listProperties.get(position));
     }
-
-    final Observer<List<Property>> ListPropertiesObserver = new Observer<List<Property>>() {
-        @Override
-        public void onChanged(@Nullable final List<Property> newName) {
-            if(newName!=null)
-                listProperties.addAll(newName);
-
-            liveData.removeObserver(this);
-            configureListProperties();
-            mainActivity.setListProperties(listProperties);
-        }
-    };
 }

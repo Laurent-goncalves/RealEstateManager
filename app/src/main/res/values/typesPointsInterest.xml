@@ -325,6 +325,55 @@
         <item>repair_store</item>
         <item>car_repair</item>
     </array>
+    <array name="pointinterest_82">
+        <item>institutions</item>
+        <item>administrative_area_level_1</item>
+    </array>
+
+    <array name="pointinterest_83">
+        <item>institutions</item>
+        <item>administrative_area_level_2</item>
+    </array>
+
+    <array name="pointinterest_84">
+        <item>institutions</item>
+        <item>administrative_area_level_3</item>
+    </array>
+
+    <array name="pointinterest_85">
+        <item>institutions</item>
+        <item>administrative_area_level_4</item>
+    </array>
+
+    <array name="pointinterest_86">
+        <item>institutions</item>
+        <item>administrative_area_level_5</item>
+    </array>
+
+    <array name="pointinterest_87">
+        <item>offices</item>
+        <item>establishment</item>
+    </array>
+    <array name="pointinterest_88">
+        <item>religious</item>
+        <item>place_of_worship</item>
+    </array>
+    <array name="pointinterest_89">
+        <item>institutions</item>
+        <item>political</item>
+    </array>
+    <array name="pointinterest_90">
+        <item>institutions</item>
+        <item>finance</item>
+    </array>
+    <array name="pointinterest_91">
+        <item>medical</item>
+        <item>health</item>
+    </array>
+    <array name="pointinterest_92">
+        <item>shops</item>
+        <item>food</item>
+    </array>
 
 </resources>
 

@@ -20,6 +20,8 @@
                 android:id="@+id/image_property"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
                 android:contentDescription="@string/image_property" />
 
             <!-- DELETE ACTION -->
@@ -72,7 +74,7 @@
 
             <!-- TITLE IMAGEVIEW -->
             <TextView
-                android:id="@+id/title_image_property"
+                android:id="@+id/title_image_property_edit"
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:layout_gravity="bottom"
@@ -87,9 +89,7 @@
             android:id="@+id/extra_panel"
             android:layout_width="230dp"
             android:layout_height="140dp"
-
             android:layout_marginEnd="5dp"
-
             android:animateLayoutChanges="true">
 
             <TextView

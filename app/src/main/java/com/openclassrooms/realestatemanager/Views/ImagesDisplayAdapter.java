@@ -20,12 +20,14 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
     private List<ImageProperty> listImages;
     private Context context;
     private CallbackImageChange callbackImageChange;
+    private int positionSelected;
 
     public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, MainActivity mainActivity) {
         this.listImages = listImages;
         this.callbackImageChange = callbackImageChange;
         this.context = context;
         this.mainActivity=mainActivity;
+        this.positionSelected = 0;
     }
 
     @NonNull
@@ -40,10 +42,14 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
     public void onBindViewHolder(@NonNull ImagesDisplayViewHolder holder, int position) {
         if(listImages!=null) {
             if(listImages.get(position)!=null)
-                holder.configureImagesViews(listImages.get(position),mainActivity);
+                holder.configureImagesViews(listImages.get(position),mainActivity,positionSelected);
         }
 
-        holder.itemView.setOnClickListener(v -> callbackImageChange.changeMainImage(position));
+        holder.itemView.setOnClickListener(v -> {
+            positionSelected = position;
+            callbackImageChange.changeMainImage(position);
+            notifyDataSetChanged();
+        });
     }
 
     @Override
