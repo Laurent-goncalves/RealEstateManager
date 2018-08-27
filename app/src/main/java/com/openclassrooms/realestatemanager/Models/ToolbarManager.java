@@ -15,7 +15,6 @@ import butterknife.OnClick;
 public class ToolbarManager {
 
     private MainActivity mainActivity;
-    private TextView title_toolbar;
     private Context context;
     private ImageButton hamburger;
     private ImageButton addButton;
@@ -37,7 +36,7 @@ public class ToolbarManager {
         mainActivity.setSupportActionBar(toolbar);
 
         //Assign and edit toolbar title
-        title_toolbar = toolbar.findViewById(R.id.title_toolbar);
+        TextView title_toolbar = toolbar.findViewById(R.id.title_toolbar);
         title_toolbar.setText(context.getResources().getString(R.string.app_name));
 
         // Assign buttons from toolbar
@@ -61,12 +60,7 @@ public class ToolbarManager {
             mainActivity.changeToEditMode(propertyId); // edit property currently displayed
         });
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        searchButton.setOnClickListener(v -> mainActivity.configureAndShowSearchFragment());
     }
 
     public void removeIconsToolbar(){

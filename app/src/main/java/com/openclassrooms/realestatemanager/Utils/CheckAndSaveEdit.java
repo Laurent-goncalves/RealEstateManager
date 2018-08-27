@@ -21,12 +21,14 @@ public class CheckAndSaveEdit {
     private static final String MODE_UPDATE = "UPDATE";
     private Context context;
     private Property propertyToSave;
+    private int idProp;
     private PropertyContentProvider propertyContentProvider;
     private ImageContentProvider imageContentProvider;
 
     public CheckAndSaveEdit(EditFragment editFragment, Context context) {
         this.editFragment = editFragment;
         this.context=context;
+        idProp = editFragment.getLastPropertyIdDisplayed();
         newlistImages = editFragment.getListImages();
         oldlistImages = new ArrayList<>();
         SaveInfoEditFragment();
@@ -43,13 +45,13 @@ public class CheckAndSaveEdit {
         if(editFragment.getMode().equals(MODE_UPDATE)){
 
             int idUpdateProperty = propertyContentProvider.update(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, propertyToSave.getId()),
-                    Property.createContentValuesFromProperty(propertyToSave),null,null);
+                    Property.createContentValuesFromPropertyUpdate(propertyToSave),null,null);
 
             // Recover images from database
-            recoverImagesProperty(idUpdateProperty);
+            recoverImagesProperty(idProp);
 
             // Update the list of images
-            updateListImagesPropertyInDatabase(idUpdateProperty);
+            updateListImagesPropertyInDatabase(idProp);
 
         } else {
             // insert new property
@@ -91,7 +93,7 @@ public class CheckAndSaveEdit {
             imageString=null;
 
         // Create the new property to save or update
-        propertyToSave = new Property(editFragment.getProperty().getId(), // id property
+        propertyToSave = new Property(editFragment.getLastPropertyIdDisplayed(), // id property
                 editFragment.listProperties.getSelectedItem().toString(), // type property
                 Double.parseDouble(editFragment.priceEdit.getText().toString()), // price property
                 Double.parseDouble(editFragment.surfaceEdit.getText().toString()), // surface property

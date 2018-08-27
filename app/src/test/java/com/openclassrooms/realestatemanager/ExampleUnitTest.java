@@ -35,5 +35,11 @@ public class ExampleUnitTest {
         Assert.assertEquals(dateFormat.format(cal.getTime()), Utils.getTodayDate());
     }
 
+    @Test
+    public void TestComparisonDates() {
+        Assert.assertTrue(Utils.isDateInsidePeriod("01/02/2018","31/01/2018","02/02/2018"));
+        Assert.assertFalse(Utils.isDateInsidePeriod("03/02/2018","31/01/2018","02/02/2018"));
+        Assert.assertFalse(Utils.isDateInsidePeriod("30/01/2018","31/01/2018","02/02/2018"));
+    }
 
 }

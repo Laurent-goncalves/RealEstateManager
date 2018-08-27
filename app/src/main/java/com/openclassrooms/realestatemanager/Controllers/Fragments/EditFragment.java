@@ -263,12 +263,12 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     public void setInterestPoints(String interestPoints){
 
         this.interestPoints = interestPoints;
-        interestView.setText(Utils.removeHooksFromString(interestPoints));
 
-        // Enable button save
+        // Enable button save and cancel
         mainActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                interestView.setText(Utils.removeHooksFromString(interestPoints));
                 buttonSave.setEnabled(true);
                 buttonCancel.setEnabled(true);
             }
@@ -390,6 +390,10 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
 
     public MainActivity getMainActivity() {
         return mainActivity;
+    }
+
+    public int getLastPropertyIdDisplayed() {
+        return lastPropertyIdDisplayed;
     }
 
     @NonNull

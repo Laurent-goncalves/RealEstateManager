@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.LatLngAddress.LatLngAddress;
 import com.openclassrooms.realestatemanager.Models.SuggestionsLatLng.Prediction;
 import com.openclassrooms.realestatemanager.Models.SuggestionsLatLng.Suggestions;
@@ -37,6 +38,7 @@ import io.reactivex.observers.DisposableObserver;
 public class SearchAddress implements Disposable{
 
     private EditFragment editFragment;
+    private SearchFragment searchFragment;
     private MainActivity mainActivity;
     private SearchView searchView;
     private Context context;
@@ -58,6 +60,16 @@ public class SearchAddress implements Disposable{
         configureSearchView(property);
     }
 
+    public SearchAddress(SearchFragment searchFragment, Context context) {
+        this.searchFragment=searchFragment;
+        this.mainActivity = (MainActivity) searchFragment.getActivity();
+        this.context=context;
+        this.apiKeyPredic=context.getResources().getString(R.string.google_maps_key2);
+        this.apiKeyMaps=context.getResources().getString(R.string.google_static_maps_key);
+        searchView = searchFragment.getLocationView();
+        configureSearchView(null);
+    }
+
     // --------------------------------------------------------------------------------------------------------
     // ---------------------------------CONFIGURATION VIEWS AND LISTENERS -------------------------------------
     // --------------------------------------------------------------------------------------------------------
@@ -65,10 +77,12 @@ public class SearchAddress implements Disposable{
     private void configureSearchView(Property property){
 
         // Set the address in searchView if exists
-        if(property.getAddress()==null) {
-            searchView.setQueryHint(context.getResources().getString(R.string.enter_address));
-        } else
-            searchView.setQuery(property.getAddress(),false);
+        if(property!=null){
+            if(property.getAddress()==null) {
+                searchView.setQueryHint(context.getResources().getString(R.string.enter_address));
+            } else
+                searchView.setQuery(property.getAddress(),false);
+        }
 
         // Assign searchAutoComplete
         searchAutoComplete = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
@@ -187,8 +201,13 @@ public class SearchAddress implements Disposable{
         searchAutoComplete.setText(address);
 
         // the button save is disabled
-        editFragment.getButtonSave().setEnabled(false);
-        editFragment.getButtonCancel().setEnabled(false);
+        if(editFragment!=null){
+            editFragment.getButtonSave().setEnabled(false);
+            editFragment.getButtonCancel().setEnabled(false);
+        } else {
+            searchFragment.getButtonSearch().setEnabled(false);
+            searchFragment.getButtonCancel().setEnabled(false);
+        }
 
         // launch of API request to get Lat and Lng of the address
         getLatLngAddress(apiKeyMaps,address);
@@ -223,15 +242,19 @@ public class SearchAddress implements Disposable{
                                         latLng = new LatLng(latLngAddressResult.getResults().get(0).getGeometry().getLocation().getLat(),
                                                 latLngAddressResult.getResults().get(0).getGeometry().getLocation().getLng());
 
-                                        editFragment.setLatLngAddress(latLng);
+                                        if(editFragment!=null)
+                                            editFragment.setLatLngAddress(latLng);
+                                        else
+                                            searchFragment.setLatLngAddress(latLng);
                                     }
                                 }
                             }
                         }
                     }
                 }
+                if(editFragment!=null)
+                    getStaticMapFromAddress(latLng);
 
-                getStaticMapFromAddress(latLng);
                 dispose();
             }
         });
@@ -247,7 +270,7 @@ public class SearchAddress implements Disposable{
         if(latLng!=null){
 
             String urlImage = "https://maps.googleapis.com/maps/api/staticmap?center=" + latLng.latitude + "," + latLng.longitude +
-                    "&zoom=19&size=800x400&maptype=roadmap&markers=color:blue%7Clabel:S%7C" + latLng.latitude + "," + latLng.longitude +
+                    "&zoom=20&size=800x400&maptype=roadmap&markers=color:blue%7Clabel:S%7C" + latLng.latitude + "," + latLng.longitude +
                     "&key=" + context.getResources().getString(R.string.google_static_maps_key);
 
             // Get static Map through Async task

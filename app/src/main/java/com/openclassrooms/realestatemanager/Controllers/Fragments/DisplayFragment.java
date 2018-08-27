@@ -63,6 +63,7 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
     @BindView(R.id.edittext_duration) EditText duration;
     @BindView(R.id.text_result) TextView result;
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
+    private static final String MODE_DISPLAY = "mode_display";
     private Property property;
     private List<ImageProperty> listImages;
     private Context context;
@@ -153,7 +154,7 @@ public class DisplayFragment extends Fragment implements CallbackImageChange {
 
     @OnClick(R.id.buttonReturnToList)
     public void returnToList(){
-        mainActivity.configureAndShowListPropertiesFragment();
+        mainActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
     }
 
     @OnClick(R.id.button_calculation)

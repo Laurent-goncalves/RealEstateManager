@@ -7,9 +7,12 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
@@ -27,6 +30,9 @@ public class MainActivity extends AppCompatActivity  {
     private static final String MODE_NEW = "NEW";
     private static final String MODE_UPDATE = "UPDATE";
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
+    private static final String MODE_SEARCH = "mode_search";
+    private static final String MODE_DISPLAY = "mode_display";
+    private static final String LIST_PROPERTIES_JSON = "list_properties_json";
     private EditFragment editFragment;
     private DisplayFragment displayFragment;
     private List<Property> listProperties;
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
 
         //PropertyDatabase.getInstance(getApplicationContext()).imageDao().deleteAllImage();
+        //PropertyDatabase.getInstance(getApplicationContext()).propertyDao().deleteAllProperties();
 
         // Configure toolbar
         toolbarManager = new ToolbarManager(this);
@@ -47,7 +54,7 @@ public class MainActivity extends AppCompatActivity  {
         currentPositionDisplayed=-1;
 
         // Show ListPropertiesFragment
-        configureAndShowListPropertiesFragment();
+        configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
     }
 
     public void displayAlertDeletion(int viewHolderPosition){
@@ -145,14 +152,45 @@ public class MainActivity extends AppCompatActivity  {
         fragmentTransaction.commit();
     }
 
-    public void configureAndShowListPropertiesFragment(){
+    public void configureAndShowListPropertiesFragment(String modeSelected, List<Property> listProp){
 
         ListPropertiesFragment listPropertiesFragment = new ListPropertiesFragment();
 
+        Bundle bundle = new Bundle();
+
+        if(modeSelected.equals(MODE_DISPLAY))
+            bundle.putString(MODE_SELECTED,MODE_DISPLAY);
+        else {
+            bundle.putString(MODE_SELECTED,MODE_SEARCH);
+            Gson gson = new Gson();
+            String listPropertiesJson = gson.toJson(listProp);
+            bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
+        }
+
         // configure and show the listPropertiesFragment
+        listPropertiesFragment.setArguments(bundle);
+
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment);
         fragmentTransaction.commit();
+    }
+
+    public void configureAndShowSearchFragment(){
+
+        // add current fragment to back stack
+        /*if (editFragment != null){
+            if(editFragment.isVisible()) {
+
+            }
+        }*/
+
+
+        SearchFragment searchFragment = new SearchFragment();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.replace(R.id.fragment_position, searchFragment);
+        fragmentTransaction.commit();
+
     }
 
     // -------------------------------------------------------------------------------------------------------

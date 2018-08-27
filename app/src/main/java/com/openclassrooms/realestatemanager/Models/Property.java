@@ -225,6 +225,30 @@ public class Property {
 
         final ContentValues values = new ContentValues();
 
+        //values.put("id",property.getId());
+        values.put("type",property.getType());
+        values.put("price",property.getPrice());
+        values.put("surface",property.getSurface());
+        values.put("roomNumber",property.getRoomNumber());
+        values.put("description",property.getDescription());
+        values.put("address",property.getAddress());
+        values.put("interestPoints",property.getInterestPoints());
+        values.put("sold",property.getSold());
+        values.put("dateStart",property.getDateStart());
+        values.put("dateSold",property.getDateSold());
+        values.put("estateAgent",property.getEstateAgent());
+        values.put("Lat",property.getLat());
+        values.put("Lng",property.getLng());
+        values.put("map",property.getMap());
+        values.put("mainImagePath",property.getMainImagePath());
+
+        return values;
+    }
+
+    public static ContentValues createContentValuesFromPropertyUpdate(Property property) {
+
+        final ContentValues values = new ContentValues();
+
         values.put("id",property.getId());
         values.put("type",property.getType());
         values.put("price",property.getPrice());

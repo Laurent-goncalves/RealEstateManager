@@ -13,12 +13,16 @@ import android.provider.MediaStore;
 import android.support.annotation.StyleableRes;
 import android.widget.ImageView;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.android.SphericalUtil;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -101,6 +105,31 @@ public class Utils {
         return Day + "/" + new_month + "/" + year;
     }
 
+    public static Boolean isDateInsidePeriod(String dateTest, String dateInf, String dateSup){
+
+        Boolean answer = true;
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("fr"));
+
+        try {
+            Date datetest = dateFormat.parse(dateTest);
+            Date dateinf = dateFormat.parse(dateInf);
+            Date datesup = dateFormat.parse(dateSup);
+
+            if(datetest.compareTo(datesup) <= 0 && datetest.compareTo(dateinf) >= 0)
+                answer = true;
+            else
+                answer = false;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return answer;
+    }
+
+    public static Boolean isLocationInsideBounds(LatLng searchLoc, LatLng propertyLoc, Double radius){
+        return SphericalUtil.computeDistanceBetween(searchLoc, propertyLoc) <= radius;
+    }
 
     public static List<String> getInterestPoints(List<String> listTypes, Context context) {
 

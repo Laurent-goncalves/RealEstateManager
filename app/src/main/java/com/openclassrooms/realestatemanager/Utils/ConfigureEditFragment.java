@@ -1,26 +1,13 @@
 package com.openclassrooms.realestatemanager.Utils;
 
-import android.Manifest;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.CalendarView;
-import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -28,11 +15,9 @@ import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
-
-import java.io.File;
 import java.util.List;
 
-import pub.devrel.easypermissions.EasyPermissions;
+
 
 public class ConfigureEditFragment {
 
@@ -149,7 +134,8 @@ public class ConfigureEditFragment {
             editFragment.descriptionEdit.setText(propertyInit.getDescription());
 
             // configure static map
-            editFragment.setStaticMap(BitmapFactory.decodeByteArray(propertyInit.getMap(),0, propertyInit.getMap().length));
+            if(propertyInit.getMap()!=null)
+                editFragment.setStaticMap(BitmapFactory.decodeByteArray(propertyInit.getMap(),0, propertyInit.getMap().length));
 
             // configure interest points
             editFragment.interestView.setText(propertyInit.getInterestPoints());

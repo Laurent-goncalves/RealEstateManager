@@ -77,4 +77,16 @@
     <string name="simulation_calculation_monthly_payment">SIMULATION CALCULATION MONTHLY PAYMENT</string>
     <string name="return_to_the_list">Return to the list</string>
 
+    <!-- SEARCH FRAGMENT-->
+    <string name="radius">1000</string>
+    <string name="any">any</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="to">to</string>
+    <string name="number_of_pictures_min">Number of pictures (min):</string>
+    <string name="number_of_rooms_min">Number of rooms (min):</string>
+    <string name="search">SEARCH</string>
+    <string name="search_properties">SEARCH PROPERTIES</string>
+
 </resources>

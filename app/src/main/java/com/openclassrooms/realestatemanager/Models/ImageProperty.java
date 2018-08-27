@@ -82,7 +82,7 @@ public class ImageProperty {
 
         final ContentValues values = new ContentValues();
 
-        values.put("id",imageProperty.getId());
+        //values.put("id",imageProperty.getId());
         values.put("imagePath",imageProperty.getImagePath());
         values.put("description",imageProperty.getDescription());
         values.put("idProperty",imageProperty.getIdProperty());

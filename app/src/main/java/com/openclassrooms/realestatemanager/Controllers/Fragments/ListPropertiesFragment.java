@@ -9,14 +9,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
+import com.openclassrooms.realestatemanager.Models.PlaceNearby.PlaceNearby;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class ListPropertiesFragment extends Fragment implements CallbackListProperties {
@@ -25,7 +32,10 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private CallbackListProperties callbackListProperties;
     private MainActivity mainActivity;
     private View view;
-
+    private static final String MODE_SEARCH = "mode_search";
+    private static final String MODE_DISPLAY = "mode_display";
+    private static final String MODE_SELECTED = "mode_selected";
+    private static final String LIST_PROPERTIES_JSON = "list_properties_json";
 
     public ListPropertiesFragment() {
     }
@@ -38,6 +48,31 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         mainActivity = (MainActivity) getActivity();
         listProperties = new ArrayList<>();
 
+        if(getArguments()!=null){
+            if(getArguments().getString(MODE_SELECTED)!=null){
+                if(Objects.requireNonNull(getArguments().getString(MODE_SELECTED)).equals(MODE_DISPLAY)){
+                    getListProperties();
+                } else {
+                    Gson gson = new Gson();
+                    String json = getArguments().getString(LIST_PROPERTIES_JSON,null);
+                    Type listPropType = new TypeToken<ArrayList<Property>>(){}.getType();
+                    listProperties = gson.fromJson(json,listPropType);
+                }
+            }
+        }
+
+        configureListProperties();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.property_item_list, container, false);
+        configureListProperties();
+        return view;
+    }
+
+    private void getListProperties(){
         PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
         propertyContentProvider.setUtils(mainActivity.getApplicationContext(),true);
 
@@ -53,14 +88,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         }
 
         mainActivity.setListProperties(listProperties);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.property_item_list, container, false);
-        configureListProperties();
-        return view;
     }
 
     private void configureListProperties(){

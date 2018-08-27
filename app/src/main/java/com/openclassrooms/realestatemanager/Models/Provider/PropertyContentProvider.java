@@ -39,11 +39,10 @@ public class PropertyContentProvider extends ContentProvider {
                 return PropertyDatabase.getInstance(context).propertyDao().getAllPropertiesWithCursor();
             else {
                 long idProperty = ContentUris.parseId(uri);
-                final Cursor cursor = PropertyDatabase.getInstance(getContext()).propertyDao().getProperty(idProperty);
+                final Cursor cursor = PropertyDatabase.getInstance(context).propertyDao().getProperty(idProperty);
                 //cursor.setNotificationUri(context.getContentResolver(), uri);
                 return cursor;
             }
-
         }
         throw new IllegalArgumentException("Failed to query row for uri " + uri);
     }
