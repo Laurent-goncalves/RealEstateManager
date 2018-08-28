@@ -78,11 +78,22 @@ public class ImageProperty {
         return imageProperty;
     }
 
-    public static ContentValues createContentValuesFromImageProperty(ImageProperty imageProperty) {
+    public static ContentValues createContentValuesFromImagePropertyUpdate(ImageProperty imageProperty) {
 
         final ContentValues values = new ContentValues();
 
-        //values.put("id",imageProperty.getId());
+        values.put("id",imageProperty.getId());
+        values.put("imagePath",imageProperty.getImagePath());
+        values.put("description",imageProperty.getDescription());
+        values.put("idProperty",imageProperty.getIdProperty());
+
+        return values;
+    }
+
+    public static ContentValues createContentValuesFromImagePropertyInsert(ImageProperty imageProperty) {
+
+        final ContentValues values = new ContentValues();
+
         values.put("imagePath",imageProperty.getImagePath());
         values.put("description",imageProperty.getDescription());
         values.put("idProperty",imageProperty.getIdProperty());

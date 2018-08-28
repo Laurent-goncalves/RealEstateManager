@@ -86,7 +86,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
             }
             cursor.close();
         }
-
         mainActivity.setListProperties(listProperties);
     }
 

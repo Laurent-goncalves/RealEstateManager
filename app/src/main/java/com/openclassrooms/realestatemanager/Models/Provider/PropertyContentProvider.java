@@ -69,7 +69,13 @@ public class PropertyContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        if (context!= null){
+            long idProperty = ContentUris.parseId(uri);
+            final int count = PropertyDatabase.getInstance(context).propertyDao().deletProperty(idProperty);
+            //context.getContentResolver().notifyChange(uri, null);
+            return count;
+        }
+        throw new IllegalArgumentException("Failed to delete row into " + uri);
     }
 
     @Override

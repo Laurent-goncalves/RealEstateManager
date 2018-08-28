@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //PropertyDatabase.getInstance(getApplicationContext()).imageDao().deleteAllImage();
         //PropertyDatabase.getInstance(getApplicationContext()).propertyDao().deleteAllProperties();
 
         // Configure toolbar

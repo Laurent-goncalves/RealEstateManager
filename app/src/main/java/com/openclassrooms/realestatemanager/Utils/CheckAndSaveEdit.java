@@ -56,7 +56,7 @@ public class CheckAndSaveEdit {
         } else {
             // insert new property
             final Uri uri = propertyContentProvider.insert(PropertyContentProvider.URI_ITEM,
-                    Property.createContentValuesFromProperty(propertyToSave));
+                    Property.createContentValuesFromPropertyInsert(propertyToSave));
 
             // insert new images
             insertListImagesPropertyInDatabase(uri);
@@ -165,7 +165,7 @@ public class CheckAndSaveEdit {
 
                     // Save image in Database
                     imageContentProvider.insert(ContentUris.withAppendedId(ImageContentProvider.URI_ITEM, idProperty)
-                            ,ImageProperty.createContentValuesFromImageProperty(image));
+                            ,ImageProperty.createContentValuesFromImagePropertyInsert(image));
                 }
             }
         }
@@ -191,14 +191,14 @@ public class CheckAndSaveEdit {
                     if (oldlistImages != null) {
                         if (Utils.isInTheList(image, oldlistImages)) {
                             imageContentProvider.update(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProperty),
-                                    ImageProperty.createContentValuesFromImageProperty(image),null,null);
+                                    ImageProperty.createContentValuesFromImagePropertyUpdate(image),null,null);
                         } else {
                             imageContentProvider.insert(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProperty),
-                                    ImageProperty.createContentValuesFromImageProperty(image));
+                                    ImageProperty.createContentValuesFromImagePropertyInsert(image));
                         }
                     } else {
                         imageContentProvider.insert(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProperty),
-                                ImageProperty.createContentValuesFromImageProperty(image));
+                                ImageProperty.createContentValuesFromImagePropertyInsert(image));
                     }
                 }
                 counter++;

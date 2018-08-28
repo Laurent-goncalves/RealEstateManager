@@ -32,13 +32,13 @@ public class EditTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
-    private static Property PROPERTY_DEMO = new Property(0, "Appartment", 125000d,30.25,1,
-            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric",null);
+    /*private static Property PROPERTY_DEMO = new Property(0, "Appartment", 125000d,30.25,1,
+            "description","address","School, Subway",false,"01/06/2018",0d,0d,"Eric",null);*/
 
     @Test
     public void TestAddRemoveImages(){
 
-        mActivityTestRule.getActivity().configureAndShowEditFragment(PROPERTY_DEMO);
+        //mActivityTestRule.getActivity().configureAndShowEditFragment(PROPERTY_DEMO);
 
         ViewInteraction button = onView(
                 allOf(withId(R.id.icon_add_photo), withText("Add a photo"),
