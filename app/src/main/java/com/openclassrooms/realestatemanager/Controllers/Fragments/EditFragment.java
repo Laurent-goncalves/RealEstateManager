@@ -191,35 +191,41 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
 
     private void recoverProperty(int idProp){
 
-        PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
-        propertyContentProvider.setUtils(context,false);
+        if(idProp!=-1){
 
-        final Cursor cursor = propertyContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
+            PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
+            propertyContentProvider.setUtils(context,false);
 
-        if (cursor != null){
-            if(cursor.getCount() >0){
-                while (cursor.moveToNext()) {
-                    property=Property.getPropertyFromCursor(cursor);
+            final Cursor cursor = propertyContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
+
+            if (cursor != null){
+                if(cursor.getCount() >0){
+                    while (cursor.moveToNext()) {
+                        property=Property.getPropertyFromCursor(cursor);
+                    }
                 }
+                cursor.close();
             }
-            cursor.close();
         }
     }
 
     private void recoverImagesProperty(int idProp){
 
-        ImageContentProvider imageContentProvider = new ImageContentProvider();
-        imageContentProvider.setUtils(context);
+        if(idProp!=-1){
 
-        final Cursor cursor = imageContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
+            ImageContentProvider imageContentProvider = new ImageContentProvider();
+            imageContentProvider.setUtils(context);
 
-        if (cursor != null){
-            if(cursor.getCount() >0){
-                while (cursor.moveToNext()) {
-                    listImages.add(ImageProperty.getImagePropertyFromCursor(cursor));
+            final Cursor cursor = imageContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
+
+            if (cursor != null){
+                if(cursor.getCount() >0){
+                    while (cursor.moveToNext()) {
+                        listImages.add(ImageProperty.getImagePropertyFromCursor(cursor));
+                    }
                 }
+                cursor.close();
             }
-            cursor.close();
         }
     }
 
@@ -352,6 +358,10 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
         return mode;
     }
 
+    public String getInterestPoints() {
+        return interestPoints;
+    }
+
     public CallbackImageSelect getCallbackImageSelect() {
         return mCallbackImageSelect;
     }
@@ -395,6 +405,8 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     public int getLastPropertyIdDisplayed() {
         return lastPropertyIdDisplayed;
     }
+
+
 
     @NonNull
     @Override

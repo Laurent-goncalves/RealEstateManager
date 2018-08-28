@@ -242,4 +242,12 @@ public class MainActivity extends AppCompatActivity  {
     public void setListProperties(List<Property> listProperties) {
         this.listProperties = listProperties;
     }
+
+    public EditFragment getEditFragment() {
+        return editFragment;
+    }
+
+    public void setCurrentPositionDisplayed(int currentPositionDisplayed) {
+        this.currentPositionDisplayed = currentPositionDisplayed;
+    }
 }

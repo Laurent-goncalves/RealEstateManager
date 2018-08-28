@@ -170,13 +170,14 @@ public class SearchAddress implements Disposable{
     public void displayListPredictions(Boolean submit) {
         String[] listSuggArray = listSuggestions.toArray(new String[listSuggestions.size()]);
 
-        ArrayAdapter<String> autocomplete_adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_dropdown_item_1line, listSuggArray);
-        searchAutoComplete.setAdapter(autocomplete_adapter);
+        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_dropdown_item_1line, listSuggArray);
+        searchAutoComplete.setAdapter(autocompleteAdapter);
 
-        if(submit && listSuggestions.size()==1){
+        if(submit && listSuggestions.size()>=1){
             // the unique item of the list is written in the searchView
             searchAutoComplete.setText(listSuggestions.get(0));
-            launchLatLngSearch(listSuggestions.get(0));
+            //launchLatLngSearch(listSuggestions.get(0));
+            launchLatLngSearch(listSuggArray[0]);
         }
     }
 
@@ -198,7 +199,13 @@ public class SearchAddress implements Disposable{
     private void launchLatLngSearch(String address){
 
         // the address selected is written in the searchView
-        searchAutoComplete.setText(address);
+        editFragment.getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                searchAutoComplete.setText(address);
+            }
+        });
+
 
         // the button save is disabled
         if(editFragment!=null){
