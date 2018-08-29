@@ -18,6 +18,8 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
+import com.openclassrooms.realestatemanager.Models.Property;
+import com.openclassrooms.realestatemanager.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -129,6 +131,26 @@ public class Utils {
 
     public static Boolean isLocationInsideBounds(LatLng searchLoc, LatLng propertyLoc, Double radius){
         return SphericalUtil.computeDistanceBetween(searchLoc, propertyLoc) <= radius;
+    }
+
+    public static List<Property> getFilteredListProperties(List<Property> listProp, LatLng cameraTarget, Context context){
+
+        List<Property> propertyList = new ArrayList<>();
+        Double radius = Double.parseDouble(context.getResources().getString(R.string.radius_camera));
+
+        if(listProp!=null){
+            for(Property property : listProp){
+
+                if(property.getLng()!=0 && property.getLat()!=0){
+                    LatLng locProp = new LatLng(property.getLat(), property.getLng());
+                    if(SphericalUtil.computeDistanceBetween(cameraTarget, locProp) <= radius)
+                        propertyList.add(property);
+
+                }
+            }
+        }
+
+        return propertyList;
     }
 
     public static List<String> getInterestPoints(List<String> listTypes, Context context) {

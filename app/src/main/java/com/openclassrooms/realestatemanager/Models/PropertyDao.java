@@ -16,6 +16,9 @@ public interface PropertyDao {
     @Query("SELECT * FROM Property")
     Cursor getAllPropertiesWithCursor();
 
+    @Query("SELECT * FROM Property WHERE Property.sold = 0")
+    Cursor getPropertiesNotSold();
+
     @Insert
     long insertProperty(Property property);
 

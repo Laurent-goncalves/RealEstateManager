@@ -13,6 +13,7 @@ import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragmen
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
+import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
@@ -47,13 +48,17 @@ public class MainActivity extends AppCompatActivity  {
 
         //PropertyDatabase.getInstance(getApplicationContext()).propertyDao().deleteAllProperties();
 
+
         // Configure toolbar
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configure_toolbar();
         currentPositionDisplayed=-1;
 
+        Intent intent = new Intent(this,MapsActivity.class);
+        startActivity(intent);
+
         // Show ListPropertiesFragment
-        configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+        // configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
     }
 
     public void displayAlertDeletion(int viewHolderPosition){

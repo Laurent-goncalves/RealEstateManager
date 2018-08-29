@@ -1,7 +1,9 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;

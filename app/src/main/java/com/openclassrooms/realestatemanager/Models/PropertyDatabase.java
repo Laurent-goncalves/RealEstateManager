@@ -54,6 +54,8 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues1.put("sold", false);
                 contentValues1.put("dateStart", "01/07/2018");
                 contentValues1.put("estateAgent", "Kevin");
+                contentValues1.put("lat", "48.85161");
+                contentValues1.put("lng", "2.374858");
 
                 ContentValues contentValues2 = new ContentValues();
 
@@ -68,6 +70,8 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues2.put("sold", false);
                 contentValues2.put("dateStart", "02/07/2018");
                 contentValues2.put("estateAgent", "Gaetan");
+                contentValues2.put("lat", "48.852265");
+                contentValues2.put("lng", "2.380437");
 
                 ContentValues contentValues3 = new ContentValues();
 
@@ -82,6 +86,8 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues3.put("sold", false);
                 contentValues3.put("dateStart", "03/07/2018");
                 contentValues3.put("estateAgent", "Yannick");
+                contentValues3.put("lat", "48.845013");
+                contentValues3.put("lng", "2.355803");
 
                 ContentValues contentValues4 = new ContentValues();
 
@@ -96,6 +102,8 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues4.put("sold", false);
                 contentValues4.put("dateStart", "04/07/2018");
                 contentValues4.put("estateAgent", "Xavier");
+                contentValues4.put("lat", "48.849057");
+                contentValues4.put("lng", "2.318295");
 
                 ContentValues contentValues5 = new ContentValues();
 
@@ -111,6 +119,8 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues5.put("dateStart", "05/07/2018");
                 contentValues5.put("dateSold", "28/07/2018");
                 contentValues5.put("estateAgent", "Michelle");
+                contentValues5.put("lat", "48.836912");
+                contentValues5.put("lng", "2.290229");
 
                 db.insert("Property", OnConflictStrategy.IGNORE, contentValues1);
                 db.insert("Property", OnConflictStrategy.IGNORE, contentValues2);
