@@ -1,5 +1,7 @@
 package com.openclassrooms.realestatemanager.Utils;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -7,8 +9,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CalendarView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
@@ -17,6 +21,8 @@ import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 public class ConfigureEditFragment {
@@ -26,72 +32,35 @@ public class ConfigureEditFragment {
     private Property propertyInit;
     private ImagesEditAdapter adapter;
     private RecyclerView recyclerView;
-    private CalendarView calendarView;
     private List<ImageProperty> listImages;
-
+    @BindView(R.id.listview_dates) LinearLayout linearLayoutDates;
+    private CalendarDialog calendarDialog;
 
     public ConfigureEditFragment(EditFragment editFragment, Context context) {
+
+        ButterKnife.bind(this, editFragment.getEditView());
+
         this.editFragment = editFragment;
         this.context=context;
         propertyInit = editFragment.getProperty();
         listImages = editFragment.getListImages();
         configureAllAreas();
         configureImagesProperty();
+        //configureOnClickListenersDatesSelector();
     }
 
-    private void configureOnClickListenersDatesSelector() {
 
-        calendarView = editFragment.getCalendarView();
-        calendarView.setVisibility(View.GONE); // hide calendarView
 
-        editFragment.linearLayoutDates.findViewById(R.id.publishing_date_selector)
-                .findViewById(R.id.relativelayout_publish)
-                .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView dateText = editFragment.linearLayoutDates
-                        .findViewById(R.id.publishing_date_selector)
-                        .findViewById(R.id.relativelayout_publish)
-                        .findViewById(R.id.date_publish_selected);
-
-                if(calendarView.getVisibility()==View.GONE){
-                    calendarView.setVisibility(View.VISIBLE);
-                    configureCalendarView(dateText);
-                } else {
-                    calendarView.setVisibility(View.GONE);
-                }
+    private void configureCalendarView(TextView dateText) {
+        if(calendarDialog!=null){
+            if(calendarDialog.getCalendarView()!=null) {
+                calendarDialog.getCalendarView().setOnDateChangeListener(((view, year, month, dayOfMonth) -> {
+                    String date = Utils.create_string_date(year, month, dayOfMonth);
+                    dateText.setText(date); // change date selected into string
+                    calendarDialog.dismiss();
+                }));
             }
-        });
-
-        editFragment.linearLayoutDates.findViewById(R.id.selling_date_selector)
-                .findViewById(R.id.relativelayout_sold)
-                .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView dateText = editFragment.linearLayoutDates
-                        .findViewById(R.id.selling_date_selector)
-                        .findViewById(R.id.relativelayout_sold)
-                        .findViewById(R.id.date_sale_selected);
-
-                if(calendarView.getVisibility()==View.GONE){
-                    calendarView.setVisibility(View.VISIBLE);
-                    configureCalendarView(dateText);
-                } else {
-                    calendarView.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    private void configureCalendarView(final TextView dateTextview) {
-
-        calendarView.setVisibility(View.VISIBLE); // show calendarView
-
-        calendarView.setOnDateChangeListener(((view, year, month, dayOfMonth) -> {
-            String dateText = Utils.create_string_date(year, month, dayOfMonth);
-            dateTextview.setText(dateText); // change date selected into string
-            calendarView.setVisibility(View.GONE); // hide calendar view
-        }));
+        }
     }
 
     private void configureAllAreas(){
@@ -118,7 +87,7 @@ public class ConfigureEditFragment {
             editFragment.dateSold = editFragment.linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
             editFragment.dateSold.setText(propertyInit.getDateSold());
 
-            configureOnClickListenersDatesSelector();
+            //configureOnClickListenersDatesSelector();
 
             // configure surface
             editFragment.surfaceEdit.setText(String.valueOf(propertyInit.getSurface()));

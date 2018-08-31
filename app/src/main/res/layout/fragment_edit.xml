@@ -234,20 +234,10 @@
 
         </LinearLayout>
 
-        <CalendarView
-            android:id="@+id/calendar"
-            android:layout_below="@id/listview_dates"
-            android:textColorPrimary="@color/colorPrimary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true">
-        </CalendarView>
-
         <!--  LINE SEPARATOR  -->
         <View
             android:id="@+id/date_line_separator"
-            android:layout_below="@id/calendar"
+            android:layout_below="@id/listview_dates"
             android:layout_width="wrap_content"
             android:layout_height="2dp"
             android:layout_marginBottom="10dp"

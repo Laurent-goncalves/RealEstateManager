@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -53,7 +56,6 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     @BindView(R.id.list_type_properties) public Spinner listProperties;
     @BindView(R.id.price_edit_text) public EditText priceEdit;
     @BindView(R.id.listview_dates) public LinearLayout linearLayoutDates;
-    @BindView(R.id.calendar) CalendarView calendarView;
     @BindView(R.id.surface_edit_text) public EditText surfaceEdit;
     @BindView(R.id.nbrooms_property_layout) public RelativeLayout relativeLayoutNbRooms;
     @BindView(R.id.address_edit_text) public android.support.v7.widget.SearchView searchView;
@@ -77,6 +79,10 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     private LatLng latLngAddress;
     private Bitmap staticMap;
     private String mainImagePath;
+    private View view;
+    private CalendarDialog calendarDialog;
+    private static final String PUBLISH_DATE = "publish_date";
+    private static final String SOLD_DATE = "sold_date";
 
     public EditFragment() {
         // Required empty public constructor
@@ -86,7 +92,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_edit, container, false);
+        view = inflater.inflate(R.layout.fragment_edit, container, false);
         recyclerView= view.findViewById(R.id.list_images_property_edit);
         ButterKnife.bind(this, view);
 
@@ -200,6 +206,43 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     private void configureViews(){
         new ConfigureEditFragment(this,context);
+
+        RelativeLayout relativeLayoutPublish = linearLayoutDates.findViewById(R.id.publishing_date_selector)
+                .findViewById(R.id.relativelayout_publish);
+
+        RelativeLayout relativeLayoutSold = linearLayoutDates.findViewById(R.id.selling_date_selector)
+                .findViewById(R.id.relativelayout_sold);
+
+        datePublish = relativeLayoutPublish.findViewById(R.id.date_publish_selected);
+
+        dateSold = relativeLayoutSold.findViewById(R.id.date_sale_selected);
+
+        linearLayoutDates.findViewById(R.id.publishing_date_selector)
+                .setOnClickListener(v -> showCalendarView(PUBLISH_DATE));
+
+        relativeLayoutPublish.findViewById(R.id.icon_expand)
+                .setOnClickListener(v -> showCalendarView(PUBLISH_DATE));
+
+        linearLayoutDates.findViewById(R.id.selling_date_selector)
+                .setOnClickListener(v -> showCalendarView(SOLD_DATE));
+
+        relativeLayoutSold.findViewById(R.id.icon_expand)
+                .setOnClickListener(v -> showCalendarView(SOLD_DATE));
+    }
+
+    private void showCalendarView(String dateType){
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("calendarDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        calendarDialog = CalendarDialog.newInstance(dateType);
+        calendarDialog.setTargetFragment(this,0);
+        calendarDialog.show(ft, "calendarDialog");
     }
 
     public void setInterestPoints(String interestPoints){
@@ -299,10 +342,6 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         this.adapter = adapter;
     }
 
-    public CalendarView getCalendarView() {
-        return calendarView;
-    }
-
     public void setStaticMap(Bitmap staticMap) {
         this.staticMap = staticMap;
     }
@@ -317,5 +356,17 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     public void setMainImagePath(String mainImagePath) {
         this.mainImagePath = mainImagePath;
+    }
+
+    public View getEditView() {
+        return view;
+    }
+
+    public TextView getDatePublish() {
+        return datePublish;
+    }
+
+    public TextView getDateSold() {
+        return dateSold;
     }
 }
