@@ -30,7 +30,7 @@ public class ConfigureEditFragment {
     private List<ImageProperty> listImages;
 
 
-    public ConfigureEditFragment(EditFragment editFragment, Context context, PropertyDatabase database) {
+    public ConfigureEditFragment(EditFragment editFragment, Context context) {
         this.editFragment = editFragment;
         this.context=context;
         propertyInit = editFragment.getProperty();
@@ -147,10 +147,8 @@ public class ConfigureEditFragment {
     }
 
     private void configureMainImage(){
-        if(propertyInit.getMainImagePath()!=null) {
-            Utils.setImageBitmapInView(propertyInit.getMainImagePath(), editFragment.mainImage, editFragment.getMainActivity());
-            editFragment.setMainImagePath(propertyInit.getMainImagePath());
-        }
+        Utils.setImageBitmapInView(propertyInit.getMainImagePath(), editFragment.mainImage, editFragment.getMainActivity());
+        editFragment.setMainImagePath(propertyInit.getMainImagePath());
     }
 
     private void configureImagesProperty(){

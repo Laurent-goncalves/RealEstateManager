@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.LatLngAddress.LatLngAddress;
@@ -40,6 +41,7 @@ public class SearchAddress implements Disposable{
     private EditFragment editFragment;
     private SearchFragment searchFragment;
     private MainActivity mainActivity;
+    private SearchActivity searchActivity;
     private SearchView searchView;
     private Context context;
     private Disposable disposable;
@@ -62,7 +64,7 @@ public class SearchAddress implements Disposable{
 
     public SearchAddress(SearchFragment searchFragment, Context context) {
         this.searchFragment=searchFragment;
-        this.mainActivity = (MainActivity) searchFragment.getActivity();
+        this.searchActivity = (SearchActivity) searchFragment.getActivity();
         this.context=context;
         this.apiKeyPredic=context.getResources().getString(R.string.google_maps_key2);
         this.apiKeyMaps=context.getResources().getString(R.string.google_static_maps_key);

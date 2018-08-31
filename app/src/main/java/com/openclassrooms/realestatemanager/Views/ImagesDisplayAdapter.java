@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
@@ -16,17 +17,17 @@ import java.util.List;
 
 public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayViewHolder> {
 
-    private MainActivity mainActivity;
+    private BaseActivity baseActivity;
     private List<ImageProperty> listImages;
     private Context context;
     private CallbackImageChange callbackImageChange;
     private int positionSelected;
 
-    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, MainActivity mainActivity) {
+    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, BaseActivity baseActivity) {
         this.listImages = listImages;
         this.callbackImageChange = callbackImageChange;
         this.context = context;
-        this.mainActivity=mainActivity;
+        this.baseActivity=baseActivity;
         this.positionSelected = 0;
     }
 
@@ -42,7 +43,7 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
     public void onBindViewHolder(@NonNull ImagesDisplayViewHolder holder, int position) {
         if(listImages!=null) {
             if(listImages.get(position)!=null)
-                holder.configureImagesViews(listImages.get(position),mainActivity,positionSelected);
+                holder.configureImagesViews(listImages.get(position),baseActivity,positionSelected);
         }
 
         holder.itemView.setOnClickListener(v -> {

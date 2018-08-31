@@ -6,12 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
-
 import java.util.List;
 
 
@@ -20,13 +18,13 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     private final List<Property> listProperties;
     private Context context;
     private CallbackListProperties callbackListProperties;
-    private MainActivity mainActivity;
+    private BaseActivity baseActivity;
 
-    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, CallbackListProperties callbackListProperties, MainActivity mainActivity) {
+    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, CallbackListProperties callbackListProperties, BaseActivity baseActivity) {
         this.listProperties = listProperties;
         this.context=context;
         this.callbackListProperties=callbackListProperties;
-        this.mainActivity = mainActivity;
+        this.baseActivity = baseActivity;
     }
 
     @NonNull
@@ -40,8 +38,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     @Override
     public void onBindViewHolder(@NonNull PropertyViewHolder holder, int position) {
         if(listProperties!=null)
-            holder.configurePropertiesViews(listProperties.get(position),context, mainActivity);
-
+            holder.configurePropertiesViews(listProperties.get(position), baseActivity);
         holder.propertyLayout.setOnClickListener(v -> callbackListProperties.showDisplayFragment(position));
     }
 
@@ -52,5 +49,4 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
         else
             return 0;
     }
-
 }

@@ -43,7 +43,7 @@
             android:id="@+id/big_image_display"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:adjustViewBounds="true"
             android:contentDescription="@string/image_main" />
 
@@ -507,7 +507,7 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/buttonReturnToList"
+            android:id="@+id/buttonReturn"
             android:layout_width="190dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"

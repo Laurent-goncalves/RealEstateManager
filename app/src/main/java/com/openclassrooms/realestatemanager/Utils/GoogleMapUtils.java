@@ -14,25 +14,20 @@ import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
-import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
-import com.openclassrooms.realestatemanager.Models.PlaceNearby.PlaceNearby;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.MapsContentProvider;
 import com.openclassrooms.realestatemanager.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +40,7 @@ public class GoogleMapUtils {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private final static String EXTRA_LAT_CURRENT = "latitude_current_location";
     private final static String EXTRA_LONG_CURRENT = "longitude_current_location";
+    private final static String EXTRA_PROPERTY_ID = "property_id";
     private boolean permissionGranted = true;
     private LatLng currentLatLng;
     private MapsActivity mapsActivity;
@@ -210,9 +206,9 @@ public class GoogleMapUtils {
 
         mMap.setOnMarkerClickListener(marker -> {
 
+            int id = (int) marker.getTag();
             Intent intent = new Intent(mapsActivity, MainActivity.class);
-            //intent.putExtra();
-
+            intent.putExtra(EXTRA_PROPERTY_ID, id);
             mapsActivity.startActivity(intent);
 
             return false;
@@ -231,7 +227,8 @@ public class GoogleMapUtils {
             markerOptions = new MarkerOptions()
                     .position(position);
 
-            mMap.addMarker(markerOptions);
+            Marker marker = mMap.addMarker(markerOptions);
+            marker.setTag(property.getId());
         }
     }
 

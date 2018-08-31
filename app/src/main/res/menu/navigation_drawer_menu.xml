@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item android:title="">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/mapsactivity_menu_item"
+                    android:icon="@drawable/baseline_place_white_24"
+                    android:title="@string/menu_mapsactivity" />
+                <item
+                    android:id="@+id/search_property_menu_item"
+                    android:icon="@drawable/baseline_search_white_24"
+                    android:title="@string/menu_search" />
+                <item
+                    android:id="@+id/mainpage_menu_item"
+                    android:icon="@drawable/baseline_arrow_back_white_24"
+                    android:title="@string/go_back_to_main_page" />
+            </group>
+        </menu>
+    </item>
+</menu>

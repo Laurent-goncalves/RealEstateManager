@@ -28,7 +28,7 @@ public class CheckAndSaveEdit {
     public CheckAndSaveEdit(EditFragment editFragment, Context context) {
         this.editFragment = editFragment;
         this.context=context;
-        idProp = editFragment.getLastPropertyIdDisplayed();
+        idProp = editFragment.getProperty().getId();
         newlistImages = editFragment.getListImages();
         oldlistImages = new ArrayList<>();
         SaveInfoEditFragment();
@@ -93,7 +93,7 @@ public class CheckAndSaveEdit {
             imageString=null;
 
         // Create the new property to save or update
-        propertyToSave = new Property(editFragment.getLastPropertyIdDisplayed(), // id property
+        propertyToSave = new Property(editFragment.getProperty().getId(), // id property
                 editFragment.listProperties.getSelectedItem().toString(), // type property
                 Double.parseDouble(editFragment.priceEdit.getText().toString()), // price property
                 Double.parseDouble(editFragment.surfaceEdit.getText().toString()), // surface property

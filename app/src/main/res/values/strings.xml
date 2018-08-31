@@ -27,11 +27,17 @@
     <string name="write_a_description">Write a description</string>
     <string name="add_a_photo">Add a photo</string>
 
+
     <string-array name="type_property">
         <item>Apartment</item>
         <item>House</item>
         <item>Office</item>
     </string-array>
+
+    <!-- MENU NAVIGATION DRAWER -->
+    <string name="menu_mapsactivity">Find property nearby</string>
+    <string name="menu_search">Search properties</string>
+
 
     <!-- IMAGES VIEWHOLDER-->
     <string name="delete_image">Image deletion</string>
@@ -76,6 +82,7 @@
     <string name="montly_payment">Your montly payment is:</string>
     <string name="simulation_calculation_monthly_payment">SIMULATION CALCULATION MONTHLY PAYMENT</string>
     <string name="return_to_the_list">Return to the list</string>
+    <string name="return_to_the_map">Return to the map</string>
 
     <!-- SEARCH FRAGMENT-->
     <string name="radius">1000</string>
@@ -93,5 +100,7 @@
     <string name="number_of_rooms_min">Number of rooms (min):</string>
     <string name="search">SEARCH</string>
     <string name="search_properties">SEARCH PROPERTIES</string>
+    <string name="maison_pictures">maison_pictures</string>
+    <string name="go_back_to_main_page">Go back to main page</string>
 
 </resources>

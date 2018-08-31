@@ -1,22 +1,14 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +25,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
-import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
-import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
-import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.CheckAndSaveEdit;
 import com.openclassrooms.realestatemanager.Utils.ConfigureEditFragment;
@@ -49,7 +39,6 @@ import com.openclassrooms.realestatemanager.Views.ImagesAddViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -58,7 +47,7 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EditFragment extends Fragment implements CallbackImageSelect, LifecycleOwner {
+public class EditFragment extends BasePropertyFragment implements CallbackImageSelect {
 
     @BindView(R.id.switch_sold) public Switch switchSold;
     @BindView(R.id.list_type_properties) public Spinner listProperties;
@@ -79,20 +68,11 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     public TextView nbRooms;
     public TextView datePublish;
     public TextView dateSold;
-    private static final String MODE_SELECTED = "mode_selected";
-    private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
-    private String mode;
-    private Property property;
-    private List<ImageProperty> listImages;
     private int roomNb;
     private CallbackImageSelect mCallbackImageSelect;
-    private MainActivity mainActivity;
-    private Context context;
     private RecyclerView recyclerView;
-    private PropertyDatabase database;
-    private View view;
     private ImagesEditAdapter adapter;
-    private int lastPropertyIdDisplayed;
+    private int idProperty;
     private String interestPoints;
     private LatLng latLngAddress;
     private Bitmap staticMap;
@@ -106,39 +86,32 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_edit, container, false);
-        recyclerView=view.findViewById(R.id.list_images_property_edit);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_edit, container, false);
+        recyclerView= view.findViewById(R.id.list_images_property_edit);
+        ButterKnife.bind(this, view);
 
-        // Set the mainActivity
-        mainActivity = (MainActivity) getActivity();
-        this.context=mainActivity.getApplicationContext();
-        this.database = PropertyDatabase.getInstance(context);
-        listImages = new ArrayList<>();
+        // Set the BaseActivity, callback and context
+        baseActivity = (BaseActivity) getActivity();
+        context = baseActivity.getApplicationContext();
         mCallbackImageSelect = this;
+        listImages = new ArrayList<>();
 
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
 
             mode=getArguments().getString(MODE_SELECTED,null);
-            lastPropertyIdDisplayed=getArguments().getInt(LAST_PROPERTY_SELECTED,-1);
+            idProperty=getArguments().getInt(LAST_PROPERTY_SELECTED,-1);
 
             if(mode!=null){
 
                 if(mode.equals("UPDATE")){ // mode update property
-
                     // Recover the property datas
-                    recoverProperty(lastPropertyIdDisplayed);
-                    recoverImagesProperty(lastPropertyIdDisplayed);
-
+                    recoverProperty(idProperty);
+                    recoverImagesProperty(idProperty);
                 } else {
-
-                    // create empyt property
-                    property = new Property(0,null,0d,0d,0,null,null,
+                    // create empty property
+                    property = new Property(-1,null,0d,0d,0,null,null,
                             null,false,null,null,0d,0d,null,null,null);
-
-                    // Configuration views
-                    new ConfigureEditFragment(this,context,database);
                 }
             }
         }
@@ -176,62 +149,25 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
         new CheckAndSaveEdit(this, context);
-        mainActivity.changeToDisplayMode(lastPropertyIdDisplayed);
+        baseActivity.changeToDisplayMode(idProperty);
     }
 
     @OnClick(R.id.buttonCancel)
     public void onClickListenerButtonCancel() {
-        mainActivity.changeToDisplayMode(lastPropertyIdDisplayed);
+        if(property.getId()==-1)
+            baseActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY,null);
+        else
+            baseActivity.changeToDisplayMode(idProperty);
     }
 
     @OnClick(R.id.main_image_selector)
     public void onClickListener(){
-        mainActivity.getMainImage();
-    }
-
-    private void recoverProperty(int idProp){
-
-        if(idProp!=-1){
-
-            PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
-            propertyContentProvider.setUtils(context,false);
-
-            final Cursor cursor = propertyContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
-
-            if (cursor != null){
-                if(cursor.getCount() >0){
-                    while (cursor.moveToNext()) {
-                        property=Property.getPropertyFromCursor(cursor);
-                    }
-                }
-                cursor.close();
-            }
-        }
-    }
-
-    private void recoverImagesProperty(int idProp){
-
-        if(idProp!=-1){
-
-            ImageContentProvider imageContentProvider = new ImageContentProvider();
-            imageContentProvider.setUtils(context);
-
-            final Cursor cursor = imageContentProvider.query(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, idProp), null, null, null, null);
-
-            if (cursor != null){
-                if(cursor.getCount() >0){
-                    while (cursor.moveToNext()) {
-                        listImages.add(ImageProperty.getImagePropertyFromCursor(cursor));
-                    }
-                }
-                cursor.close();
-            }
-        }
+        baseActivity.getMainImage();
     }
 
     public void setMainImage(String imagePath){
         mainImagePath = imagePath;
-        Utils.setImageBitmapInView(imagePath,mainImage,mainActivity);
+        Utils.setImageBitmapInView(imagePath,mainImage,baseActivity);
     }
 
     @Override
@@ -250,7 +186,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
                     mainImage.setImageBitmap(bitmap);
 
                 } else {
-                    Toast.makeText(mainActivity, "Please give your permission.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(baseActivity, "Please give your permission.", Toast.LENGTH_LONG).show();
                 }
                 break;
             }
@@ -263,7 +199,7 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
 
 
     private void configureViews(){
-        new ConfigureEditFragment(this,context,database);
+        new ConfigureEditFragment(this,context);
     }
 
     public void setInterestPoints(String interestPoints){
@@ -271,24 +207,21 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
         this.interestPoints = interestPoints;
 
         // Enable button save and cancel
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                interestView.setText(Utils.removeHooksFromString(interestPoints));
-                buttonSave.setEnabled(true);
-                buttonCancel.setEnabled(true);
-            }
+        baseActivity.runOnUiThread(() -> {
+            interestView.setText(Utils.removeHooksFromString(interestPoints));
+            buttonSave.setEnabled(true);
+            buttonCancel.setEnabled(true);
         });
     }
 
     @Override
     public void getExtraImageFromGallery(int viewHolderPosition) {
-        mainActivity.getExtraImage(viewHolderPosition);
+        baseActivity.getExtraImage(viewHolderPosition);
     }
 
     @Override
     public void alertDeleteImage(int viewHolderPosition) {
-        mainActivity.displayAlertDeletion(viewHolderPosition);
+        baseActivity.displayAlertDeletion(viewHolderPosition);
     }
 
     public void alertDeletion(int viewHolderPosition){
@@ -328,18 +261,6 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
             ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(holderPosition);
             holder.setExtraImage(imagePath);
         }
-    }
-
-    public PropertyDatabase getDatabase() {
-        return database;
-    }
-
-    public List<ImageProperty> getListImages() {
-        return listImages;
-    }
-
-    public void setListImages(List<ImageProperty> listImages) {
-        this.listImages = listImages;
     }
 
     public void setLatLngAddress(LatLng latLngAddress) {
@@ -396,21 +317,5 @@ public class EditFragment extends Fragment implements CallbackImageSelect, Lifec
 
     public void setMainImagePath(String mainImagePath) {
         this.mainImagePath = mainImagePath;
-    }
-
-    public MainActivity getMainActivity() {
-        return mainActivity;
-    }
-
-    public int getLastPropertyIdDisplayed() {
-        return lastPropertyIdDisplayed;
-    }
-
-
-
-    @NonNull
-    @Override
-    public Lifecycle getLifecycle() {
-        return null;
     }
 }

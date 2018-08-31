@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -210,12 +211,12 @@ public class Utils {
         return -1; // no value found
     }
 
-    public static String getRealPathFromURI(MainActivity mainActivity, Uri uri) {
+    public static String getRealPathFromURI(BaseActivity baseActivity, Uri uri) {
 
         String realPath=null;
 
         String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = mainActivity.getContentResolver().query(uri, projection, null, null, null);
+        Cursor cursor = baseActivity.getContentResolver().query(uri, projection, null, null, null);
 
         if (cursor != null) {
             if(cursor.moveToFirst()){
@@ -245,23 +246,28 @@ public class Utils {
         return (propertyPrice-contribution)*(interestRate/1200)/(1 - Math.pow(1+interestRate/1200, -12*duration));
     }
 
-    public static void setImageBitmapInView(String imagePath, ImageView imageView, MainActivity mainActivity){
+    public static void setImageBitmapInView(String imagePath, ImageView imageView, BaseActivity baseActivity){
 
         try {
             Bitmap bitmap;
+            if(imagePath==null)
+                imageView.setImageDrawable(baseActivity.getApplicationContext().getResources().getDrawable(R.drawable.placeholder));
+
             File f= new File(imagePath);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
             String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-            if (EasyPermissions.hasPermissions(mainActivity, galleryPermissions)) {
+            if (EasyPermissions.hasPermissions(baseActivity, galleryPermissions)) {
 
                 bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-                imageView.setImageBitmap(bitmap);
+
+                if(bitmap!=null)
+                    imageView.setImageBitmap(bitmap);
 
             } else {
-                EasyPermissions.requestPermissions(mainActivity, "Access for storage",
+                EasyPermissions.requestPermissions(baseActivity, "Access for storage",
                         101, galleryPermissions);
             }
 

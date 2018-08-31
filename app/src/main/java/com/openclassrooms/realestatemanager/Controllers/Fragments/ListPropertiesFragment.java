@@ -1,9 +1,7 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,17 +9,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
-import com.openclassrooms.realestatemanager.Models.PlaceNearby.PlaceNearby;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +27,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
     private List<Property> listProperties;
     private CallbackListProperties callbackListProperties;
-    private MainActivity mainActivity;
+    private BaseActivity baseActivity;
     private View view;
     private static final String MODE_SEARCH = "mode_search";
     private static final String MODE_DISPLAY = "mode_display";
@@ -47,13 +42,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         super.onCreate(savedInstanceState);
 
         callbackListProperties = this;
-        mainActivity = (MainActivity) getActivity();
+        baseActivity = (BaseActivity) getActivity();
         listProperties = new ArrayList<>();
 
         if(getArguments()!=null){
             if(getArguments().getString(MODE_SELECTED)!=null){
                 if(Objects.requireNonNull(getArguments().getString(MODE_SELECTED)).equals(MODE_DISPLAY)){
-                    getListProperties();
+                    recoverListProperties();
                 } else {
                     Gson gson = new Gson();
                     String json = getArguments().getString(LIST_PROPERTIES_JSON,null);
@@ -74,9 +69,9 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         return view;
     }
 
-    private void getListProperties(){
+    private void recoverListProperties(){
         PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
-        propertyContentProvider.setUtils(mainActivity.getApplicationContext(),true);
+        propertyContentProvider.setUtils(baseActivity.getApplicationContext(),true);
 
         final Cursor cursor = propertyContentProvider.query(null, null, null, null, null);
 
@@ -88,7 +83,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
             }
             cursor.close();
         }
-        mainActivity.setListProperties(listProperties);
+        baseActivity.setListProperties(listProperties);
     }
 
     private void configureListProperties(){
@@ -101,7 +96,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
             if(context!=null){
 
                 // Create adapter passing in the sample user data
-                PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties,context, callbackListProperties, mainActivity);
+                PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties,context, callbackListProperties, baseActivity);
                 // Attach the adapter to the recyclerview to populate items
                 recyclerView.setAdapter(adapter);
                 // Set layout manager to position the items
@@ -112,6 +107,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
     @Override
     public void showDisplayFragment(int position) {
-        mainActivity.configureAndShowDisplayFragment(listProperties.get(position));
+        baseActivity.configureAndShowDisplayFragment(listProperties.get(position).getId());
     }
 }

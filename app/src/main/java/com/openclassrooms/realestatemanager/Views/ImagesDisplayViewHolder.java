@@ -4,13 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 import static android.view.View.GONE;
 
 
@@ -26,12 +25,10 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void configureImagesViews(ImageProperty imageProperty, MainActivity mainActivity, int positionSelected) {
+    public void configureImagesViews(ImageProperty imageProperty, BaseActivity baseActivity, int positionSelected) {
 
         // set image
-        if(imageProperty.getImagePath()!=null){
-            Utils.setImageBitmapInView(imageProperty.getImagePath(),image,mainActivity);
-        }
+        Utils.setImageBitmapInView(imageProperty.getImagePath(),image, baseActivity);
 
         // set title
         String title = imageProperty.getDescription();

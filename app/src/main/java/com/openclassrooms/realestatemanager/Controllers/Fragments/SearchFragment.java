@@ -22,7 +22,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.SearchContentProvider;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
@@ -58,7 +58,7 @@ public class SearchFragment extends Fragment {
     private ImageButton buttonLess;
     private int roomNbMin;
     private List<Property> listProperties;
-    private MainActivity mainActivity;
+    private BaseActivity baseActivity;
     private TextView nbRoomsView;
     private Context context;
     private LatLng searchLoc;
@@ -74,9 +74,9 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this,view);
 
-        mainActivity = (MainActivity) getActivity();
-        if(mainActivity!=null)
-            this.context = mainActivity.getApplicationContext();
+        baseActivity = (BaseActivity) getActivity();
+        if(baseActivity!=null)
+            this.context = baseActivity.getApplicationContext();
 
         configureSearchFragment();
         return view;
@@ -103,32 +103,26 @@ public class SearchFragment extends Fragment {
         calendarView.setVisibility(View.GONE); // hide calendarView
 
         layoutDates.findViewById(R.id.start_relativelayout_publish_search)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TextView dateText = mainActivity.findViewById(R.id.start_date_publish_selected_search);
+                .setOnClickListener(v -> {
+                    TextView dateText = baseActivity.findViewById(R.id.start_date_publish_selected_search);
 
-                        if(calendarView.getVisibility()==View.GONE){
-                            calendarView.setVisibility(View.VISIBLE);
-                            configureCalendarView(dateText);
-                        } else {
-                            calendarView.setVisibility(View.GONE);
-                        }
+                    if(calendarView.getVisibility()==View.GONE){
+                        calendarView.setVisibility(View.VISIBLE);
+                        configureCalendarView(dateText);
+                    } else {
+                        calendarView.setVisibility(View.GONE);
                     }
                 });
 
         layoutDates.findViewById(R.id.end_relativelayout_publish_search)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TextView dateText = mainActivity.findViewById(R.id.end_date_publish_selected_search);
+                .setOnClickListener(v -> {
+                    TextView dateText = baseActivity.findViewById(R.id.end_date_publish_selected_search);
 
-                        if(calendarView.getVisibility()==View.GONE){
-                            calendarView.setVisibility(View.VISIBLE);
-                            configureCalendarView(dateText);
-                        } else {
-                            calendarView.setVisibility(View.GONE);
-                        }
+                    if(calendarView.getVisibility()==View.GONE){
+                        calendarView.setVisibility(View.VISIBLE);
+                        configureCalendarView(dateText);
+                    } else {
+                        calendarView.setVisibility(View.GONE);
                     }
                 });
     }
@@ -334,17 +328,14 @@ public class SearchFragment extends Fragment {
         searchLoc = latLng;
 
         // Enable button save and cancel
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                buttonSearch.setEnabled(true);
-                buttonCancel.setEnabled(true);
-            }
+        baseActivity.runOnUiThread(() -> {
+            buttonSearch.setEnabled(true);
+            buttonCancel.setEnabled(true);
         });
     }
 
     private void displayResults(){
-        mainActivity.configureAndShowListPropertiesFragment(MODE_SEARCH, listProperties);
+        baseActivity.configureAndShowListPropertiesFragment(MODE_SEARCH, listProperties);
     }
 
     public SearchView getLocationView() {
