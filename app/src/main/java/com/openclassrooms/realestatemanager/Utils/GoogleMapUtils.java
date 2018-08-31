@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.Toast;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceDetectionClient;
@@ -251,5 +252,6 @@ public class GoogleMapUtils {
         }
 
         updateMarkers(listProperties);
+        mapsActivity.getProgressBar().setVisibility(View.GONE);
     }
 }

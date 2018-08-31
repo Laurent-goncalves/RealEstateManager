@@ -9,6 +9,8 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+
 import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
@@ -150,6 +152,8 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void configureAndShowSearchFragment(){
+
+        toolbarManager.setIconsToolbarSearchPropertiesMode();
 
         SearchFragment searchFragment = new SearchFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

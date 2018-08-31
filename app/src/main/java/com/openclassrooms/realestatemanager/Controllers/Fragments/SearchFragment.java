@@ -23,6 +23,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.SearchContentProvider;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
@@ -59,6 +60,7 @@ public class SearchFragment extends Fragment {
     private int roomNbMin;
     private List<Property> listProperties;
     private BaseActivity baseActivity;
+    private SearchActivity searchActivity;
     private TextView nbRoomsView;
     private Context context;
     private LatLng searchLoc;
@@ -75,6 +77,7 @@ public class SearchFragment extends Fragment {
         ButterKnife.bind(this,view);
 
         baseActivity = (BaseActivity) getActivity();
+        searchActivity= (SearchActivity) getActivity();
         if(baseActivity!=null)
             this.context = baseActivity.getApplicationContext();
 
@@ -173,11 +176,12 @@ public class SearchFragment extends Fragment {
 
     @OnClick(R.id.buttonSearchCancel)
     public void cancel(){
-
+        searchActivity.finish();
     }
 
     @OnClick(R.id.buttonSearch)
     public void search(){
+        searchActivity.getRelativeLayout().setVisibility(View.VISIBLE);
         launchSearchProperties();
     }
 

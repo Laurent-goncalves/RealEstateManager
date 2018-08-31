@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
+import com.openclassrooms.realestatemanager.Models.SimulationTool;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImagesDisplayAdapter;
@@ -46,10 +49,6 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     @BindView(R.id.publication_date_text) TextView publishView;
     @BindView(R.id.sale_date_text) TextView soldView;
     @BindView(R.id.sold_date_layout) LinearLayout soldDateLayout;
-    @BindView(R.id.edittext_contribution) EditText contribution;
-    @BindView(R.id.edittext_interest_rate) EditText rate;
-    @BindView(R.id.edittext_duration) EditText duration;
-    @BindView(R.id.text_result) TextView result;
     @BindView(R.id.buttonReturn) Button buttonReturn;
     private CallbackImageChange callbackImageChange;
 
@@ -112,23 +111,19 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         }
     }
 
-    @OnClick(R.id.button_calculation)
-    public void calculateMonthlyPayment(){
+    @OnClick(R.id.buttonSimulation)
+    public void launchSimulation(){
 
-        if(contribution.getText()!=null && rate.getText()!=null && duration.getText()!=null){
-            if(!contribution.getText().toString().equals("") && !rate.getText().toString().equals("") && !duration.getText().toString().equals("")){
-
-                Double montlyRate = Utils.calculateMonthlyPayment(property.getPrice(),
-                                Double.parseDouble(duration.getText().toString()),
-                                Double.parseDouble(rate.getText().toString()),
-                                Double.parseDouble(contribution.getText().toString()));
-
-                NumberFormat formatter = NumberFormat.getCurrencyInstance();
-                String moneyString = context.getResources().getString(R.string.montly_payment) + "\n" + formatter.format(montlyRate);
-
-                result.setText(moneyString);
-            }
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
         }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        SimulationTool simulationTool = SimulationTool.newInstance(property);
+        simulationTool.show(ft, "dialog");
     }
 
     // ---------------------------------------------------------------------------------------------------

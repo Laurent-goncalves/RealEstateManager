@@ -201,7 +201,7 @@ public class SearchAddress implements Disposable{
     private void launchLatLngSearch(String address){
 
         // the address selected is written in the searchView
-        editFragment.getMainActivity().runOnUiThread(new Runnable() {
+        editFragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 searchAutoComplete.setText(address);

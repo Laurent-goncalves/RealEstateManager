@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/text_monthly_calculation"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_alignParentTop="true"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimaryDark"
+        android:text="@string/simulation_calculation_monthly_payment"/>
+
+    <!-- INTEREST RATE-->
+    <TextView
+        android:id="@+id/text_interest_rate"
+        android:layout_width="@dimen/views_width"
+        android:layout_height="@dimen/views_height"
+        android:textSize="@dimen/text_size"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_below="@id/text_monthly_calculation"
+        android:layout_alignParentStart="true"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:text="@string/interest_rate"/>
+
+    <EditText
+        android:id="@+id/edittext_interest_rate"
+        android:layout_width="@dimen/views_width"
+        android:layout_height="@dimen/views_height"
+        android:inputType="numberDecimal"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginStart="@dimen/margin_top"
+        android:layout_marginTop="@dimen/margin_top"
+        android:background="@drawable/background_result"
+        android:layout_below="@id/text_monthly_calculation"
+        android:layout_toEndOf="@+id/text_interest_rate"
+        android:textColor="@color/colorAccent"/>
+
+    <!-- DURATION -->
+    <TextView
+        android:id="@+id/text_duration"
+        android:layout_width="@dimen/views_width"
+        android:layout_height="@dimen/views_height"
+        android:gravity="center"
+        android:textSize="@dimen/text_size"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_below="@id/text_interest_rate"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_alignParentStart="true"
+        android:text="@string/duration_years"/>
+
+    <EditText
+        android:id="@+id/edittext_duration"
+        android:layout_width="@dimen/views_width"
+        android:layout_height="@dimen/views_height"
+        android:inputType="number"
+        android:textSize="@dimen/text_size"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_marginStart="@dimen/margin_top"
+        android:background="@drawable/background_result"
+        android:layout_below="@id/edittext_interest_rate"
+        android:layout_toEndOf="@+id/text_duration"
+        android:textColor="@color/colorAccent"/>
+
+    <!-- CONTRIBUTION -->
+    <TextView
+        android:id="@+id/text_contribution"
+        android:layout_width="@dimen/views_width"
+        android:layout_height="@dimen/views_height"
+        android:gravity="center"
+        android:textSize="@dimen/text_size"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_below="@id/text_duration"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_alignParentStart="true"
+        android:text="@string/contribution"/>
+
+    <EditText
+        android:id="@+id/edittext_contribution"
+        android:layout_width="@dimen/views_width"
+        android:layout_height="@dimen/views_height"
+        android:inputType="number"
+        android:textSize="@dimen/text_size"
+        android:gravity="center"
+        android:background="@drawable/background_result"
+        android:layout_marginStart="@dimen/margin_top"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_below="@id/edittext_duration"
+        android:layout_toEndOf="@+id/text_contribution"
+        android:textColor="@color/colorAccent"/>
+
+    <!-- CALCULATION -->
+    <TextView
+        android:id="@+id/button_calculation"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/views_height"
+        android:padding="3dp"
+        android:background="@drawable/background_edittext"
+        android:layout_marginTop="@dimen/margin_top"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/colorAccent"
+        android:layout_marginStart="@dimen/margin_top"
+        android:layout_below="@id/edittext_contribution"
+        android:text="@string/calculation"/>
+
+</RelativeLayout>

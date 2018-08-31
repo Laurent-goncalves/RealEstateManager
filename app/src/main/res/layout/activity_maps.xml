@@ -131,4 +131,14 @@
 
     </android.support.v4.widget.DrawerLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:indeterminateDrawable="@drawable/progress" >
+    </ProgressBar>
+
 </FrameLayout>

@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -46,6 +47,7 @@ public class MapsActivity extends BaseActivity {
 
     private SharedPreferences sharedPreferences;
     @BindView(R.id.fragment_layout) ScrollView mScrollView;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
     private SupportMapFragment mapFragment;
     private GoogleMapUtils googleMapUtils;
 
@@ -60,8 +62,8 @@ public class MapsActivity extends BaseActivity {
         toolbarManager.configureNavigationDrawer(this);
 
         sharedPreferences = getSharedPreferences("MAPSPREFERRENCES",MODE_PRIVATE);
+        configureAndShowMap();
 
-        googleMapUtils = new GoogleMapUtils(getApplicationContext(), this);
     }
 
     @Override
@@ -87,7 +89,8 @@ public class MapsActivity extends BaseActivity {
     }
 
     public void configureAndShowMap() {
-
+        progressBar.setVisibility(View.VISIBLE);
+        googleMapUtils = new GoogleMapUtils(getApplicationContext(), this);
     }
 
     public void changeToMapMode(){
@@ -108,7 +111,9 @@ public class MapsActivity extends BaseActivity {
         return sharedPreferences;
     }
 
-
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
 }
 
 

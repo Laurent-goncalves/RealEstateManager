@@ -180,6 +180,11 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         editButton.setVisibility(View.GONE);
     }
 
+    public void setIconsToolbarSearchPropertiesMode(){
+        addButton.setVisibility(View.GONE);
+        editButton.setVisibility(View.GONE);
+    }
+
     // ---------------------------------------------------------------------------------
     // -----------------     CONFIGURATION OF DRAWER  ----------------------------------
     // ---------------------------------------------------------------------------------
