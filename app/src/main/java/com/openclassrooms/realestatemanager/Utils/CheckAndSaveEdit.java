@@ -44,7 +44,7 @@ public class CheckAndSaveEdit {
 
         if(editFragment.getMode().equals(MODE_UPDATE)){
 
-            int idUpdateProperty = propertyContentProvider.update(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, propertyToSave.getId()),
+            propertyContentProvider.update(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, propertyToSave.getId()),
                     Property.createContentValuesFromPropertyUpdate(propertyToSave),null,null);
 
             // Recover images from database
@@ -69,45 +69,8 @@ public class CheckAndSaveEdit {
 
     private void createPropertyToSave(){
 
-        byte[] mapStatic;
-        if(editFragment.getStaticMap()!=null)
-            mapStatic = Utils.getBitmapAsByteArray(editFragment.getStaticMap());
-        else
-            mapStatic = null;
-
-        Double lat;
-        Double lng;
-
-        if(editFragment.getLatLngAddress()!=null){
-            lat=editFragment.getLatLngAddress().latitude;
-            lng=editFragment.getLatLngAddress().longitude;
-        } else {
-            lat=0d;
-            lng=0d;
-        }
-
-        String imageString;
-        if(editFragment.getMainImagePath()!=null)
-            imageString = editFragment.getMainImagePath();
-        else
-            imageString=null;
-
-        // Create the new property to save or update
-        propertyToSave = new Property(editFragment.getProperty().getId(), // id property
-                editFragment.listProperties.getSelectedItem().toString(), // type property
-                Double.parseDouble(editFragment.priceEdit.getText().toString()), // price property
-                Double.parseDouble(editFragment.surfaceEdit.getText().toString()), // surface property
-                Integer.parseInt(editFragment.nbRooms.getText().toString()),// nb rooms
-                editFragment.descriptionEdit.getText().toString(), // description property
-                editFragment.getSearchView().getQuery().toString(), // address property
-                editFragment.interestView.getText().toString(), // list interest points
-                editFragment.switchSold.isChecked(), // property sold or not ?
-                editFragment.datePublish.getText().toString(), // date start
-                editFragment.dateSold.getText().toString(), // date sold
-                lat, lng, // latitude & longitude property
-                editFragment.estateAgentEdit.getText().toString(), // estate agent name
-                mapStatic, imageString);
-
+        PropertyConstructor propertyConstructor = new PropertyConstructor();
+        propertyToSave = propertyConstructor.createPropertyFromViews(editFragment, editFragment.getView());
     }
 
     // ------------------------------------------------------------------------------------------------------------

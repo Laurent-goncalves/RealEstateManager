@@ -27,7 +27,15 @@ public class SearchActivity extends BaseActivity {
 
         mRelativeLayout.setVisibility(View.GONE);
 
-        configureAndShowSearchFragment();
+        if(savedInstanceState!=null){
+            showSaveInstanceFragment(savedInstanceState);
+        } else
+            configureAndShowSearchFragment();
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
     }
 
     @OnClick(R.id.button_return_search)

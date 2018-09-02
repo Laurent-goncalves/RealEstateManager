@@ -25,8 +25,15 @@
             android:name=".Models.Provider.PropertyContentProvider"
             android:authorities="com.openclassrooms.realestatemanager.provider"
             android:exported="true" />
+        <provider
+            android:name=".Models.Provider.SearchContentProvider"
+            android:authorities="com.openclassrooms.realestatemanager.provider"
+            android:exported="true" />
 
-        <activity android:name=".Controllers.Activities.MainActivity">
+        <activity
+            android:name=".Controllers.Activities.MainActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:configChanges="keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,10 +48,17 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".Controllers.Activities.MapsActivity" />
-        <activity android:name=".Controllers.Activities.DetailActivity" />
-        <activity android:name=".Controllers.Activities.SearchActivity" />
-        <activity android:name=".Controllers.Activities.BaseActivity"></activity>
+        <activity
+            android:name=".Controllers.Activities.MapsActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+        <activity android:name=".Controllers.Activities.SearchActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+        <activity
+            android:name=".Controllers.Activities.BaseActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
     </application>
 
 </manifest>

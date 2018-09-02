@@ -62,8 +62,11 @@ public class MapsActivity extends BaseActivity {
         toolbarManager.configureNavigationDrawer(this);
 
         sharedPreferences = getSharedPreferences("MAPSPREFERRENCES",MODE_PRIVATE);
-        configureAndShowMap();
 
+        if(savedInstanceState!=null){
+            showSaveInstanceFragment(savedInstanceState);
+        } else
+            configureAndShowMap();
     }
 
     @Override

@@ -5,67 +5,79 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.CalendarView;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
+
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
-import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class ConfigureEditFragment {
 
-    private EditFragment editFragment;
+    @BindView(R.id.listview_dates) LinearLayout linearLayoutDates;
+    @BindView(R.id.switch_sold) Switch switchSold;
+    @BindView(R.id.list_type_properties) Spinner listProperties;
+    @BindView(R.id.price_edit_text) EditText priceEdit;
+    @BindView(R.id.surface_edit_text) EditText surfaceEdit;
+    @BindView(R.id.nbrooms_property_layout) RelativeLayout relativeLayoutNbRooms;
+    @BindView(R.id.address_edit_text) android.support.v7.widget.SearchView searchView;
+    @BindView(R.id.main_image_selected) ImageView mainImage;
+    @BindView(R.id.description_edit_text) EditText descriptionEdit;
+    @BindView(R.id.estateagent_edit_text) EditText estateAgentEdit;
+    @BindView(R.id.plus_button) ImageButton buttonPlus;
+    @BindView(R.id.less_button) ImageButton buttonLess;
+    @BindView(R.id.interest_points_editview) EditText interestView;
+    private View view;
+    private int roomNb;
+    private TextView nbRooms;
+    private TextView datePublish;
+    private TextView dateSold;
     private Context context;
-    private Property propertyInit;
+    private Property property;
     private ImagesEditAdapter adapter;
+    private EditFragment editFragment;
     private RecyclerView recyclerView;
     private List<ImageProperty> listImages;
-    @BindView(R.id.listview_dates) LinearLayout linearLayoutDates;
+    private BaseActivity baseActivity;
     private CalendarDialog calendarDialog;
+    private static final String PUBLISH_DATE = "publish_date";
+    private static final String SOLD_DATE = "sold_date";
 
-    public ConfigureEditFragment(EditFragment editFragment, Context context) {
-
-        ButterKnife.bind(this, editFragment.getEditView());
-
-        this.editFragment = editFragment;
+    public ConfigureEditFragment(View view, EditFragment editFragment, Context context, Property property, List<ImageProperty> listImages, BaseActivity baseActivity) {
+        ButterKnife.bind(this, view);
+        this.view=view;
         this.context=context;
-        propertyInit = editFragment.getProperty();
-        listImages = editFragment.getListImages();
+        this.property = property;
+        this.editFragment=editFragment;
+        this.baseActivity=baseActivity;
+        this.listImages = listImages;
         configureAllAreas();
         configureImagesProperty();
-        //configureOnClickListenersDatesSelector();
-    }
-
-
-
-    private void configureCalendarView(TextView dateText) {
-        if(calendarDialog!=null){
-            if(calendarDialog.getCalendarView()!=null) {
-                calendarDialog.getCalendarView().setOnDateChangeListener(((view, year, month, dayOfMonth) -> {
-                    String date = Utils.create_string_date(year, month, dayOfMonth);
-                    dateText.setText(date); // change date selected into string
-                    calendarDialog.dismiss();
-                }));
-            }
-        }
     }
 
     private void configureAllAreas(){
 
-        if(propertyInit!=null){
+        if(property!=null){
 
             // configure mainImage
             configureMainImage();
@@ -74,50 +86,111 @@ public class ConfigureEditFragment {
             configureSwitchSold();
 
             // configure price
-            editFragment.priceEdit.setText(String.valueOf(propertyInit.getPrice()));
+            priceEdit.setText(String.valueOf(property.getPrice()));
 
             // configure estate agent
-            editFragment.estateAgentEdit.setText(propertyInit.getEstateAgent());
+            estateAgentEdit.setText(property.getEstateAgent());
 
-            // configure date publication
-            editFragment.datePublish = editFragment.linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
-            editFragment.datePublish.setText(propertyInit.getDateStart());
-
-            // configure date sold
-            editFragment.dateSold = editFragment.linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
-            editFragment.dateSold.setText(propertyInit.getDateSold());
-
-            //configureOnClickListenersDatesSelector();
+            // configure date selectors
+            configureDateSelector();
 
             // configure surface
-            editFragment.surfaceEdit.setText(String.valueOf(propertyInit.getSurface()));
+            surfaceEdit.setText(String.valueOf(property.getSurface()));
 
             // configure number of rooms
-            editFragment.nbRooms = editFragment.relativeLayoutNbRooms.findViewById(R.id.room_number_selector).findViewById(R.id.text_selection);
-            editFragment.nbRooms.setText(String.valueOf(propertyInit.getRoomNumber()));
+            nbRooms = relativeLayoutNbRooms.findViewById(R.id.room_number_selector).findViewById(R.id.text_selection);
+            nbRooms.setText(String.valueOf(property.getRoomNumber()));
 
             // configure address
-            new SearchAddress(editFragment, propertyInit, context);
+            new SearchAddress(editFragment, property, context);
 
             // configure description
-            editFragment.descriptionEdit.setText(propertyInit.getDescription());
+            descriptionEdit.setText(property.getDescription());
 
             // configure static map
-            if(propertyInit.getMap()!=null)
-                editFragment.setStaticMap(BitmapFactory.decodeByteArray(propertyInit.getMap(),0, propertyInit.getMap().length));
+            if(property.getMap()!=null)
+                editFragment.setStaticMap(BitmapFactory.decodeByteArray(property.getMap(),0, property.getMap().length));
 
             // configure interest points
-            editFragment.interestView.setText(propertyInit.getInterestPoints());
-            editFragment.setInterestPoints(propertyInit.getInterestPoints());
+            interestView.setText(property.getInterestPoints());
+            editFragment.setInterestPoints(property.getInterestPoints());
         }
 
-        editFragment.buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
-        editFragment.buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
     }
 
     private void configureMainImage(){
-        Utils.setImageBitmapInView(propertyInit.getMainImagePath(), editFragment.mainImage, editFragment.getMainActivity());
-        editFragment.setMainImagePath(propertyInit.getMainImagePath());
+        Utils.setImageBitmapInView(property.getMainImagePath(), mainImage, editFragment.getMainActivity());
+        editFragment.setMainImagePath(property.getMainImagePath());
+    }
+
+    private void configureDateSelector(){
+
+        // configure date publication
+        datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
+        datePublish.setText(property.getDateStart());
+
+        // configure date sold
+        dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
+        dateSold.setText(property.getDateSold());
+
+
+        RelativeLayout relativeLayoutPublish = linearLayoutDates.findViewById(R.id.publishing_date_selector)
+                .findViewById(R.id.relativelayout_publish);
+
+        RelativeLayout relativeLayoutSold = linearLayoutDates.findViewById(R.id.selling_date_selector)
+                .findViewById(R.id.relativelayout_sold);
+
+        linearLayoutDates.findViewById(R.id.publishing_date_selector)
+                .setOnClickListener(v -> showCalendarView(PUBLISH_DATE));
+
+        relativeLayoutPublish.findViewById(R.id.icon_expand)
+                .setOnClickListener(v -> showCalendarView(PUBLISH_DATE));
+
+        linearLayoutDates.findViewById(R.id.selling_date_selector)
+                .setOnClickListener(v -> showCalendarView(SOLD_DATE));
+
+        relativeLayoutSold.findViewById(R.id.icon_expand)
+                .setOnClickListener(v -> showCalendarView(SOLD_DATE));
+    }
+
+    private void showCalendarView(String dateType){
+
+        FragmentTransaction ft = editFragment.getFragmentManager().beginTransaction();
+        Fragment prev = editFragment.getFragmentManager().findFragmentByTag("calendarDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        calendarDialog = CalendarDialog.newInstance(dateType);
+        calendarDialog.setTargetFragment(editFragment,0);
+        calendarDialog.show(ft, "calendarDialog");
+    }
+
+    @OnClick(R.id.plus_button)
+    public void onClickListenerButtonPlus() {
+        if(roomNb<10) {
+            roomNb++;
+            nbRooms.setText(String.valueOf(roomNb));
+        }
+        buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        new Handler().postDelayed(() -> buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
+    }
+
+    @OnClick(R.id.less_button)
+    public void onClickListenerButtonLess() {
+        if(roomNb>=1) {
+            roomNb--;
+            nbRooms.setText(String.valueOf(roomNb));
+        }
+
+        buttonLess.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        new Handler().postDelayed(() -> buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
     }
 
     private void configureImagesProperty(){
@@ -129,12 +202,11 @@ public class ConfigureEditFragment {
                     = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
             // Create adapter passing in the sample user data
-            adapter=editFragment.getAdapter();
-            adapter = new ImagesEditAdapter(listImages,propertyInit,context, editFragment.getCallbackImageSelect(), editFragment.getMainActivity());
+            adapter = new ImagesEditAdapter(listImages,property,context, editFragment.getCallbackImageSelect(), baseActivity);
             editFragment.setAdapter(adapter);
 
             // Attach the adapter to the recyclerview to populate items
-            recyclerView = editFragment.getRecyclerView();
+            recyclerView= view.findViewById(R.id.list_images_property_edit);
             recyclerView.setAdapter(adapter);
 
             // Set layout manager to position the items
@@ -143,10 +215,10 @@ public class ConfigureEditFragment {
     }
 
     private void configureSwitchSold(){
-        if(propertyInit.getSold())
-            editFragment.switchSold.setChecked(true);
+        if(property.getSold())
+            switchSold.setChecked(true);
         else
-            editFragment.switchSold.setChecked(false);
+            switchSold.setChecked(false);
     }
 }
 

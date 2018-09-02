@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,14 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
 import com.openclassrooms.realestatemanager.Models.SimulationTool;
@@ -153,7 +151,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         }
 
         // set the price
-        String price = property.getPrice().toString() + " $";
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        String price = formatter.format(property.getPrice());
         priceView.setText(price);
 
         // set the surface
@@ -217,4 +216,5 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
             Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, baseActivity);
         }
     }
+
 }

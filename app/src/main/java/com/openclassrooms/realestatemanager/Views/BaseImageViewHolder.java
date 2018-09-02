@@ -1,8 +1,10 @@
 package com.openclassrooms.realestatemanager.Views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
@@ -46,7 +50,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     protected ImagesEditAdapter adapter;
     protected Boolean inEdition;
     protected Boolean changesOngoing;
-    protected MainActivity mainActivity;
+    protected BaseActivity baseActivity;
 
     public BaseImageViewHolder(View itemView) {
         super(itemView);
@@ -58,14 +62,14 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     // ------------------------------------- CONFIGURATION VIEW ------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, MainActivity mainActivity) {
+    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, BaseActivity baseActivity) {
         // Initialize variables
         this.context=context;
         this.adapter=adapter;
         this.inEdition = inEdition;
         this.changesOngoing=changesOngoing;
         this.database = PropertyDatabase.getInstance(context);
-        this.mainActivity = mainActivity;
+        this.baseActivity = baseActivity;
 
         //extraPanel.setX(-600);
         //extraPanel.setVisibility(View.GONE);
@@ -73,7 +77,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
 
     public void setExtraImage(String imagePath){
         this.imagePath=imagePath;
-        Utils.setImageBitmapInView(imagePath, image, mainActivity);
+        Utils.setImageBitmapInView(imagePath, image, baseActivity);
         addPhotoButton.setVisibility(View.GONE);
     }
 
@@ -110,15 +114,6 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
         view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_expanded);
         extraPanel.setVisibility(View.VISIBLE);
 
-
-
-        /*ObjectAnimator animX = ObjectAnimator.ofFloat(extraPanel, View.TRANSLATION_X,
-                -1*extraPanel.getWidth(), 0);
-
-animX.setDuration(1000);
-        animX.start();*/
-
-
         adapter.setPositionEdited(getAdapterPosition());
     }
 
@@ -135,14 +130,6 @@ animX.setDuration(1000);
         view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_reduced);
         extraPanel.setVisibility(View.GONE);
 
-/*
-        ObjectAnimator animX = ObjectAnimator.ofFloat(extraPanel, View.TRANSLATION_X,
-                 extraPanel.getWidth(), 0);
-
-        animX.setDuration(1000);
-        animX.start();
-*/
-
         adapter.setPositionEdited(-1);
     }
 
@@ -154,3 +141,19 @@ animX.setDuration(1000);
         return view;
     }
 }
+
+
+/*
+        ObjectAnimator animX = ObjectAnimator.ofFloat(extraPanel, View.TRANSLATION_X,
+                 extraPanel.getWidth(), 0);
+
+        animX.setDuration(1000);
+        animX.start();
+*/
+
+
+        /*ObjectAnimator animX = ObjectAnimator.ofFloat(extraPanel, View.TRANSLATION_X,
+                -1*extraPanel.getWidth(), 0);
+
+animX.setDuration(1000);
+        animX.start();*/

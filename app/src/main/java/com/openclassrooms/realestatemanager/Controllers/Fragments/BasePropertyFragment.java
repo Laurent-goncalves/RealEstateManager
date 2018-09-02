@@ -1,15 +1,14 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
+import android.app.Fragment;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
@@ -18,9 +17,6 @@ import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
-import com.openclassrooms.realestatemanager.Utils.Utils;
-
-import java.util.ArrayList;
 import java.util.List;
 
 

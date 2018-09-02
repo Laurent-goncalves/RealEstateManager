@@ -3,6 +3,8 @@ package com.openclassrooms.realestatemanager.Views;
 import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
+
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
@@ -26,9 +28,9 @@ public class ImageUpdateViewHolder extends BaseImageViewHolder {
     // ---------------------------------------------------------------------------------------------------
 
     @Override
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, MainActivity mainActivity) {
+    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, BaseActivity baseActivity) {
 
-        super.configureImagesViews(imageProperty, adapter, inEdition, changesOngoing, context, mainActivity);
+        super.configureImagesViews(imageProperty, adapter, inEdition, changesOngoing, context, baseActivity);
 
         this.imageProperty=imageProperty;
 

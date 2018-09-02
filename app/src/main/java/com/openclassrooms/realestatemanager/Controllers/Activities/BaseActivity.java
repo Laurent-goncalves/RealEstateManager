@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +39,15 @@ public class BaseActivity extends AppCompatActivity {
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     protected static final String LIST_PROPERTIES_JSON = "list_properties_json";
     protected final static String EXTRA_PROPERTY_ID = "property_id";
+
+    protected final static String BUNDLE_FRAG = "fragment_displayed";
+    protected final static String BUNDLE_PROP_ID = "property_id";
+    protected final static String LIST_FRAG = "fragment_list";
+    protected final static String SEARCH_FRAG = "fragment_search";
+    protected final static String DISPLAY_FRAG = "fragment_display";
+    protected final static String EDIT_FRAG = "fragment_edit";
+
+    protected String fragmentDisplayed;
     @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
     protected List<Property> listProperties;
@@ -45,7 +55,7 @@ public class BaseActivity extends AppCompatActivity {
     protected EditFragment editFragment;
     protected DisplayFragment displayFragment;
     protected ListPropertiesFragment listPropertiesFragment;
-    protected int currentPositionDisplayed;
+    protected int idProperty;
     protected int viewHolderPosition;
 
     @Override
@@ -54,9 +64,32 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_FRAG,fragmentDisplayed);
+        outState.putInt(BUNDLE_PROP_ID,idProperty);
+    }
+
+    protected void showSaveInstanceFragment(Bundle bundle){
+
+        String frag = bundle.getString(BUNDLE_FRAG,null);
+
+        if(frag !=null){
+            switch (frag) {
+                case LIST_FRAG:
+                    configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+                    break;
+                case SEARCH_FRAG:
+                    configureAndShowSearchFragment();
+                    break;
+                case DISPLAY_FRAG:
+                    configureAndShowDisplayFragment(bundle.getInt(BUNDLE_PROP_ID));
+                    break;
+                case EDIT_FRAG:
+                    configureAndShowEditFragment(bundle.getInt(BUNDLE_PROP_ID));
+                    break;
+            }
+        }
     }
 
     public void changeToDisplayMode(int propertyId){
@@ -84,8 +117,9 @@ public class BaseActivity extends AppCompatActivity {
         // change icons toolbar
         toolbarManager.setIconsToolbarDisplayMode();
 
-        currentPositionDisplayed = propertyId; // TODO check if necessary
+        idProperty = propertyId;
         displayFragment = new DisplayFragment();
+        fragmentDisplayed = DISPLAY_FRAG;
 
         // create a bundle
         Bundle bundle = new Bundle();
@@ -107,12 +141,14 @@ public class BaseActivity extends AppCompatActivity {
         toolbarManager.setIconsToolbarEditMode();
 
         editFragment = new EditFragment();
+        fragmentDisplayed = EDIT_FRAG;
+        idProperty = propertyId;
 
         // create a bundle
         Bundle bundle = new Bundle();
         bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
 
-        if(currentPositionDisplayed==-1){
+        if(idProperty==-1){
             bundle.putString(MODE_SELECTED, MODE_NEW);
         } else {
             bundle.putString(MODE_SELECTED, MODE_UPDATE);
@@ -131,6 +167,7 @@ public class BaseActivity extends AppCompatActivity {
         toolbarManager.setIconsToolbarListPropertiesMode();
 
         listPropertiesFragment = new ListPropertiesFragment();
+        fragmentDisplayed = LIST_FRAG;
 
         Bundle bundle = new Bundle();
 
@@ -153,6 +190,8 @@ public class BaseActivity extends AppCompatActivity {
 
     public void configureAndShowSearchFragment(){
 
+        fragmentDisplayed = SEARCH_FRAG;
+
         toolbarManager.setIconsToolbarSearchPropertiesMode();
 
         SearchFragment searchFragment = new SearchFragment();
@@ -160,7 +199,6 @@ public class BaseActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.replace(R.id.fragment_position, searchFragment);
         fragmentTransaction.commit();
-
     }
 
     public void launchMapsActivity(){
@@ -243,11 +281,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public int getCurrentPropertyDisplayed(){
-        return currentPositionDisplayed;
+        return idProperty;
     }
 
-    public void setCurrentPositionDisplayed(int currentPositionDisplayed) {
-        this.currentPositionDisplayed = currentPositionDisplayed;
+    public void setCurrentPositionDisplayed(int idProperty) {
+        this.idProperty = idProperty;
     }
 
     public ToolbarManager getToolbarManager() {

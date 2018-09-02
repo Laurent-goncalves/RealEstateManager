@@ -94,6 +94,7 @@
         android:textColor="@color/colorAccent"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:text="@string/description"/>
 
     <!-- SURFACE -->
@@ -368,6 +369,7 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/static_mapview" />
 
+    <!-- BUTTONS -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -382,7 +384,7 @@
             android:layout_height="40dp"
             android:padding="3dp"
             android:scaleType="centerCrop"
-            android:background="#58ACFA"
+            android:background="@color/colorAccent"
             android:layout_alignParentStart="true"
             android:src="@drawable/calculator"
             android:contentDescription="@string/button_simulation" />
