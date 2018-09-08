@@ -17,6 +17,7 @@ public class MainActivity extends BaseActivity  {
         ButterKnife.bind(this);
 
         // Configure toolbar
+        setModeDevice();
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configureNavigationDrawer(this);
 

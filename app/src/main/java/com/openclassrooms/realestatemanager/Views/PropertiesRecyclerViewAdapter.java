@@ -19,12 +19,14 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     private Context context;
     private CallbackListProperties callbackListProperties;
     private BaseActivity baseActivity;
+    private int propertySelected;
 
     public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, CallbackListProperties callbackListProperties, BaseActivity baseActivity) {
         this.listProperties = listProperties;
         this.context=context;
         this.callbackListProperties=callbackListProperties;
         this.baseActivity = baseActivity;
+        this.propertySelected=-1;
     }
 
     @NonNull
@@ -37,9 +39,24 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
     @Override
     public void onBindViewHolder(@NonNull PropertyViewHolder holder, int position) {
+
         if(listProperties!=null)
             holder.configurePropertiesViews(listProperties.get(position), baseActivity);
-        holder.propertyLayout.setOnClickListener(v -> callbackListProperties.showDisplayFragment(position));
+
+        holder.propertyLayout.setOnClickListener(v -> {
+                callbackListProperties.showDisplayFragment(position);
+                propertySelected = holder.getAdapterPosition();
+                notifyDataSetChanged();
+            }
+        );
+
+        if(position != propertySelected){
+            holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorAccent));
+            holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
+        } else {
+            holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorWhite));
+            holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+        }
     }
 
     @Override

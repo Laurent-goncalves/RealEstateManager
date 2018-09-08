@@ -1,14 +1,11 @@
 package com.openclassrooms.realestatemanager.Views;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
@@ -52,5 +49,13 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
 
         // Main Image
         Utils.setImageBitmapInView(property.getMainImagePath(),mainImage, baseActivity);
+    }
+
+    public LinearLayout getPropertyLayout() {
+        return propertyLayout;
+    }
+
+    public TextView getCostTextView() {
+        return costTextView;
     }
 }

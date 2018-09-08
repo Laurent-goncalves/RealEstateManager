@@ -7,6 +7,8 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.provider.MediaStore;
@@ -79,8 +81,21 @@ public class Utils {
      * @return
      */
     public static Boolean isInternetAvailable(Context context){
-        WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        return wifi.isWifiEnabled();
+
+        WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo netInfo = null;
+        if (cm != null) {
+            netInfo = cm.getActiveNetworkInfo();
+        }
+
+        if(wifi!=null)
+            return wifi.isWifiEnabled() || (netInfo != null && netInfo.isConnectedOrConnecting());
+        else
+            return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {

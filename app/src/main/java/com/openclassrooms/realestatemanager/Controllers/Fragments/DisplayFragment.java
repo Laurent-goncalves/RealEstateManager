@@ -131,6 +131,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     private void configureViews() {
 
         // set the main image
+        if(property.getMainImagePath()!=null)
         Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
 
         // set the type of property

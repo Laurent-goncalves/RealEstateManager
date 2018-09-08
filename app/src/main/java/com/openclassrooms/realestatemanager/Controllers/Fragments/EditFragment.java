@@ -113,8 +113,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
-        new CheckAndSaveEdit(this, context);
-        baseActivity.changeToDisplayMode(idProperty);
+        new CheckAndSaveEdit(this, context, baseActivity);
     }
 
     @OnClick(R.id.buttonCancel)

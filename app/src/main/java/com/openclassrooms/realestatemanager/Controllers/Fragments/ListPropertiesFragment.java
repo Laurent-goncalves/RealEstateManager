@@ -37,9 +37,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     public ListPropertiesFragment() {
     }
 
+    private Property PROPERTY_DEMO = new Property(0, "Appartment", 125000d,30.25d,1,
+            "description","address","School, Subway",false,"01/06/2018","02/06/2018",0d,0d,"Eric",null,null);
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(null);
 
         callbackListProperties = this;
         baseActivity = (BaseActivity) getActivity();
@@ -58,7 +62,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
             }
         }
 
+        for(int i = 0; i<10; i++){
+            PROPERTY_DEMO.setPrice(PROPERTY_DEMO.getPrice()+1);
+            listProperties.add(PROPERTY_DEMO);
+        }
+
         configureListProperties();
+            baseActivity.configureAndShowDisplayFragment(listProperties.get(0).getId());
     }
 
     @Override

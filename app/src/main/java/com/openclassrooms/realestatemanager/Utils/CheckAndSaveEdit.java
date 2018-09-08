@@ -4,6 +4,8 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -24,10 +26,12 @@ public class CheckAndSaveEdit {
     private int idProp;
     private PropertyContentProvider propertyContentProvider;
     private ImageContentProvider imageContentProvider;
+    private BaseActivity baseActivity;
 
-    public CheckAndSaveEdit(EditFragment editFragment, Context context) {
+    public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivity baseActivity) {
         this.editFragment = editFragment;
         this.context=context;
+        this.baseActivity=baseActivity;
         idProp = editFragment.getProperty().getId();
         newlistImages = editFragment.getListImages();
         oldlistImages = new ArrayList<>();
@@ -53,6 +57,9 @@ public class CheckAndSaveEdit {
             // Update the list of images
             updateListImagesPropertyInDatabase(idProp);
 
+            // display property
+            baseActivity.changeToDisplayMode(idProp);
+
         } else {
             // insert new property
             final Uri uri = propertyContentProvider.insert(PropertyContentProvider.URI_ITEM,
@@ -60,7 +67,12 @@ public class CheckAndSaveEdit {
 
             // insert new images
             insertListImagesPropertyInDatabase(uri);
+
+            // display property
+            baseActivity.changeToDisplayMode((int) ContentUris.parseId(uri));
         }
+
+
     }
 
     // ------------------------------------------------------------------------------------------------------------

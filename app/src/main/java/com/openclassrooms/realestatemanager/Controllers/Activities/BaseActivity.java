@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -25,7 +27,6 @@ import java.util.List;
 import butterknife.BindView;
 
 
-
 public class BaseActivity extends AppCompatActivity {
 
     protected static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
@@ -39,14 +40,15 @@ public class BaseActivity extends AppCompatActivity {
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     protected static final String LIST_PROPERTIES_JSON = "list_properties_json";
     protected final static String EXTRA_PROPERTY_ID = "property_id";
-
     protected final static String BUNDLE_FRAG = "fragment_displayed";
+    protected final static String BUNDLE_DEVICE = "bundle_device";
     protected final static String BUNDLE_PROP_ID = "property_id";
     protected final static String LIST_FRAG = "fragment_list";
     protected final static String SEARCH_FRAG = "fragment_search";
     protected final static String DISPLAY_FRAG = "fragment_display";
     protected final static String EDIT_FRAG = "fragment_edit";
-
+    protected final static String MODE_TABLET = "mode_tablet";
+    protected final static String MODE_PHONE = "mode_phone";
     protected String fragmentDisplayed;
     @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
@@ -57,22 +59,33 @@ public class BaseActivity extends AppCompatActivity {
     protected ListPropertiesFragment listPropertiesFragment;
     protected int idProperty;
     protected int viewHolderPosition;
+    protected String modeDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    protected void setModeDevice(){
+        if(findViewById(R.id.fragment_list) != null) { // MODE TABLET
+            modeDevice=MODE_TABLET;
+        } else { // MODE PHONE
+            modeDevice=MODE_PHONE;
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(BUNDLE_FRAG,fragmentDisplayed);
+        outState.putString(BUNDLE_DEVICE,modeDevice);
         outState.putInt(BUNDLE_PROP_ID,idProperty);
     }
 
     protected void showSaveInstanceFragment(Bundle bundle){
 
         String frag = bundle.getString(BUNDLE_FRAG,null);
+        modeDevice = bundle.getString(BUNDLE_DEVICE,null);
 
         if(frag !=null){
             switch (frag) {
@@ -115,7 +128,8 @@ public class BaseActivity extends AppCompatActivity {
     public void configureAndShowDisplayFragment(int propertyId){
 
         // change icons toolbar
-        toolbarManager.setIconsToolbarDisplayMode();
+        if(toolbarManager!=null)
+            toolbarManager.setIconsToolbarDisplayMode(modeDevice);
 
         idProperty = propertyId;
         displayFragment = new DisplayFragment();
@@ -138,7 +152,7 @@ public class BaseActivity extends AppCompatActivity {
     public void configureAndShowEditFragment(int propertyId){
 
         // change icons toolbar
-        toolbarManager.setIconsToolbarEditMode();
+        toolbarManager.setIconsToolbarEditMode(modeDevice);
 
         editFragment = new EditFragment();
         fragmentDisplayed = EDIT_FRAG;
@@ -164,7 +178,8 @@ public class BaseActivity extends AppCompatActivity {
     public void configureAndShowListPropertiesFragment(String modeSelected, List<Property> listProp){
 
         // change icons toolbar
-        toolbarManager.setIconsToolbarListPropertiesMode();
+        if(toolbarManager!=null)
+            toolbarManager.setIconsToolbarListPropertiesMode(modeDevice);
 
         listPropertiesFragment = new ListPropertiesFragment();
         fragmentDisplayed = LIST_FRAG;
@@ -183,16 +198,22 @@ public class BaseActivity extends AppCompatActivity {
         // configure and show the listPropertiesFragment
         listPropertiesFragment.setArguments(bundle);
 
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment);
-        fragmentTransaction.commit();
+        if(findViewById(R.id.fragment_list) != null){ // MODE TABLET
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_list, listPropertiesFragment);
+            fragmentTransaction.commit();
+        } else { // MODE PHONE
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment);
+            fragmentTransaction.commit();
+        }
     }
 
     public void configureAndShowSearchFragment(){
 
         fragmentDisplayed = SEARCH_FRAG;
 
-        toolbarManager.setIconsToolbarSearchPropertiesMode();
+        toolbarManager.setIconsToolbarSearchPropertiesMode(modeDevice);
 
         SearchFragment searchFragment = new SearchFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
