@@ -1,12 +1,9 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
-
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -19,8 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
@@ -28,18 +23,15 @@ import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.CheckAndSaveEdit;
 import com.openclassrooms.realestatemanager.Utils.ConfigureEditFragment;
-import com.openclassrooms.realestatemanager.Utils.PropertyConstructor;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImageUpdateViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesAddViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
 
 
 public class EditFragment extends BasePropertyFragment implements CallbackImageSelect {
@@ -87,12 +79,12 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
 
-            mode=getArguments().getString(MODE_SELECTED,null);
+            modeSelected=getArguments().getString(MODE_SELECTED,null);
             idProperty=getArguments().getInt(LAST_PROPERTY_SELECTED,-1);
 
-            if(mode!=null){
+            if(modeSelected!=null){
 
-                if(mode.equals("UPDATE")){ // mode update property
+                if(modeSelected.equals("UPDATE")){ // mode update property
                     // Recover the property datas
                     recoverProperty(idProperty);
                     recoverImagesProperty(idProperty);
@@ -113,7 +105,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
-        new CheckAndSaveEdit(this, context, baseActivity);
+        new CheckAndSaveEdit(this, context, baseActivity, modeSelected);
     }
 
     @OnClick(R.id.buttonCancel)
@@ -121,7 +113,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         if(property.getId()==-1)
             baseActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY,null);
         else
-            baseActivity.changeToDisplayMode(idProperty);
+            baseActivity.changeToDisplayMode(modeSelected, idProperty);
     }
 
     @OnClick(R.id.main_image_selector)
@@ -227,7 +219,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     }
 
     public String getMode() {
-        return mode;
+        return modeSelected;
     }
 
     public String getInterestPoints() {

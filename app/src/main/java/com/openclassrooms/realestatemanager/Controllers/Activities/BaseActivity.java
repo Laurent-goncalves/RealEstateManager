@@ -1,6 +1,7 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
@@ -35,20 +37,25 @@ public class BaseActivity extends AppCompatActivity {
     protected static final String MODE_NEW = "NEW";
     protected static final String MODE_UPDATE = "UPDATE";
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
+
+    protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
     protected static final String MODE_SEARCH = "mode_search";
     protected static final String MODE_DISPLAY = "mode_display";
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     protected static final String LIST_PROPERTIES_JSON = "list_properties_json";
     protected final static String EXTRA_PROPERTY_ID = "property_id";
-    protected final static String BUNDLE_FRAG = "fragment_displayed";
-    protected final static String BUNDLE_DEVICE = "bundle_device";
     protected final static String BUNDLE_PROP_ID = "property_id";
+
+    protected final static String BUNDLE_FRAG = "fragment_displayed";
     protected final static String LIST_FRAG = "fragment_list";
     protected final static String SEARCH_FRAG = "fragment_search";
     protected final static String DISPLAY_FRAG = "fragment_display";
     protected final static String EDIT_FRAG = "fragment_edit";
+
+    protected final static String BUNDLE_DEVICE = "bundle_device";
     protected final static String MODE_TABLET = "mode_tablet";
     protected final static String MODE_PHONE = "mode_phone";
+
     protected String fragmentDisplayed;
     @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
@@ -60,6 +67,7 @@ public class BaseActivity extends AppCompatActivity {
     protected int idProperty;
     protected int viewHolderPosition;
     protected String modeDevice;
+    protected String modeSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +85,17 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(BUNDLE_FRAG,fragmentDisplayed);
-        outState.putString(BUNDLE_DEVICE,modeDevice);
-        outState.putInt(BUNDLE_PROP_ID,idProperty);
+        outState.putString(BUNDLE_FRAG, fragmentDisplayed);
+        outState.putString(BUNDLE_DEVICE, modeDevice);
+        outState.putString(BUNDLE_MODE_SELECTED, modeSelected);
+        outState.putInt(BUNDLE_PROP_ID, idProperty);
     }
 
     protected void showSaveInstanceFragment(Bundle bundle){
 
         String frag = bundle.getString(BUNDLE_FRAG,null);
         modeDevice = bundle.getString(BUNDLE_DEVICE,null);
+        modeSelected = bundle.getString(BUNDLE_MODE_SELECTED,null);
 
         if(frag !=null){
             switch (frag) {
@@ -96,7 +106,7 @@ public class BaseActivity extends AppCompatActivity {
                     configureAndShowSearchFragment();
                     break;
                 case DISPLAY_FRAG:
-                    configureAndShowDisplayFragment(bundle.getInt(BUNDLE_PROP_ID));
+                    configureAndShowDisplayFragment(modeSelected, bundle.getInt(BUNDLE_PROP_ID));
                     break;
                 case EDIT_FRAG:
                     configureAndShowEditFragment(bundle.getInt(BUNDLE_PROP_ID));
@@ -105,14 +115,14 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void changeToDisplayMode(int propertyId){
+    public void changeToDisplayMode(String modeSelected, int propertyId){
 
         // remove the editFragment
         if(editFragment!=null)
             this.getFragmentManager().beginTransaction().remove(editFragment).commit();
 
         // show displayFragment
-        configureAndShowDisplayFragment(propertyId);
+        configureAndShowDisplayFragment(modeSelected, propertyId);
     }
 
     public void changeToEditMode(int propertyId){
@@ -125,7 +135,18 @@ public class BaseActivity extends AppCompatActivity {
         configureAndShowEditFragment(propertyId);
     }
 
-    public void configureAndShowDisplayFragment(int propertyId){
+    public void returnToSearchCriteria(){
+
+        // remove the editFragment
+        if(displayFragment!=null)
+            this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.show(fragmentManager.findFragmentByTag(SEARCH_FRAG)).commit();
+    }
+
+    public void configureAndShowDisplayFragment(String modeSelected, int propertyId){
 
         // change icons toolbar
         if(toolbarManager!=null)
@@ -140,7 +161,8 @@ public class BaseActivity extends AppCompatActivity {
 
         // Add the property Id to the bundle
         bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
-        bundle.putBoolean(MODE_DISPLAY_MAPS,false);
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
+        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
 
         // configure and show the editFragment
         displayFragment.setArguments(bundle);
@@ -187,9 +209,14 @@ public class BaseActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
 
         if(modeSelected.equals(MODE_DISPLAY))
-            bundle.putString(MODE_SELECTED,MODE_DISPLAY);
-        else {
-            bundle.putString(MODE_SELECTED,MODE_SEARCH);
+            bundle.putString(BUNDLE_MODE_SELECTED,MODE_DISPLAY);
+        else if(modeSelected.equals(MODE_SEARCH)) {
+            bundle.putString(BUNDLE_MODE_SELECTED,MODE_SEARCH);
+            Gson gson = new Gson();
+            String listPropertiesJson = gson.toJson(listProp);
+            bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
+        } else if (modeSelected.equals(MODE_DISPLAY_MAPS)) {
+            bundle.putString(BUNDLE_MODE_SELECTED,MODE_DISPLAY_MAPS);
             Gson gson = new Gson();
             String listPropertiesJson = gson.toJson(listProp);
             bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
@@ -198,7 +225,7 @@ public class BaseActivity extends AppCompatActivity {
         // configure and show the listPropertiesFragment
         listPropertiesFragment.setArguments(bundle);
 
-        if(findViewById(R.id.fragment_list) != null){ // MODE TABLET
+        if(modeDevice.equals(MODE_TABLET)){ // MODE TABLET
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.fragment_list, listPropertiesFragment);
             fragmentTransaction.commit();
@@ -217,7 +244,7 @@ public class BaseActivity extends AppCompatActivity {
 
         SearchFragment searchFragment = new SearchFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.addToBackStack(SEARCH_FRAG);
         fragmentTransaction.replace(R.id.fragment_position, searchFragment);
         fragmentTransaction.commit();
     }
@@ -248,6 +275,11 @@ public class BaseActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void displayError(String error){
+        Toast toast = Toast.makeText(getApplicationContext(),error,Toast.LENGTH_LONG);
+        toast.show();
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -299,6 +331,10 @@ public class BaseActivity extends AppCompatActivity {
 
     public EditFragment getEditFragment() {
         return editFragment;
+    }
+
+    public ListPropertiesFragment getListPropertiesFragment() {
+        return listPropertiesFragment;
     }
 
     public int getCurrentPropertyDisplayed(){

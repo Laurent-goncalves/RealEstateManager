@@ -1,10 +1,12 @@
 package com.openclassrooms.realestatemanager.Views;
 
+
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
@@ -30,6 +32,20 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
         // set image
         Utils.setImageBitmapInView(imageProperty.getImagePath(),image, baseActivity);
 
+        // set title and layout
+        finalizeLayoutImage(imageProperty, positionSelected);
+    }
+
+    public void configureImagesViews(ImageProperty imageProperty, MapsActivity mapsActivity, int positionSelected) {
+
+        // set image
+        Utils.setImageBitmapInView(imageProperty.getImagePath(),image, mapsActivity);
+
+        // set title and layout
+        finalizeLayoutImage(imageProperty, positionSelected);
+    }
+
+    private void finalizeLayoutImage(ImageProperty imageProperty, int positionSelected){
         // set title
         String title = imageProperty.getDescription();
         if(title==null)
@@ -42,6 +58,7 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
             view.setBackgroundResource(R.drawable.background_image_selected);
         else
             view.setBackground(null);
-
     }
+
+
 }

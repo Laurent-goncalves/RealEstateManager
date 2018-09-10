@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -31,6 +32,7 @@ import com.openclassrooms.realestatemanager.Models.Provider.MapsContentProvider;
 import com.openclassrooms.realestatemanager.R;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class GoogleMapUtils {
@@ -41,16 +43,20 @@ public class GoogleMapUtils {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private final static String EXTRA_LAT_CURRENT = "latitude_current_location";
     private final static String EXTRA_LONG_CURRENT = "longitude_current_location";
-    private final static String EXTRA_PROPERTY_ID = "property_id";
+    private final static String MODE_TABLET = "mode_tablet";
+    private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private boolean permissionGranted = true;
     private LatLng currentLatLng;
     private MapsActivity mapsActivity;
     private SharedPreferences sharedPreferences;
     private GoogleMapUtils mGoogleMapUtils;
     private List<Property> listProperties;
+    private String modeDevice;
+    List<Marker> listMarkers;
 
-    public GoogleMapUtils(Context context, MapsActivity mapsActivity) {
+    public GoogleMapUtils(Context context, String modeDevice, MapsActivity mapsActivity) {
         this.context = context;
+        this.modeDevice=modeDevice;
         this.mapsActivity=mapsActivity;
         this.mGoogleMapUtils=this;
         sharedPreferences = mapsActivity.getSharedPreferences();
@@ -200,17 +206,20 @@ public class GoogleMapUtils {
 
     private void updateMarkers(List<Property> listProp){
         createMarkerForEachProperty(listProp);
-        create_marker_listener();
+        createMarkerListener();
+
+        if(listProp.size()>0){
+            centerToMarker(listProp.get(0).getId());
+        }
     }
 
-    private void create_marker_listener(){
+    private void createMarkerListener(){
 
         mMap.setOnMarkerClickListener(marker -> {
 
             int id = (int) marker.getTag();
-            Intent intent = new Intent(mapsActivity, MainActivity.class);
-            intent.putExtra(EXTRA_PROPERTY_ID, id);
-            mapsActivity.startActivity(intent);
+            centerToMarker(id);
+            mapsActivity.changeToDisplayMode(id);
 
             return false;
         });
@@ -218,6 +227,7 @@ public class GoogleMapUtils {
 
     private void createMarkerForEachProperty(List<Property> listProperties){
 
+        listMarkers = new ArrayList<Marker>();
         mMap.clear();
         MarkerOptions markerOptions;
 
@@ -229,13 +239,15 @@ public class GoogleMapUtils {
                     .position(position);
 
             Marker marker = mMap.addMarker(markerOptions);
+            listMarkers.add(marker);
+
             marker.setTag(property.getId());
         }
     }
 
     private void getPropertiesCloseToTarget() {
 
-        List<Property> listProperties = new ArrayList<>();
+        listProperties = new ArrayList<>();
 
         MapsContentProvider mapsContentProvider = new MapsContentProvider();
         mapsContentProvider.setParametersQuery(mapsActivity.getApplicationContext());
@@ -252,6 +264,33 @@ public class GoogleMapUtils {
         }
 
         updateMarkers(listProperties);
+        mapsActivity.setListProperties(listProperties);
         mapsActivity.getProgressBar().setVisibility(View.GONE);
+
+        if(modeDevice.equals(MODE_TABLET)){
+            mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS,listProperties);
+        }
+    }
+
+    public void centerToMarker(int idProp){
+
+        for(Marker marker : listMarkers){
+            if(marker.getTag().toString().equals(String.valueOf(idProp)))
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            else
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+
+        Property property = Utils.getPropertyFromList(idProp,listProperties);
+
+        if(property!=null){
+            LatLng position = new LatLng(property.getLat(),property.getLng());
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+        }
+    }
+
+    public GoogleMap getMap() {
+        return mMap;
     }
 }

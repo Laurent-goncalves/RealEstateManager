@@ -49,6 +49,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     @BindView(R.id.sold_date_layout) LinearLayout soldDateLayout;
     @BindView(R.id.buttonReturn) Button buttonReturn;
     private CallbackImageChange callbackImageChange;
+    private int idProp;
+    private ImagesDisplayAdapter adapter;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -69,21 +71,17 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
 
-            // if the mode of display is for mapsActivity, remove button return and icons in toolbar
-            if(getArguments().getBoolean(MODE_DISPLAY_MAPS)) {
-                mapsActivity = (MapsActivity) getActivity();
-                this.context= mapsActivity.getApplicationContext();
-                mode = MODE_DISPLAY_MAPS;
-                buttonReturn.setText(context.getResources().getString(R.string.return_to_the_map));
-            } else {
-                baseActivity = (BaseActivity) getActivity();
-                this.context= baseActivity.getApplicationContext();
-                mode = MODE_DISPLAY;
-                buttonReturn.setText(context.getResources().getString(R.string.return_to_the_list));
-            }
+            // recover mode selected (search, list, map)
+            recoverModeSelected();
+
+            // recover mode of device (phone or tablet)
+            recoverDeviceMode();
+
+            // configure button return
+            configureButtonReturn();
 
             // Recover id of property to display
-            int idProp = getArguments().getInt(LAST_PROPERTY_SELECTED);
+            idProp = getArguments().getInt(LAST_PROPERTY_SELECTED);
 
             // Recover the property datas
             recoverProperty(idProp);
@@ -92,19 +90,39 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
             recoverImagesProperty(idProp);
         }
 
-        configureViews();
-        configureImagesProperty();
+        if(property!=null){
+            configureViews();
+            configureImagesProperty();
+        }
 
         return view;
     }
 
     @OnClick(R.id.buttonReturn)
     public void returnToList(){
-        if(mode!=null) {
-            if (mode.equals(MODE_DISPLAY_MAPS)) {
-                mapsActivity.changeToMapMode();
-            } else {
-                baseActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+
+        if(modeDevice.equals(MODE_TABLET)){ // ----------- TABLET MODE
+
+            switch(modeSelected){
+                case MODE_SEARCH:
+                    baseActivity.returnToSearchCriteria();
+                    break;
+                case MODE_DISPLAY_MAPS:
+                    mapsActivity.changeToMapMode(idProp);
+                    break;
+            }
+        } else {     // ----------- PHONE MODE
+            switch (modeSelected) {
+
+                case MODE_DISPLAY:
+                    baseActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+                    break;
+                case MODE_SEARCH:
+                    baseActivity.returnToSearchCriteria();
+                    break;
+                case MODE_DISPLAY_MAPS:
+                    mapsActivity.changeToMapMode(idProp);
+                    break;
             }
         }
     }
@@ -128,11 +146,23 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     // ---------------------------------  CONFIGURE VIEWS  -----------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
+    private void configureButtonReturn(){
+
+        if(modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_DISPLAY))
+            buttonReturn.setVisibility(View.GONE);
+        else {
+            buttonReturn.setVisibility(View.VISIBLE);
+            buttonReturn.setText(buttonReturnText);
+        }
+    }
+
     private void configureViews() {
 
         // set the main image
-        if(property.getMainImagePath()!=null)
-        Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
+        if(property.getMainImagePath()!=null && baseActivity!=null)
+            Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
+        else if (property.getMainImagePath()!=null && mapsActivity!=null)
+            Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, mapsActivity);
 
         // set the type of property
         String typeProp = property.getType();
@@ -202,7 +232,10 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                         = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
                 // Create adapter passing in the sample user data
-                ImagesDisplayAdapter adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, baseActivity);
+                if(baseActivity!=null)
+                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, baseActivity);
+                else if(mapsActivity!=null)
+                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, mapsActivity);
 
                 // Attach the adapter to the recyclerview to populate items
                 listImagesView.setAdapter(adapter);
@@ -213,9 +246,10 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     }
 
     public void changeMainImage(int position){
-        if(listImages.get(position)!=null){
+        if(listImages.get(position)!=null && baseActivity!=null)
             Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, baseActivity);
-        }
+        else if(listImages.get(position)!=null && mapsActivity!=null)
+            Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, mapsActivity);
     }
 
 }

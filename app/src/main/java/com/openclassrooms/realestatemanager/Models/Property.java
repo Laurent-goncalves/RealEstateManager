@@ -43,6 +43,7 @@ public class Property {
     private Double Lng;
     private byte[] map;
     private String mainImagePath;
+    private transient Boolean selected;
 
     public Property(int id, String type, Double price, Double surface, int roomNumber, String description, String address,
                     String interestPoints, Boolean sold, String dateStart, String dateSold, Double Lat, Double Lng,
@@ -194,6 +195,14 @@ public class Property {
 
     public void setMainImagePath(String mainImagePath) {
         this.mainImagePath = mainImagePath;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
     }
 
     // --- UTILS ---

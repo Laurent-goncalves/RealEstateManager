@@ -11,9 +11,10 @@ import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
+import com.openclassrooms.realestatemanager.R;
+
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class CheckAndSaveEdit {
 
@@ -27,21 +28,62 @@ public class CheckAndSaveEdit {
     private PropertyContentProvider propertyContentProvider;
     private ImageContentProvider imageContentProvider;
     private BaseActivity baseActivity;
+    private String modeSelected;
 
-    public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivity baseActivity) {
+    public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivity baseActivity, String modeSelected) {
         this.editFragment = editFragment;
         this.context=context;
         this.baseActivity=baseActivity;
+        this.modeSelected=modeSelected;
         idProp = editFragment.getProperty().getId();
         newlistImages = editFragment.getListImages();
         oldlistImages = new ArrayList<>();
-        SaveInfoEditFragment();
-    }
-
-    private void SaveInfoEditFragment(){
 
         // Create the property to save
         createPropertyToSave();
+
+        if(checkInformation()) // if fragment with enough information
+            SaveInfoEditFragment();
+    }
+
+    private Boolean checkInformation(){
+
+        Boolean answer = false;
+
+        if(propertyToSave.getPrice() > 0){
+            if(propertyToSave.getSurface() > 0){
+                if(propertyToSave.getDateStart()!=null){
+                    if(propertyToSave.getDateStart().length()>0){
+                        if(propertyToSave.getRoomNumber()>0){
+                            if(propertyToSave.getDescription()!=null) {
+                                if (propertyToSave.getDescription().length()>0) {
+                                    if(propertyToSave.getMainImagePath()!=null){
+                                        if(propertyToSave.getMainImagePath().length()> 0){
+                                            answer = true;
+                                        } else
+                                            baseActivity.displayError(context.getResources().getString(R.string.check_main_image));
+                                    } else
+                                        baseActivity.displayError(context.getResources().getString(R.string.check_main_image));
+                                } else
+                                    baseActivity.displayError(context.getResources().getString(R.string.check_description));
+                            } else
+                                baseActivity.displayError(context.getResources().getString(R.string.check_description));
+                        } else
+                            baseActivity.displayError(context.getResources().getString(R.string.check_room_number));
+                    } else
+                        baseActivity.displayError(context.getResources().getString(R.string.check_date_publish));
+                } else
+                    baseActivity.displayError(context.getResources().getString(R.string.check_date_publish));
+            } else
+                baseActivity.displayError(context.getResources().getString(R.string.check_surface));
+        } else
+            baseActivity.displayError(context.getResources().getString(R.string.check_price));
+
+
+        return answer;
+    }
+
+    private void SaveInfoEditFragment(){
 
         // Create contentProviders
         createContentProviders();
@@ -57,8 +99,9 @@ public class CheckAndSaveEdit {
             // Update the list of images
             updateListImagesPropertyInDatabase(idProp);
 
-            // display property
-            baseActivity.changeToDisplayMode(idProp);
+            // display property and refresh the list of properties
+            baseActivity.changeToDisplayMode(modeSelected, idProp);
+            baseActivity.getListPropertiesFragment().refresh(idProp);
 
         } else {
             // insert new property
@@ -68,8 +111,9 @@ public class CheckAndSaveEdit {
             // insert new images
             insertListImagesPropertyInDatabase(uri);
 
-            // display property
-            baseActivity.changeToDisplayMode((int) ContentUris.parseId(uri));
+            // display property and refresh the list of properties
+            baseActivity.changeToDisplayMode(modeSelected, (int) ContentUris.parseId(uri));
+            baseActivity.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
         }
 
 
@@ -80,7 +124,6 @@ public class CheckAndSaveEdit {
     // ------------------------------------------------------------------------------------------------------------
 
     private void createPropertyToSave(){
-
         PropertyConstructor propertyConstructor = new PropertyConstructor();
         propertyToSave = propertyConstructor.createPropertyFromViews(editFragment, editFragment.getView());
     }

@@ -202,7 +202,7 @@ public class ConfigureEditFragment {
                     = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
             // Create adapter passing in the sample user data
-            adapter = new ImagesEditAdapter(listImages,property,context, editFragment.getCallbackImageSelect(), baseActivity);
+            adapter = new ImagesEditAdapter(listImages,property, context, editFragment.getCallbackImageSelect(), baseActivity);
             editFragment.setAdapter(adapter);
 
             // Attach the adapter to the recyclerview to populate items

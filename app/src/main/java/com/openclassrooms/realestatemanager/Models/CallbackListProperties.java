@@ -4,4 +4,5 @@ public interface CallbackListProperties {
 
     void showDisplayFragment(int position);
 
+    void changeMarkerMap(int idProp);
 }

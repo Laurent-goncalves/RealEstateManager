@@ -176,13 +176,8 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
     }
 
     public void setIconsToolbarEditMode(String modeDevice){
-        if(modeDevice.equals(MODE_PHONE)){
-            addButton.setVisibility(View.GONE);
-            editButton.setVisibility(View.GONE);
-        } else {
-            addButton.setVisibility(View.VISIBLE);
-            editButton.setVisibility(View.GONE);
-        }
+        addButton.setVisibility(View.GONE);
+        editButton.setVisibility(View.GONE);
     }
 
     public void setIconsToolbarListPropertiesMode(String modeDevice){

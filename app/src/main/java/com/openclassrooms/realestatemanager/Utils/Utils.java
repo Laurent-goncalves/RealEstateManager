@@ -20,6 +20,7 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
@@ -210,7 +211,7 @@ public class Utils {
         return newText;
     }
 
-    private static int getIndexFromList(String type, List<String> list){
+    public static int getIndexFromList(String type, List<String> list){
 
         int index = 0;
 
@@ -221,6 +222,48 @@ public class Utils {
                 else
                     index++;
             }
+        }
+
+        return -1; // no value found
+    }
+
+    public static Property getPropertyFromList(int idProp, List<Property> list){
+
+        if(list!=null && idProp!=-1){
+            for(Property property : list){
+                if(property.getId() == idProp)
+                    return property;
+            }
+        }
+
+        return null; // no value found
+    }
+
+    public static int getIndexPropertyFromList(Property property, List<Property> list){
+
+        int index = 0;
+
+        if(list!=null && property!=null){
+            for(Property prop : list){
+                if(prop.getId() == property.getId())
+                    return index;
+                else
+                    index++;
+            }
+        }
+
+        return -1; // no value found
+    }
+
+    public static int getIdPositionFromList(int id, List<Property> list){
+
+        int index = 0;
+
+        for(Property property : list){
+            if(id == property.getId())
+                return index;
+            else
+                index++;
         }
 
         return -1; // no value found
@@ -283,6 +326,36 @@ public class Utils {
 
             } else {
                 EasyPermissions.requestPermissions(baseActivity, "Access for storage",
+                        101, galleryPermissions);
+            }
+
+        } catch (Exception e) {
+            System.out.println("eee exception = " + e.toString());
+        }
+    }
+
+    public static void setImageBitmapInView(String imagePath, ImageView imageView, MapsActivity mapsActivity){
+
+        try {
+            Bitmap bitmap;
+            if(imagePath==null)
+                imageView.setImageDrawable(mapsActivity.getApplicationContext().getResources().getDrawable(R.drawable.placeholder));
+
+            File f= new File(imagePath);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+            if (EasyPermissions.hasPermissions(mapsActivity, galleryPermissions)) {
+
+                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
+
+                if(bitmap!=null)
+                    imageView.setImageBitmap(bitmap);
+
+            } else {
+                EasyPermissions.requestPermissions(mapsActivity, "Access for storage",
                         101, galleryPermissions);
             }
 

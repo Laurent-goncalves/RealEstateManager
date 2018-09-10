@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
@@ -34,6 +35,7 @@ import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvi
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.GoogleMapUtils;
+import com.openclassrooms.realestatemanager.Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +47,10 @@ import butterknife.ButterKnife;
 
 public class MapsActivity extends BaseActivity {
 
+    private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private SharedPreferences sharedPreferences;
-    @BindView(R.id.fragment_layout) ScrollView mScrollView;
+    @BindView(R.id.fragment_layout) ScrollView displayLayout;
+    @BindView(R.id.fragment_maps_layout) FrameLayout mapsLayout;
     @BindView(R.id.progressBar) ProgressBar progressBar;
     private SupportMapFragment mapFragment;
     private GoogleMapUtils googleMapUtils;
@@ -58,19 +62,27 @@ public class MapsActivity extends BaseActivity {
         setContentView(R.layout.activity_maps);
 
         ButterKnife.bind(this);
+
+        setModeDevice();
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configureNavigationDrawer(this);
 
         sharedPreferences = getSharedPreferences("MAPSPREFERRENCES",MODE_PRIVATE);
 
-        if(savedInstanceState!=null){
+        if(modeDevice.equals(MODE_TABLET)) { // MODE TABLET
+            displayLayout.setVisibility(View.GONE);
+        }
+
+        configureAndShowMap();
+
+        /*if(savedInstanceState!=null){
             showSaveInstanceFragment(savedInstanceState);
         } else
-            configureAndShowMap();
+            configureAndShowMap();*/
     }
 
     @Override
-    public void configureAndShowDisplayFragment(int idProperty){
+    public void configureAndShowDisplayFragment(String modeSelected, int idProperty){
 
         // change icons toolbar
         toolbarManager.setIconsToolbarDisplayMode(modeDevice);
@@ -82,7 +94,8 @@ public class MapsActivity extends BaseActivity {
 
         // Add the property Id to the bundle
         bundle.putInt(LAST_PROPERTY_SELECTED, idProperty);
-        bundle.putBoolean(MODE_DISPLAY_MAPS,false);
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
+        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
 
         // configure and show the editFragment
         displayFragment.setArguments(bundle);
@@ -93,21 +106,37 @@ public class MapsActivity extends BaseActivity {
 
     public void configureAndShowMap() {
         progressBar.setVisibility(View.VISIBLE);
-        googleMapUtils = new GoogleMapUtils(getApplicationContext(), this);
+        googleMapUtils = new GoogleMapUtils(getApplicationContext(), modeDevice,this);
     }
 
-    public void changeToMapMode(){
-        mScrollView.setVisibility(View.GONE);
-        googleMapUtils = new GoogleMapUtils(getApplicationContext(), this);
+    public void changeToMapMode(int idProperty){
+
+        Property property = Utils.getPropertyFromList(idProperty,listProperties);
+
+        // Select property in the list
+        getListPropertiesFragment().refreshListProperties(Utils.getIndexPropertyFromList(property,listProperties));
+
+        // move camera to property location
+        if(property!=null){
+            LatLng position = new LatLng(property.getLat(),property.getLng());
+            googleMapUtils.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+        }
+
+        displayLayout.setVisibility(View.GONE);
+        mapsLayout.setVisibility(View.VISIBLE);
     }
 
-    public void changeToDetailMode(int idProperty){
-        mScrollView.setVisibility(View.VISIBLE);
+    public void changeToDisplayMode(int idProperty){
 
-        getSupportFragmentManager().beginTransaction().
-                remove(getSupportFragmentManager().findFragmentById(R.id.map)).commit();
+        Property property = Utils.getPropertyFromList(idProperty,listProperties);
 
-        configureAndShowDisplayFragment(idProperty);
+        // Select property in the list
+        getListPropertiesFragment().refreshListProperties(Utils.getIndexPropertyFromList(property,listProperties));
+
+        configureAndShowDisplayFragment(MODE_DISPLAY_MAPS, idProperty);
+
+        displayLayout.setVisibility(View.VISIBLE);
+        mapsLayout.setVisibility(View.GONE);
     }
 
     public SharedPreferences getSharedPreferences() {
@@ -116,6 +145,10 @@ public class MapsActivity extends BaseActivity {
 
     public ProgressBar getProgressBar() {
         return progressBar;
+    }
+
+    public GoogleMapUtils getGoogleMapUtils() {
+        return googleMapUtils;
     }
 }
 

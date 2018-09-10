@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/mainactivity_tab_xml"
+    android:id="@+id/searchactivity_tab_xml"
     tools:context="com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity">
 
     <android.support.v4.widget.DrawerLayout
@@ -92,37 +92,42 @@
 
             </android.support.v7.widget.Toolbar>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- FRAGMENT LIST -->
+                <ScrollView
+                    android:layout_width="0dp"
+                    android:layout_weight="35"
+                    android:layout_height="match_parent">
+
+                    <FrameLayout
+                        android:id="@+id/fragment_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </ScrollView>
+
+                <!--  LINE SEPARATOR  -->
+                <View
+                    android:id="@+id/date_line_separator"
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="#dfdfdf"/>
+
+                <!-- FRAGMENT POSITION -->
                 <LinearLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="65"
+                    android:orientation="vertical">
 
-                    <!-- FRAGMENT LIST -->
                     <ScrollView
-                        android:layout_width="0dp"
-                        android:layout_weight="35"
-                        android:layout_height="match_parent">
-
-                        <FrameLayout
-                            android:id="@+id/fragment_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-
-                    </ScrollView>
-
-                    <!--  LINE SEPARATOR  -->
-                    <View
-                        android:id="@+id/date_line_separator"
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"
-                        android:background="#dfdfdf"/>
-
-                    <!-- FRAGMENT POSITION -->
-                    <ScrollView
-                        android:layout_width="0dp"
-                        android:layout_weight="65"
-                        android:layout_height="match_parent">
+                        android:id="@+id/fragment_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
                         <FrameLayout
                             android:id="@+id/fragment_position"
@@ -131,7 +136,28 @@
 
                     </ScrollView>
 
+                    <RelativeLayout
+                        android:id="@+id/relativelayout_return_search_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginEnd="20dp">
+
+                        <Button
+                            android:id="@+id/button_return_search"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/colorPrimary"
+                            android:textColor="@color/colorWhite"
+                            android:layout_alignParentEnd="true"
+                            android:text="@string/return_to_the_search"/>
+
+                    </RelativeLayout>
+
                 </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 

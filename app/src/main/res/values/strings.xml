@@ -74,6 +74,14 @@
     <string name="extra_images">Extra images</string>
     <string name="ok">OK</string>
 
+    <string name="check_price">Please enter a price above 0.</string>
+    <string name="check_surface">Please enter a surface above 0.</string>
+    <string name="check_date_publish">Please enter a date of publishing.</string>
+    <string name="check_room_number">Please enter a number of rooms above 0.</string>
+    <string name="check_description">Please enter a description.</string>
+    <string name="check_main_image">Please select a main image for the property.</string>
+
+
     <!-- DISPLAY FRAGMENT-->
     <string name="interest_rate">Interest rate</string>
     <string name="duration_years">Duration (years)</string>
@@ -83,6 +91,7 @@
     <string name="simulation_calculation_monthly_payment">SIMULATION CALCULATION MONTHLY PAYMENT</string>
     <string name="return_to_the_list">Return to the list</string>
     <string name="return_to_the_map">Return to the map</string>
+    <string name="return_to_search_criteria">Return to search criteria</string>
 
     <!-- SEARCH FRAGMENT-->
     <string name="radius">1000</string>

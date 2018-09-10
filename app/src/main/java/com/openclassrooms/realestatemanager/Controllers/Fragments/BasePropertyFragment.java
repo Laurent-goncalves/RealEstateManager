@@ -18,6 +18,7 @@ import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
 import java.util.List;
+import java.util.Objects;
 
 
 public class BasePropertyFragment extends Fragment {
@@ -28,11 +29,20 @@ public class BasePropertyFragment extends Fragment {
     protected BaseActivity baseActivity;
     protected MainActivity mainActivity;
     protected MapsActivity mapsActivity;
-    protected String mode;
+    protected String buttonReturnText;
+
+    protected String modeSelected;
+    protected final static String BUNDLE_DEVICE = "bundle_device";
+    protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     protected static final String MODE_DISPLAY = "mode_display";
     protected static final String MODE_SELECTED = "mode_selected";
+    protected static final String MODE_SEARCH = "mode_search";
+
+    protected String modeDevice;
+    protected final static String MODE_TABLET = "mode_tablet";
+    protected final static String MODE_PHONE = "mode_phone";
 
 
     public BasePropertyFragment() {
@@ -45,6 +55,47 @@ public class BasePropertyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_base_property, container, false);
+    }
+
+    protected void recoverModeSelected(){
+
+        if(getArguments()!=null) {
+
+            // if the mode of display is for mapsActivity, remove button return and icons in toolbar
+            if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY_MAPS)) {
+                mapsActivity = (MapsActivity) getActivity();
+                this.context = mapsActivity.getApplicationContext();
+                modeSelected = MODE_DISPLAY_MAPS;
+                buttonReturnText = context.getResources().getString(R.string.return_to_the_map);
+            } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY)) {
+                baseActivity = (BaseActivity) getActivity();
+                this.context = baseActivity.getApplicationContext();
+                modeSelected = MODE_DISPLAY;
+                buttonReturnText = context.getResources().getString(R.string.return_to_the_list);
+            } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_SEARCH)) {
+                baseActivity = (BaseActivity) getActivity();
+                this.context = baseActivity.getApplicationContext();
+                modeSelected = MODE_SEARCH;
+                buttonReturnText = context.getResources().getString(R.string.return_to_search_criteria);
+            }
+        }
+    }
+
+    protected void recoverDeviceMode(){
+
+        if(getArguments()!=null) {
+            if (getArguments().getString(BUNDLE_DEVICE)!=null){
+                if (Objects.equals(getArguments().getString(BUNDLE_DEVICE), MODE_TABLET)) {
+                    modeDevice = MODE_TABLET;
+                } else {
+                    modeDevice = MODE_PHONE;
+                }
+            } else {
+                modeDevice = MODE_PHONE;
+            }
+        } else {
+            modeDevice = MODE_PHONE;
+        }
     }
 
     protected void recoverProperty(int idProp){
