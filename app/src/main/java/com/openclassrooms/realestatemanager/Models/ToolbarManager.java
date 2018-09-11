@@ -19,7 +19,11 @@ import com.openclassrooms.realestatemanager.R;
 
 public class ToolbarManager implements NavigationView.OnNavigationItemSelectedListener{
 
-    protected final static String MODE_PHONE = "mode_phone";
+    private static final String MODE_SEARCH = "mode_search";
+    private static final String MODE_DISPLAY = "mode_display";
+    private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
+    private final static String MODE_PHONE = "mode_phone";
+    protected final static String MODE_TABLET = "mode_tablet";
     private MainActivity mainActivity;
     private MapsActivity mapsActivity;
     private SearchActivity searchActivity;
@@ -165,36 +169,40 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
     // -----------------     CONFIGURATION OF ICONS ------------------------------------
     // ---------------------------------------------------------------------------------
 
-    public void setIconsToolbarDisplayMode(String modeDevice){
-        if(modeDevice.equals(MODE_PHONE)){
-            addButton.setVisibility(View.GONE);
+    public void setIconsToolbarDisplayMode(String modeSelected, String modeDevice){
+        if(modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_DISPLAY)) {
+            addButton.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
         } else {
-            addButton.setVisibility(View.VISIBLE);
+            addButton.setVisibility(View.GONE);
             editButton.setVisibility(View.VISIBLE);
         }
     }
 
-    public void setIconsToolbarEditMode(String modeDevice){
+    public void setIconsToolbarEditMode(){
         addButton.setVisibility(View.GONE);
         editButton.setVisibility(View.GONE);
     }
 
-    public void setIconsToolbarListPropertiesMode(String modeDevice){
-        if(modeDevice.equals(MODE_PHONE)){
+    public void setIconsToolbarMapsMode(){
+        addButton.setVisibility(View.GONE);
+        editButton.setVisibility(View.GONE);
+    }
+
+    public void setIconsToolbarListPropertiesMode(String modeSelected){
+
+        if(modeSelected.equals(MODE_DISPLAY)){
             addButton.setVisibility(View.VISIBLE);
+            editButton.setVisibility(View.GONE);
+        } else {
+            addButton.setVisibility(View.GONE);
             editButton.setVisibility(View.GONE);
         }
     }
 
-    public void setIconsToolbarSearchPropertiesMode(String modeDevice){
-        if(modeDevice.equals(MODE_PHONE)){
-            addButton.setVisibility(View.GONE);
-            editButton.setVisibility(View.GONE);
-        } else {
-            addButton.setVisibility(View.VISIBLE);
-            editButton.setVisibility(View.GONE);
-        }
+    public void setIconsToolbarSearchPropertiesMode(){
+        addButton.setVisibility(View.GONE);
+        editButton.setVisibility(View.GONE);
     }
 
     // ---------------------------------------------------------------------------------

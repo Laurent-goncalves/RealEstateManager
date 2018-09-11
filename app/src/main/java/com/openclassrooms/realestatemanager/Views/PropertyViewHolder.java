@@ -51,9 +51,9 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
 
         // Location
         if(property.getAddress()!=null){
-            if(property.getAddress().length()>35) {
+            if(property.getAddress().length()>25) {
 
-                String address = property.getAddress().substring(0, 35) + "...";
+                String address = property.getAddress().substring(0, 25) + "...";
                 locTextView.setText(address);
             } else
                 locTextView.setText(property.getAddress());

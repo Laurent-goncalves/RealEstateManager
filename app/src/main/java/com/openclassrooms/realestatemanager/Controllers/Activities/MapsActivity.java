@@ -49,7 +49,7 @@ public class MapsActivity extends BaseActivity {
 
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private SharedPreferences sharedPreferences;
-    @BindView(R.id.fragment_layout) ScrollView displayLayout;
+    private ScrollView displayLayout;
     @BindView(R.id.fragment_maps_layout) FrameLayout mapsLayout;
     @BindView(R.id.progressBar) ProgressBar progressBar;
     private SupportMapFragment mapFragment;
@@ -63,6 +63,8 @@ public class MapsActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
+        modeSelected = MODE_DISPLAY_MAPS;
+
         setModeDevice();
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configureNavigationDrawer(this);
@@ -70,22 +72,18 @@ public class MapsActivity extends BaseActivity {
         sharedPreferences = getSharedPreferences("MAPSPREFERRENCES",MODE_PRIVATE);
 
         if(modeDevice.equals(MODE_TABLET)) { // MODE TABLET
+            displayLayout = findViewById(R.id.fragment_layout);
             displayLayout.setVisibility(View.GONE);
         }
 
         configureAndShowMap();
-
-        /*if(savedInstanceState!=null){
-            showSaveInstanceFragment(savedInstanceState);
-        } else
-            configureAndShowMap();*/
     }
 
     @Override
     public void configureAndShowDisplayFragment(String modeSelected, int idProperty){
 
         // change icons toolbar
-        toolbarManager.setIconsToolbarDisplayMode(modeDevice);
+        toolbarManager.setIconsToolbarDisplayMode(modeSelected, modeDevice);
 
         displayFragment = new DisplayFragment();
 
@@ -105,11 +103,16 @@ public class MapsActivity extends BaseActivity {
     }
 
     public void configureAndShowMap() {
+        toolbarManager.setIconsToolbarMapsMode();
         progressBar.setVisibility(View.VISIBLE);
         googleMapUtils = new GoogleMapUtils(getApplicationContext(), modeDevice,this);
     }
 
     public void changeToMapMode(int idProperty){
+
+        this.idProperty = idProperty;
+
+        toolbarManager.setIconsToolbarMapsMode();
 
         Property property = Utils.getPropertyFromList(idProperty,listProperties);
 
@@ -127,6 +130,10 @@ public class MapsActivity extends BaseActivity {
     }
 
     public void changeToDisplayMode(int idProperty){
+
+        this.idProperty = idProperty;
+
+        toolbarManager.setIconsToolbarDisplayMode(modeSelected,modeDevice);
 
         Property property = Utils.getPropertyFromList(idProperty,listProperties);
 

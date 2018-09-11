@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.CalendarDialog;
@@ -100,6 +101,7 @@ public class ConfigureEditFragment {
             // configure number of rooms
             nbRooms = relativeLayoutNbRooms.findViewById(R.id.room_number_selector).findViewById(R.id.text_selection);
             nbRooms.setText(String.valueOf(property.getRoomNumber()));
+            roomNb = property.getRoomNumber();
 
             // configure address
             new SearchAddress(editFragment, property, context);
@@ -114,6 +116,9 @@ public class ConfigureEditFragment {
             // configure interest points
             interestView.setText(property.getInterestPoints());
             editFragment.setInterestPoints(property.getInterestPoints());
+
+            // set lat lng of the property
+            editFragment.setLatLngAddress(new LatLng(property.getLat(),property.getLng()));
         }
 
         buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
@@ -121,7 +126,7 @@ public class ConfigureEditFragment {
     }
 
     private void configureMainImage(){
-        Utils.setImageBitmapInView(property.getMainImagePath(), mainImage, editFragment.getMainActivity());
+        Utils.setImageBitmapInView(property.getMainImagePath(), mainImage, editFragment.getBaseActivity());
         editFragment.setMainImagePath(property.getMainImagePath());
     }
 

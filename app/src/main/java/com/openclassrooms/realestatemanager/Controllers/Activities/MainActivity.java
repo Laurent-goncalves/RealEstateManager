@@ -16,6 +16,8 @@ public class MainActivity extends BaseActivity  {
 
         ButterKnife.bind(this);
 
+        modeSelected = MODE_DISPLAY;
+
         // Configure toolbar
         setModeDevice();
         toolbarManager = new ToolbarManager(this);

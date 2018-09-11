@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/text_monthly_calculation"
-        android:layout_width="match_parent"
+        android:layout_width="405dp"
         android:layout_height="50dp"
         android:gravity="center"
         android:layout_marginTop="@dimen/margin_top"
@@ -103,7 +103,7 @@
     <!-- CALCULATION -->
     <TextView
         android:id="@+id/button_calculation"
-        android:layout_width="match_parent"
+        android:layout_width="405dp"
         android:layout_height="@dimen/views_height"
         android:padding="3dp"
         android:background="@drawable/background_edittext"
@@ -112,7 +112,6 @@
         android:textStyle="bold"
         android:gravity="center"
         android:textColor="@color/colorAccent"
-        android:layout_marginStart="@dimen/margin_top"
         android:layout_below="@id/edittext_contribution"
         android:text="@string/calculation"/>
 

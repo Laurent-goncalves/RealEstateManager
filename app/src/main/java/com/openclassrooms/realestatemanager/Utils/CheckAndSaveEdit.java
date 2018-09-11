@@ -28,13 +28,13 @@ public class CheckAndSaveEdit {
     private PropertyContentProvider propertyContentProvider;
     private ImageContentProvider imageContentProvider;
     private BaseActivity baseActivity;
-    private String modeSelected;
+    private String typeEdit;
 
-    public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivity baseActivity, String modeSelected) {
+    public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivity baseActivity, String typeEdit) {
         this.editFragment = editFragment;
         this.context=context;
         this.baseActivity=baseActivity;
-        this.modeSelected=modeSelected;
+        this.typeEdit=typeEdit;
         idProp = editFragment.getProperty().getId();
         newlistImages = editFragment.getListImages();
         oldlistImages = new ArrayList<>();
@@ -88,7 +88,7 @@ public class CheckAndSaveEdit {
         // Create contentProviders
         createContentProviders();
 
-        if(editFragment.getMode().equals(MODE_UPDATE)){
+        if(typeEdit.equals(MODE_UPDATE)){
 
             propertyContentProvider.update(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, propertyToSave.getId()),
                     Property.createContentValuesFromPropertyUpdate(propertyToSave),null,null);
@@ -100,7 +100,7 @@ public class CheckAndSaveEdit {
             updateListImagesPropertyInDatabase(idProp);
 
             // display property and refresh the list of properties
-            baseActivity.changeToDisplayMode(modeSelected, idProp);
+            baseActivity.changeToDisplayMode(idProp);
             baseActivity.getListPropertiesFragment().refresh(idProp);
 
         } else {
@@ -112,11 +112,9 @@ public class CheckAndSaveEdit {
             insertListImagesPropertyInDatabase(uri);
 
             // display property and refresh the list of properties
-            baseActivity.changeToDisplayMode(modeSelected, (int) ContentUris.parseId(uri));
+            baseActivity.changeToDisplayMode((int) ContentUris.parseId(uri));
             baseActivity.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
         }
-
-
     }
 
     // ------------------------------------------------------------------------------------------------------------
@@ -172,6 +170,8 @@ public class CheckAndSaveEdit {
 
         if(newlistImages!=null){
 
+            newlistImages.remove(newlistImages.size()-1); // delete the last image
+
             for(ImageProperty image : newlistImages) {
 
                 if (counter < newlistImages.size() - 1) { // if it's NOT the last item of the list
@@ -193,9 +193,9 @@ public class CheckAndSaveEdit {
 
         int counter = 0;
 
-        newlistImages.remove(newlistImages.size()-1); // delete the last image
-
         if(newlistImages!=null){
+
+            newlistImages.remove(newlistImages.size()-1); // delete the last image
 
             // for each image in the new list, check if it's present in oldlist (yes => update the image, no => insert the image)
             for(ImageProperty image : newlistImages){

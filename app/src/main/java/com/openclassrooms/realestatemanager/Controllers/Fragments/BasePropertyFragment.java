@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
@@ -28,6 +29,7 @@ public class BasePropertyFragment extends Fragment {
     protected List<ImageProperty> listImages;
     protected BaseActivity baseActivity;
     protected MainActivity mainActivity;
+    protected SearchActivity searchActivity;
     protected MapsActivity mapsActivity;
     protected String buttonReturnText;
 
@@ -64,17 +66,17 @@ public class BasePropertyFragment extends Fragment {
             // if the mode of display is for mapsActivity, remove button return and icons in toolbar
             if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY_MAPS)) {
                 mapsActivity = (MapsActivity) getActivity();
-                this.context = mapsActivity.getApplicationContext();
+                //this.context = mapsActivity.getApplicationContext();
                 modeSelected = MODE_DISPLAY_MAPS;
                 buttonReturnText = context.getResources().getString(R.string.return_to_the_map);
             } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY)) {
-                baseActivity = (BaseActivity) getActivity();
-                this.context = baseActivity.getApplicationContext();
+                //baseActivity = (BaseActivity) getActivity();
+                //this.context = baseActivity.getApplicationContext();
                 modeSelected = MODE_DISPLAY;
                 buttonReturnText = context.getResources().getString(R.string.return_to_the_list);
             } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_SEARCH)) {
-                baseActivity = (BaseActivity) getActivity();
-                this.context = baseActivity.getApplicationContext();
+                searchActivity = (SearchActivity) getActivity();
+                //this.context = baseActivity.getApplicationContext();
                 modeSelected = MODE_SEARCH;
                 buttonReturnText = context.getResources().getString(R.string.return_to_search_criteria);
             }
@@ -142,7 +144,7 @@ public class BasePropertyFragment extends Fragment {
         return listImages;
     }
 
-    public MainActivity getMainActivity() {
-        return mainActivity;
+    public BaseActivity getBaseActivity() {
+        return baseActivity;
     }
 }

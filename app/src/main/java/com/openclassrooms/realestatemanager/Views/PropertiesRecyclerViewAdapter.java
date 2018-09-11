@@ -66,8 +66,8 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
         if(listProperties!=null && baseActivity!=null)
             holder.configurePropertiesViews(listProperties.get(position), baseActivity);
-        else if(listProperties!=null && mapsActivity!=null)
-            holder.configurePropertiesViews(listProperties.get(position), mapsActivity);
+        /*else if(listProperties!=null && mapsActivity!=null)
+            holder.configurePropertiesViews(listProperties.get(position), mapsActivity);*/
 
         holder.propertyLayout.setOnClickListener(v -> {
 

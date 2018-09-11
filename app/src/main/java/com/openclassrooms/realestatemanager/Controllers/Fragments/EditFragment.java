@@ -52,6 +52,9 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     private RecyclerView recyclerView;
     private ImagesEditAdapter adapter;
     private View view;
+    private static final String BUNDLE_TYPE_EDIT = "type_edit";
+    private static final String MODE_UPDATE = "UPDATE";
+    private String typeEdit;
     private static final String PROPERTY_JSON = "property_json";
     @BindView(R.id.main_image_selected) ImageView mainImage;
 
@@ -65,7 +68,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_edit, container, false);
         ButterKnife.bind(this, view);
-        recyclerView= view.findViewById(R.id.list_images_property_edit);
+        recyclerView = view.findViewById(R.id.list_images_property_edit);
         datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
         dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
         setRetainInstance(true);
@@ -79,12 +82,13 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
 
-            modeSelected=getArguments().getString(MODE_SELECTED,null);
+            modeSelected = getArguments().getString(MODE_SELECTED,MODE_DISPLAY);
             idProperty=getArguments().getInt(LAST_PROPERTY_SELECTED,-1);
+            typeEdit=getArguments().getString(BUNDLE_TYPE_EDIT,MODE_UPDATE);
 
-            if(modeSelected!=null){
+            if(typeEdit!=null){
 
-                if(modeSelected.equals("UPDATE")){ // mode update property
+                if(typeEdit.equals(MODE_UPDATE)){ // mode update property
                     // Recover the property datas
                     recoverProperty(idProperty);
                     recoverImagesProperty(idProperty);
@@ -105,7 +109,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
-        new CheckAndSaveEdit(this, context, baseActivity, modeSelected);
+        new CheckAndSaveEdit(this, context, baseActivity, typeEdit);
     }
 
     @OnClick(R.id.buttonCancel)
@@ -113,7 +117,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         if(property.getId()==-1)
             baseActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY,null);
         else
-            baseActivity.changeToDisplayMode(modeSelected, idProperty);
+            baseActivity.changeToDisplayMode(idProperty);
     }
 
     @OnClick(R.id.main_image_selector)
@@ -142,7 +146,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
                     mainImage.setImageBitmap(bitmap);
 
                 } else {
-                    Toast.makeText(baseActivity, "Please give your permission.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(baseActivity, context.getResources().getString(R.string.give_permission), Toast.LENGTH_LONG).show();
                 }
                 break;
             }

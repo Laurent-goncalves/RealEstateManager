@@ -74,6 +74,8 @@
     <string name="extra_images">Extra images</string>
     <string name="ok">OK</string>
 
+    <string name="give_permission">Please give your permission</string>
+
     <string name="check_price">Please enter a price above 0.</string>
     <string name="check_surface">Please enter a surface above 0.</string>
     <string name="check_date_publish">Please enter a date of publishing.</string>
@@ -98,6 +100,7 @@
     <string name="any">any</string>
     <string name="radius_camera">1000</string>
     <string name="return_to_the_search">Return to search query</string>
+    <string name="no_result_found">No result found for these criteria.</string>
 
     <!-- MAPS -->
     <string name="error_geolocalization">Error geolocalization</string>

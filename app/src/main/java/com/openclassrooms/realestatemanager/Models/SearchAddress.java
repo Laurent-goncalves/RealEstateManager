@@ -10,8 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import com.google.android.gms.maps.model.LatLng;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.LatLngAddress.LatLngAddress;
@@ -40,8 +39,7 @@ public class SearchAddress implements Disposable{
 
     private EditFragment editFragment;
     private SearchFragment searchFragment;
-    private MainActivity mainActivity;
-    private SearchActivity searchActivity;
+    private BaseActivity baseActivity;
     private SearchView searchView;
     private Context context;
     private Disposable disposable;
@@ -54,7 +52,7 @@ public class SearchAddress implements Disposable{
 
     public SearchAddress(EditFragment editFragment, Property property, Context context) {
         this.editFragment=editFragment;
-        this.mainActivity = (MainActivity) editFragment.getActivity();
+        this.baseActivity = (BaseActivity) editFragment.getActivity();
         this.context=context;
         this.apiKeyPredic=context.getResources().getString(R.string.google_maps_key2);
         this.apiKeyMaps=context.getResources().getString(R.string.google_static_maps_key);
@@ -64,7 +62,7 @@ public class SearchAddress implements Disposable{
 
     public SearchAddress(SearchFragment searchFragment, Context context) {
         this.searchFragment=searchFragment;
-        this.searchActivity = (SearchActivity) searchFragment.getActivity();
+        this.baseActivity = (BaseActivity) searchFragment.getActivity();
         this.context=context;
         this.apiKeyPredic=context.getResources().getString(R.string.google_maps_key2);
         this.apiKeyMaps=context.getResources().getString(R.string.google_static_maps_key);
@@ -172,7 +170,7 @@ public class SearchAddress implements Disposable{
     public void displayListPredictions(Boolean submit) {
         String[] listSuggArray = listSuggestions.toArray(new String[listSuggestions.size()]);
 
-        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_dropdown_item_1line, listSuggArray);
+        ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(baseActivity, android.R.layout.simple_dropdown_item_1line, listSuggArray);
         searchAutoComplete.setAdapter(autocompleteAdapter);
 
         if(submit && listSuggestions.size()>=1){

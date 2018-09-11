@@ -99,6 +99,7 @@
 
                 <!-- FRAGMENT LIST -->
                 <ScrollView
+                    android:id="@+id/fragment_list_layout"
                     android:layout_width="0dp"
                     android:layout_weight="35"
                     android:layout_height="match_parent">
@@ -135,25 +136,6 @@
                             android:layout_height="wrap_content"/>
 
                     </ScrollView>
-
-                    <RelativeLayout
-                        android:id="@+id/relativelayout_return_search_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:layout_marginEnd="20dp">
-
-                        <Button
-                            android:id="@+id/button_return_search"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@color/colorPrimary"
-                            android:textColor="@color/colorWhite"
-                            android:layout_alignParentEnd="true"
-                            android:text="@string/return_to_the_search"/>
-
-                    </RelativeLayout>
 
                 </LinearLayout>
 

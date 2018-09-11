@@ -176,12 +176,11 @@ public class SearchFragment extends Fragment {
 
     @OnClick(R.id.buttonSearchCancel)
     public void cancel(){
-        searchActivity.finish();
+        searchActivity.launchMainActivity();
     }
 
     @OnClick(R.id.buttonSearch)
     public void search(){
-        searchActivity.getRelativeLayout().setVisibility(View.VISIBLE);
         launchSearchProperties();
     }
 
@@ -339,7 +338,10 @@ public class SearchFragment extends Fragment {
     }
 
     private void displayResults(){
-        baseActivity.configureAndShowListPropertiesFragment(MODE_SEARCH, listProperties);
+        if(listProperties.size()>0) // if at least one result, show list properties
+            baseActivity.configureAndShowListPropertiesFragment(MODE_SEARCH, listProperties);
+        else
+            baseActivity.displayError(context.getResources().getString(R.string.no_result_found));
     }
 
     public SearchView getLocationView() {

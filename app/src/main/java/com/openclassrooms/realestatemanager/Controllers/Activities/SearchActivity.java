@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
@@ -14,7 +15,7 @@ import butterknife.OnClick;
 
 public class SearchActivity extends BaseActivity {
 
-    @BindView(R.id.relativelayout_return_search_button) RelativeLayout mRelativeLayout;
+    private ScrollView listFragLayout;
     private static final String MODE_SEARCH = "mode_search";
 
     @Override
@@ -22,15 +23,15 @@ public class SearchActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        ButterKnife.bind(this);
+        modeSelected = MODE_SEARCH;
 
         setModeDevice();
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configureNavigationDrawer(this);
-
-        mRelativeLayout.setVisibility(View.GONE);
+        listFragLayout.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGrey));
 
         if(modeDevice.equals(MODE_TABLET)) { // MODE TABLET
+            listFragLayout = findViewById(R.id.fragment_list_layout);
             configureAndShowListPropertiesFragment(MODE_SEARCH,null);
         }
 
@@ -48,13 +49,7 @@ public class SearchActivity extends BaseActivity {
         super.onBackPressed();
     }
 
-    @OnClick(R.id.button_return_search)
-    public void buttonReturnClick(){
-
-
-    }
-
-    public RelativeLayout getRelativeLayout() {
-        return mRelativeLayout;
+    public ScrollView getListFragLayout() {
+        return listFragLayout;
     }
 }

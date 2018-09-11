@@ -13,37 +13,44 @@
         android:scaleType="centerCrop"
         android:contentDescription="@string/image_property" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:layout_marginStart="12dp"
-        android:layout_gravity="center_vertical"
-        android:orientation="vertical">
+        android:layout_height="80dp">
 
-        <!-- TYPE OF PROPERTY -->
-        <TextView
-            android:id="@+id/property_type_view"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"/>
+            android:layout_height="80dp"
+            android:layout_marginStart="12dp"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
 
-        <!-- LOCATION OF PROPERTY -->
-        <TextView
-            android:id="@+id/property_location_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/colorPrimaryDark"/>
+            <!-- TYPE OF PROPERTY -->
+            <TextView
+                android:id="@+id/property_type_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"/>
 
-        <!-- COST OF PROPERTY -->
-        <TextView
-            android:id="@+id/property_cost_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="@color/colorAccent"/>
+            <!-- LOCATION OF PROPERTY -->
+            <TextView
+                android:id="@+id/property_location_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorPrimaryDark"/>
+
+            <!-- COST OF PROPERTY -->
+            <TextView
+                android:id="@+id/property_cost_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@color/colorAccent"/>
+
+        </LinearLayout>
 
         <!--  LINE SEPARATOR  -->
         <View
@@ -51,9 +58,9 @@
             android:layout_marginTop="5dp"
             android:layout_width="wrap_content"
             android:layout_height="1dp"
-            android:layout_gravity="bottom"
+            android:layout_alignParentBottom="true"
             android:background="@color/colorPrimary"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

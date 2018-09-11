@@ -37,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
     protected static final String MODE_NEW = "NEW";
     protected static final String MODE_UPDATE = "UPDATE";
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
-
+    protected static final String BUNDLE_TYPE_EDIT = "type_edit";
     protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
     protected static final String MODE_SEARCH = "mode_search";
     protected static final String MODE_DISPLAY = "mode_display";
@@ -63,6 +63,7 @@ public class BaseActivity extends AppCompatActivity {
     protected ToolbarManager toolbarManager;
     protected EditFragment editFragment;
     protected DisplayFragment displayFragment;
+    protected SearchFragment searchFragment;
     protected ListPropertiesFragment listPropertiesFragment;
     protected int idProperty;
     protected int viewHolderPosition;
@@ -115,7 +116,7 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void changeToDisplayMode(String modeSelected, int propertyId){
+    public void changeToDisplayMode(int propertyId){
 
         // remove the editFragment
         if(editFragment!=null)
@@ -137,20 +138,24 @@ public class BaseActivity extends AppCompatActivity {
 
     public void returnToSearchCriteria(){
 
-        // remove the editFragment
+        // remove the displayFragment
         if(displayFragment!=null)
             this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.show(fragmentManager.findFragmentByTag(SEARCH_FRAG)).commit();
+        FragmentTransaction fragTransReplace = getFragmentManager().beginTransaction();
+        fragTransReplace.replace(R.id.fragment_position, searchFragment);
+        fragTransReplace.commit();
+
+        FragmentTransaction fragTransRemove = getFragmentManager().beginTransaction();
+        fragTransRemove.remove(listPropertiesFragment);
+        fragTransRemove.commit();
     }
 
     public void configureAndShowDisplayFragment(String modeSelected, int propertyId){
 
         // change icons toolbar
         if(toolbarManager!=null)
-            toolbarManager.setIconsToolbarDisplayMode(modeDevice);
+            toolbarManager.setIconsToolbarDisplayMode(modeSelected, modeDevice);
 
         idProperty = propertyId;
         displayFragment = new DisplayFragment();
@@ -174,7 +179,7 @@ public class BaseActivity extends AppCompatActivity {
     public void configureAndShowEditFragment(int propertyId){
 
         // change icons toolbar
-        toolbarManager.setIconsToolbarEditMode(modeDevice);
+        toolbarManager.setIconsToolbarEditMode();
 
         editFragment = new EditFragment();
         fragmentDisplayed = EDIT_FRAG;
@@ -183,11 +188,13 @@ public class BaseActivity extends AppCompatActivity {
         // create a bundle
         Bundle bundle = new Bundle();
         bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
+        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
 
-        if(idProperty==-1){
-            bundle.putString(MODE_SELECTED, MODE_NEW);
+        if(propertyId==-1){
+            bundle.putString(BUNDLE_TYPE_EDIT, MODE_NEW);
         } else {
-            bundle.putString(MODE_SELECTED, MODE_UPDATE);
+            bundle.putString(BUNDLE_TYPE_EDIT, MODE_UPDATE);
         }
 
         // configure and show the editFragment
@@ -201,12 +208,14 @@ public class BaseActivity extends AppCompatActivity {
 
         // change icons toolbar
         if(toolbarManager!=null)
-            toolbarManager.setIconsToolbarListPropertiesMode(modeDevice);
+            toolbarManager.setIconsToolbarListPropertiesMode(modeSelected);
 
         listPropertiesFragment = new ListPropertiesFragment();
         fragmentDisplayed = LIST_FRAG;
 
         Bundle bundle = new Bundle();
+
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
 
         if(modeSelected.equals(MODE_DISPLAY))
             bundle.putString(BUNDLE_MODE_SELECTED,MODE_DISPLAY);
@@ -240,11 +249,15 @@ public class BaseActivity extends AppCompatActivity {
 
         fragmentDisplayed = SEARCH_FRAG;
 
-        toolbarManager.setIconsToolbarSearchPropertiesMode(modeDevice);
+        toolbarManager.setIconsToolbarSearchPropertiesMode();
 
-        SearchFragment searchFragment = new SearchFragment();
+        searchFragment = new SearchFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
+        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
+
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.addToBackStack(SEARCH_FRAG);
         fragmentTransaction.replace(R.id.fragment_position, searchFragment);
         fragmentTransaction.commit();
     }

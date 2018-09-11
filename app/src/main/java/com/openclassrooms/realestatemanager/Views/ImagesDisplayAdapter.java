@@ -54,8 +54,8 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
         if(listImages!=null) {
             if(listImages.get(position)!=null && baseActivity!=null)
                 holder.configureImagesViews(listImages.get(position),baseActivity,positionSelected);
-            else if(listImages.get(position)!=null && mapsActivity!=null)
-                holder.configureImagesViews(listImages.get(position),mapsActivity,positionSelected);
+            /*else if(listImages.get(position)!=null && mapsActivity!=null)
+                holder.configureImagesViews(listImages.get(position),mapsActivity,positionSelected);*/
         }
 
         holder.itemView.setOnClickListener(v -> {

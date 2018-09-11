@@ -18,7 +18,9 @@ import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
+import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.SimulationTool;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
@@ -51,6 +53,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     private CallbackImageChange callbackImageChange;
     private int idProp;
     private ImagesDisplayAdapter adapter;
+    private SearchActivity searchActivity;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -67,6 +70,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         // Set the variables
         listImages = new ArrayList<>();
         callbackImageChange = this;
+        baseActivity = (BaseActivity) getActivity();
+        context = baseActivity.getApplicationContext();
 
         // We recover in the bundle the property in json format
         if(getArguments()!=null){
@@ -87,6 +92,9 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
             recoverProperty(idProp);
 
             // Recover images from the property
+            if(property.getMainImagePath()!=null)
+                listImages.add(new ImageProperty(0, property.getMainImagePath(),null,idProp)); // add main image
+
             recoverImagesProperty(idProp);
         }
 
@@ -105,6 +113,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
 
             switch(modeSelected){
                 case MODE_SEARCH:
+                    searchActivity.getListFragLayout().setBackgroundColor(context.getResources().getColor(R.color.colorGrey));
                     baseActivity.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:
@@ -154,6 +163,10 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
             buttonReturn.setVisibility(View.VISIBLE);
             buttonReturn.setText(buttonReturnText);
         }
+
+        if(modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_SEARCH)){
+            searchActivity = (SearchActivity) getActivity();
+        }
     }
 
     private void configureViews() {
@@ -161,8 +174,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         // set the main image
         if(property.getMainImagePath()!=null && baseActivity!=null)
             Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
-        else if (property.getMainImagePath()!=null && mapsActivity!=null)
-            Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, mapsActivity);
+        /*else if (property.getMainImagePath()!=null && mapsActivity!=null)
+            Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, mapsActivity);*/
 
         // set the type of property
         String typeProp = property.getType();
@@ -234,8 +247,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                 // Create adapter passing in the sample user data
                 if(baseActivity!=null)
                     adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, baseActivity);
-                else if(mapsActivity!=null)
-                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, mapsActivity);
+                /*else if(mapsActivity!=null)
+                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, mapsActivity);*/
 
                 // Attach the adapter to the recyclerview to populate items
                 listImagesView.setAdapter(adapter);
@@ -248,8 +261,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     public void changeMainImage(int position){
         if(listImages.get(position)!=null && baseActivity!=null)
             Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, baseActivity);
-        else if(listImages.get(position)!=null && mapsActivity!=null)
-            Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, mapsActivity);
+        /*else if(listImages.get(position)!=null && mapsActivity!=null)
+            Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, mapsActivity);*/
     }
 
 }
