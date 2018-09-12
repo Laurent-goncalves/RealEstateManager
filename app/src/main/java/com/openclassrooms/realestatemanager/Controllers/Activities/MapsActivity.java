@@ -1,49 +1,24 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.app.FragmentTransaction;
-import android.content.ContentUris;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Models.Property;
-import com.openclassrooms.realestatemanager.Models.Provider.MapsContentProvider;
-import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.GoogleMapUtils;
 import com.openclassrooms.realestatemanager.Utils.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.ToLongBiFunction;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 public class MapsActivity extends BaseActivity {
 
@@ -52,7 +27,6 @@ public class MapsActivity extends BaseActivity {
     private ScrollView displayLayout;
     @BindView(R.id.fragment_maps_layout) FrameLayout mapsLayout;
     @BindView(R.id.progressBar) ProgressBar progressBar;
-    private SupportMapFragment mapFragment;
     private GoogleMapUtils googleMapUtils;
 
 

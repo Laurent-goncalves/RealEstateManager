@@ -55,7 +55,6 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     private static final String BUNDLE_TYPE_EDIT = "type_edit";
     private static final String MODE_UPDATE = "UPDATE";
     private String typeEdit;
-    private static final String PROPERTY_JSON = "property_json";
     @BindView(R.id.main_image_selected) ImageView mainImage;
 
     public EditFragment() {
@@ -183,7 +182,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         baseActivity.displayAlertDeletion(viewHolderPosition);
     }
 
-    public void alertDeletion(int viewHolderPosition){
+    public void proceedToDeletion(int viewHolderPosition){
         ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(viewHolderPosition);
 
         // destroy item from the list
@@ -191,16 +190,14 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         adapter.deleteImageToList(imageProperty);
     }
 
-    // ---------------------------------------------------------------------------------------
-    // -------------------------------- GETTER and SETTER ------------------------------------
-    // ---------------------------------------------------------------------------------------
-
     public void setExtraImage(String imagePath, int holderPosition){
 
+        // Find the view where to put the image
         View view = recyclerView.findViewHolderForAdapterPosition(holderPosition).itemView;
         ImageView image = view.findViewById(R.id.image_property);
         image.setVisibility(View.VISIBLE);
 
+        // check the position of the viewHolder. If it's the last one, it's an ImagesAddViewHolder; if not, it's an ImageUpdateViewHolder
         if(recyclerView.findViewHolderForAdapterPosition(holderPosition).getItemViewType()==1) {
             ImagesAddViewHolder holder = (ImagesAddViewHolder) recyclerView.findViewHolderForLayoutPosition(holderPosition);
             holder.setExtraImage(imagePath);
@@ -209,6 +206,10 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
             holder.setExtraImage(imagePath);
         }
     }
+
+    // ---------------------------------------------------------------------------------------
+    // -------------------------------- GETTER and SETTER ------------------------------------
+    // ---------------------------------------------------------------------------------------
 
     public void setLatLngAddress(LatLng latLngAddress) {
         this.latLngAddress = latLngAddress;

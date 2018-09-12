@@ -59,7 +59,16 @@ public class CheckAndSaveEdit {
                                 if (propertyToSave.getDescription().length()>0) {
                                     if(propertyToSave.getMainImagePath()!=null){
                                         if(propertyToSave.getMainImagePath().length()> 0){
-                                            answer = true;
+                                            if(propertyToSave.getSold()){
+                                                if(propertyToSave.getDateSold()!=null){
+                                                    if(propertyToSave.getDateSold().length() > 0 )
+                                                        answer=true;
+                                                    else
+                                                        baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
+                                                } else
+                                                    baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
+                                            } else
+                                                answer=true;
                                         } else
                                             baseActivity.displayError(context.getResources().getString(R.string.check_main_image));
                                     } else
@@ -78,7 +87,6 @@ public class CheckAndSaveEdit {
                 baseActivity.displayError(context.getResources().getString(R.string.check_surface));
         } else
             baseActivity.displayError(context.getResources().getString(R.string.check_price));
-
 
         return answer;
     }

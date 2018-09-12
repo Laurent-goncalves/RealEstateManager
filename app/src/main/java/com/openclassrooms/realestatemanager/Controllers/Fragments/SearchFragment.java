@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 
 import android.annotation.SuppressLint;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
+import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.SearchContentProvider;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
@@ -44,17 +46,20 @@ public class SearchFragment extends Fragment {
     @BindView(R.id.list_type_properties_search) Spinner typePropView;
     @BindView(R.id.start_date_publish_selected_search) TextView startPublishView;
     @BindView(R.id.end_date_publish_selected_search) TextView endPublishView;
+    @BindView(R.id.start_icon_expand_search) ImageButton iconExpandStart;
+    @BindView(R.id.end_icon_expand_search) ImageButton iconExpandEnd;
     @BindView(R.id.price_inf_search) EditText priceInfView;
     @BindView(R.id.price_sup_search) EditText priceSupView;
     @BindView(R.id.surface_inf_search) EditText surfaceInfView;
     @BindView(R.id.surface_sup_search) EditText surfaceSupView;
     @BindView(R.id.address_edit_text_search) SearchView locationView;
     @BindView(R.id.relativelayout_rooms) RelativeLayout layoutRooms;
-    @BindView(R.id.calendar_search) CalendarView calendarView;
     @BindView(R.id.linearlayout_dates_search) LinearLayout layoutDates;
     @BindView(R.id.buttonSearchCancel) Button buttonCancel;
     @BindView(R.id.buttonSearch) Button buttonSearch;
     private static final String MODE_SEARCH = "mode_search";
+    private static final String PUBLISH_DATE_START = "publish_date_start";
+    private static final String PUBLISH_DATE_END = "publish_date_end";
     private ImageButton buttonPlus;
     private ImageButton buttonLess;
     private int roomNbMin;
@@ -64,6 +69,7 @@ public class SearchFragment extends Fragment {
     private TextView nbRoomsView;
     private Context context;
     private LatLng searchLoc;
+    private CalendarDialog calendarDialog;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -97,49 +103,34 @@ public class SearchFragment extends Fragment {
         buttonPlus.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         nbRoomsView.setText(getResources().getString(R.string.any));
 
-        configureOnClickListenersDatesSelector();
+        configureDateSelector();
         new SearchAddress(this,context);
     }
 
-    private void configureOnClickListenersDatesSelector() {
+    private void configureDateSelector(){
 
-        calendarView.setVisibility(View.GONE); // hide calendarView
+        startPublishView.setOnClickListener(v -> showCalendarView(PUBLISH_DATE_START));
+        iconExpandStart.setOnClickListener(v -> showCalendarView(PUBLISH_DATE_START));
 
-        layoutDates.findViewById(R.id.start_relativelayout_publish_search)
-                .setOnClickListener(v -> {
-                    TextView dateText = baseActivity.findViewById(R.id.start_date_publish_selected_search);
-
-                    if(calendarView.getVisibility()==View.GONE){
-                        calendarView.setVisibility(View.VISIBLE);
-                        configureCalendarView(dateText);
-                    } else {
-                        calendarView.setVisibility(View.GONE);
-                    }
-                });
-
-        layoutDates.findViewById(R.id.end_relativelayout_publish_search)
-                .setOnClickListener(v -> {
-                    TextView dateText = baseActivity.findViewById(R.id.end_date_publish_selected_search);
-
-                    if(calendarView.getVisibility()==View.GONE){
-                        calendarView.setVisibility(View.VISIBLE);
-                        configureCalendarView(dateText);
-                    } else {
-                        calendarView.setVisibility(View.GONE);
-                    }
-                });
+        endPublishView.setOnClickListener(v -> showCalendarView(PUBLISH_DATE_END));
+        iconExpandEnd.setOnClickListener(v -> showCalendarView(PUBLISH_DATE_END));
     }
 
-    private void configureCalendarView(final TextView dateTextview) {
+    private void showCalendarView(String dateType){
 
-        calendarView.setVisibility(View.VISIBLE); // show calendarView
+        FragmentTransaction ft = this.getFragmentManager().beginTransaction();
+        Fragment prev = this.getFragmentManager().findFragmentByTag("calendarDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
 
-        calendarView.setOnDateChangeListener(((view, year, month, dayOfMonth) -> {
-            String dateText = Utils.create_string_date(year, month, dayOfMonth);
-            dateTextview.setText(dateText); // change date selected into string
-            calendarView.setVisibility(View.GONE); // hide calendar view
-        }));
+        // Create and show the dialog.
+        calendarDialog = CalendarDialog.newInstance(dateType);
+        calendarDialog.setTargetFragment(this,0);
+        calendarDialog.show(ft, "calendarDialog");
     }
+
 
     @OnClick(R.id.plus_button)
     public void onClickListenerButtonPlus() {
@@ -356,5 +347,56 @@ public class SearchFragment extends Fragment {
         return buttonSearch;
     }
 
+    public TextView getStartPublishView() {
+        return startPublishView;
+    }
 
+    public TextView getEndPublishView() {
+        return endPublishView;
+    }
 }
+
+
+
+/*
+    private void configureOnClickListenersDatesSelector() {
+
+        calendarView.setVisibility(View.GONE); // hide calendarView
+
+        layoutDates.findViewById(R.id.start_relativelayout_publish_search)
+                .setOnClickListener(v -> {
+                    TextView dateText = baseActivity.findViewById(R.id.start_date_publish_selected_search);
+
+                    if(calendarView.getVisibility()==View.GONE){
+                        calendarView.setVisibility(View.VISIBLE);
+                        configureCalendarView(dateText);
+                    } else {
+                        calendarView.setVisibility(View.GONE);
+                    }
+                });
+
+        layoutDates.findViewById(R.id.end_relativelayout_publish_search)
+                .setOnClickListener(v -> {
+                    TextView dateText = baseActivity.findViewById(R.id.end_date_publish_selected_search);
+
+                    if(calendarView.getVisibility()==View.GONE){
+                        calendarView.setVisibility(View.VISIBLE);
+                        configureCalendarView(dateText);
+                    } else {
+                        calendarView.setVisibility(View.GONE);
+                    }
+                });
+    }
+
+
+
+    private void configureCalendarView(final TextView dateTextview) {
+
+        calendarView.setVisibility(View.VISIBLE); // show calendarView
+
+        calendarView.setOnDateChangeListener(((view, year, month, dayOfMonth) -> {
+            String dateText = Utils.create_string_date(year, month, dayOfMonth);
+            dateTextview.setText(dateText); // change date selected into string
+            calendarView.setVisibility(View.GONE); // hide calendar view
+        }));
+    }*/

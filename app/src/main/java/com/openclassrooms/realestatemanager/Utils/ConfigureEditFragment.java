@@ -51,16 +51,11 @@ public class ConfigureEditFragment {
     private View view;
     private int roomNb;
     private TextView nbRooms;
-    private TextView datePublish;
-    private TextView dateSold;
     private Context context;
     private Property property;
-    private ImagesEditAdapter adapter;
     private EditFragment editFragment;
-    private RecyclerView recyclerView;
     private List<ImageProperty> listImages;
     private BaseActivity baseActivity;
-    private CalendarDialog calendarDialog;
     private static final String PUBLISH_DATE = "publish_date";
     private static final String SOLD_DATE = "sold_date";
 
@@ -133,11 +128,11 @@ public class ConfigureEditFragment {
     private void configureDateSelector(){
 
         // configure date publication
-        datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
+        TextView datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
         datePublish.setText(property.getDateStart());
 
         // configure date sold
-        dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
+        TextView dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
         dateSold.setText(property.getDateSold());
 
 
@@ -170,7 +165,7 @@ public class ConfigureEditFragment {
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        calendarDialog = CalendarDialog.newInstance(dateType);
+        CalendarDialog calendarDialog = CalendarDialog.newInstance(dateType);
         calendarDialog.setTargetFragment(editFragment,0);
         calendarDialog.show(ft, "calendarDialog");
     }
@@ -207,11 +202,11 @@ public class ConfigureEditFragment {
                     = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
             // Create adapter passing in the sample user data
-            adapter = new ImagesEditAdapter(listImages,property, context, editFragment.getCallbackImageSelect(), baseActivity);
+            ImagesEditAdapter adapter = new ImagesEditAdapter(listImages, property, context, editFragment.getCallbackImageSelect(), baseActivity);
             editFragment.setAdapter(adapter);
 
             // Attach the adapter to the recyclerview to populate items
-            recyclerView= view.findViewById(R.id.list_images_property_edit);
+            RecyclerView recyclerView = view.findViewById(R.id.list_images_property_edit);
             recyclerView.setAdapter(adapter);
 
             // Set layout manager to position the items

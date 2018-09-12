@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
@@ -17,12 +16,12 @@ import java.util.Objects;
 
 public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<PropertyViewHolder>  {
 
+    private final static String MODE_TABLET = "mode_tablet";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private final List<Property> listProperties;
     private Context context;
     private CallbackListProperties callbackListProperties;
     private BaseActivity baseActivity;
-    private MapsActivity mapsActivity;
     private int propertySelected;
     private String modeSelected;
 
@@ -44,15 +43,6 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
         this.propertySelected=position;
     }
 
-    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, int position, CallbackListProperties callbackListProperties, MapsActivity mapsActivity, String modeSelected) {
-        this.listProperties = listProperties;
-        this.context=context;
-        this.callbackListProperties=callbackListProperties;
-        this.mapsActivity = mapsActivity;
-        this.modeSelected=modeSelected;
-        this.propertySelected=position;
-    }
-
     @NonNull
     @Override
     public PropertyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -66,8 +56,6 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
         if(listProperties!=null && baseActivity!=null)
             holder.configurePropertiesViews(listProperties.get(position), baseActivity);
-        /*else if(listProperties!=null && mapsActivity!=null)
-            holder.configurePropertiesViews(listProperties.get(position), mapsActivity);*/
 
         holder.propertyLayout.setOnClickListener(v -> {
 
@@ -109,7 +97,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
                             holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
                         }
                     }
-                } else if(holder.getAdapterPosition()==0){ // if no item selected in the list
+                } else if(holder.getAdapterPosition()==0 && baseActivity.getModeDevice().equals(MODE_TABLET)){ // if no item selected in the list
                     propertySelected = 0;
                     listProperties.get(holder.getAdapterPosition()).setSelected(true);
                     callbackListProperties.showDisplayFragment(holder.getAdapterPosition());

@@ -165,15 +165,6 @@
 
     </LinearLayout>
 
-    <CalendarView
-        android:id="@+id/calendar_search"
-        android:textColorPrimary="@color/colorPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true">
-    </CalendarView>
-
     <!-- PRICE -->
     <TextView
         android:layout_width="match_parent"

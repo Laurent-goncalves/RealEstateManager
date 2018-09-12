@@ -26,7 +26,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -86,7 +85,10 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
             listProperties = gson.fromJson(json,listPropType);
         }
 
-        showDisplayFragment(0);
+        if(listProperties!=null){
+            if(listProperties.size()>0 && modeDevice.equals(MODE_TABLET))
+                showDisplayFragment(0);
+        }
     }
 
     @Override
@@ -128,8 +130,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                 // Get context
                 if(baseActivity!=null)
                     context = baseActivity.getApplicationContext();
-                /*if(mapsActivity!=null)
-                    context = mapsActivity.getApplicationContext();*/
 
                 // if at least one result in the list, remove grey background
                 if(modeSelected.equals(MODE_SEARCH) && modeDevice.equals(MODE_TABLET))

@@ -82,7 +82,7 @@
     <string name="check_room_number">Please enter a number of rooms above 0.</string>
     <string name="check_description">Please enter a description.</string>
     <string name="check_main_image">Please select a main image for the property.</string>
-
+    <string name="check_sold_date">As the property has been sold, please enter a date of sale.</string>
 
     <!-- DISPLAY FRAGMENT-->
     <string name="interest_rate">Interest rate</string>

@@ -1,21 +1,15 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.View;
 import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
@@ -94,12 +88,12 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void showSaveInstanceFragment(Bundle bundle){
 
-        String frag = bundle.getString(BUNDLE_FRAG,null);
+        fragmentDisplayed = bundle.getString(BUNDLE_FRAG,null);
         modeDevice = bundle.getString(BUNDLE_DEVICE,null);
         modeSelected = bundle.getString(BUNDLE_MODE_SELECTED,null);
 
-        if(frag !=null){
-            switch (frag) {
+        if(fragmentDisplayed !=null){
+            switch (fragmentDisplayed) {
                 case LIST_FRAG:
                     configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
                     break;
@@ -163,8 +157,6 @@ public class BaseActivity extends AppCompatActivity {
 
         // create a bundle
         Bundle bundle = new Bundle();
-
-        // Add the property Id to the bundle
         bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
         bundle.putString(BUNDLE_DEVICE, modeDevice);
         bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
@@ -188,7 +180,6 @@ public class BaseActivity extends AppCompatActivity {
         // create a bundle
         Bundle bundle = new Bundle();
         bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
-        bundle.putString(BUNDLE_DEVICE, modeDevice);
         bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
 
         if(propertyId==-1){
@@ -213,6 +204,7 @@ public class BaseActivity extends AppCompatActivity {
         listPropertiesFragment = new ListPropertiesFragment();
         fragmentDisplayed = LIST_FRAG;
 
+        // Create a bundle
         Bundle bundle = new Bundle();
 
         bundle.putString(BUNDLE_DEVICE, modeDevice);
@@ -247,12 +239,13 @@ public class BaseActivity extends AppCompatActivity {
 
     public void configureAndShowSearchFragment(){
 
-        fragmentDisplayed = SEARCH_FRAG;
-
+        // change icons toolbar
         toolbarManager.setIconsToolbarSearchPropertiesMode();
 
+        fragmentDisplayed = SEARCH_FRAG;
         searchFragment = new SearchFragment();
 
+        // Create bundle
         Bundle bundle = new Bundle();
         bundle.putString(BUNDLE_DEVICE, modeDevice);
         bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
@@ -283,7 +276,7 @@ public class BaseActivity extends AppCompatActivity {
         builder.setCancelable(true);
         builder.setTitle(getResources().getString(R.string.delete_image));
         builder.setMessage(getResources().getString(R.string.delete_confirmation));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), (dialog, id) -> editFragment.alertDeletion(viewHolderPosition))
+        builder.setPositiveButton(getResources().getString(R.string.confirm), (dialog, id) -> editFragment.proceedToDeletion(viewHolderPosition))
                 .setNegativeButton(R.string.cancel, (dialog, id) -> { });
 
         AlertDialog dialog = builder.create();
@@ -314,19 +307,20 @@ public class BaseActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // --------------------------- For extra images
         if (requestCode == RESULT_LOAD_IMAGE_VIEWHOLDER && resultCode == RESULT_OK && data != null){
             Uri selectedImage = data.getData();
 
-            if(selectedImage!=null){
+            if(selectedImage!=null){ // if URI is not null, recover real path from URI and send it to editfragment
                 String imagePath = Utils.getRealPathFromURI(this,selectedImage);
                 editFragment.setExtraImage(imagePath, viewHolderPosition);
             } else
                 editFragment.setExtraImage(null, viewHolderPosition);
-
+        // --------------------------- For main image
         } else if (requestCode == RESULT_LOAD_MAIN_IMAGE_ && null != data){
             Uri selectedImage = data.getData();
 
-            if(selectedImage!=null){
+            if(selectedImage!=null){ // if URI is not null, recover real path from URI and send it to editfragment
                 String imagePath = Utils.getRealPathFromURI(this,selectedImage);
                 editFragment.setMainImage(imagePath);
             } else
@@ -358,15 +352,15 @@ public class BaseActivity extends AppCompatActivity {
         this.idProperty = idProperty;
     }
 
-    public ToolbarManager getToolbarManager() {
-        return toolbarManager;
-    }
-
     public DrawerLayout getDrawerLayout() {
         return drawerLayout;
     }
 
     public NavigationView getNavigationView() {
         return navigationView;
+    }
+
+    public String getModeDevice() {
+        return modeDevice;
     }
 }
