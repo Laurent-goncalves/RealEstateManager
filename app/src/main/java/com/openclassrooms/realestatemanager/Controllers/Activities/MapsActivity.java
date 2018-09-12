@@ -23,9 +23,11 @@ import butterknife.ButterKnife;
 public class MapsActivity extends BaseActivity {
 
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
+    private static final String SHAREDPREFERENCES = "MAPSPREFERRENCES";
     private SharedPreferences sharedPreferences;
     private ScrollView displayLayout;
     @BindView(R.id.fragment_maps_layout) FrameLayout mapsLayout;
+    @BindView(R.id.fragment_layout) ScrollView listPropMap;
     @BindView(R.id.progressBar) ProgressBar progressBar;
     private GoogleMapUtils googleMapUtils;
 
@@ -43,12 +45,9 @@ public class MapsActivity extends BaseActivity {
         toolbarManager = new ToolbarManager(this);
         toolbarManager.configureNavigationDrawer(this);
 
-        sharedPreferences = getSharedPreferences("MAPSPREFERRENCES",MODE_PRIVATE);
-
-        if(modeDevice.equals(MODE_TABLET)) { // MODE TABLET
-            displayLayout = findViewById(R.id.fragment_layout);
-            displayLayout.setVisibility(View.GONE);
-        }
+        sharedPreferences = getSharedPreferences(SHAREDPREFERENCES,MODE_PRIVATE);
+        displayLayout = findViewById(R.id.fragment_layout);
+        displayLayout.setVisibility(View.GONE);
 
         configureAndShowMap();
     }
@@ -91,7 +90,8 @@ public class MapsActivity extends BaseActivity {
         Property property = Utils.getPropertyFromList(idProperty,listProperties);
 
         // Select property in the list
-        getListPropertiesFragment().refreshListProperties(Utils.getIndexPropertyFromList(property,listProperties));
+        if(modeDevice.equals(MODE_TABLET))
+            getListPropertiesFragment().refreshListProperties(Utils.getIndexPropertyFromList(property,listProperties));
 
         // move camera to property location
         if(property!=null){
@@ -111,13 +111,23 @@ public class MapsActivity extends BaseActivity {
 
         Property property = Utils.getPropertyFromList(idProperty,listProperties);
 
-        // Select property in the list
-        getListPropertiesFragment().refreshListProperties(Utils.getIndexPropertyFromList(property,listProperties));
+        // Select property in the list (mode Tablet)
+        if(modeDevice.equals(MODE_TABLET))
+            getListPropertiesFragment().refreshListProperties(Utils.getIndexPropertyFromList(property,listProperties));
 
         configureAndShowDisplayFragment(MODE_DISPLAY_MAPS, idProperty);
 
         displayLayout.setVisibility(View.VISIBLE);
         mapsLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(fragmentDisplayed.equals(EDIT_FRAG))
+            configureAndShowDisplayFragment(modeSelected, idProperty);
+        else
+            configureAndShowMap();
     }
 
     public SharedPreferences getSharedPreferences() {

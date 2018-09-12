@@ -60,6 +60,7 @@ public class SearchFragment extends Fragment {
     private static final String MODE_SEARCH = "mode_search";
     private static final String PUBLISH_DATE_START = "publish_date_start";
     private static final String PUBLISH_DATE_END = "publish_date_end";
+    private static final String NUMBER_ROOMS = "number_of_rooms";
     private ImageButton buttonPlus;
     private ImageButton buttonLess;
     private int roomNbMin;
@@ -87,8 +88,41 @@ public class SearchFragment extends Fragment {
         if(baseActivity!=null)
             this.context = baseActivity.getApplicationContext();
 
+        if(savedInstanceState!=null)
+            restoreData(savedInstanceState);
+
         configureSearchFragment();
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if(startPublishView.getText()!=null)
+            outState.putString(PUBLISH_DATE_START, startPublishView.getText().toString());
+        else
+            outState.putString(PUBLISH_DATE_START, "");
+
+        if(endPublishView.getText()!=null)
+            outState.putString(PUBLISH_DATE_END, endPublishView.getText().toString());
+        else
+            outState.putString(PUBLISH_DATE_END, "");
+
+        outState.putInt(NUMBER_ROOMS, roomNbMin);
+    }
+
+    public void restoreData(Bundle outState){
+        startPublishView.setText(outState.getString(PUBLISH_DATE_START));
+        endPublishView.setText(outState.getString(PUBLISH_DATE_END));
+        roomNbMin = outState.getInt(NUMBER_ROOMS);
+
+        if(roomNbMin==0)
+            nbRoomsView.setText(getResources().getString(R.string.any));
+        else {
+            String text = "+" + String.valueOf(roomNbMin);
+            nbRoomsView.setText(text);
+        }
     }
 
     @SuppressLint("CutPasteId")
@@ -328,10 +362,11 @@ public class SearchFragment extends Fragment {
         });
     }
 
-    private void displayResults(){
-        if(listProperties.size()>0) // if at least one result, show list properties
+    private void displayResults() {
+        if (listProperties.size() > 0){ // if at least one result, show list properties
+            searchActivity.setListProperties(listProperties);
             baseActivity.configureAndShowListPropertiesFragment(MODE_SEARCH, listProperties);
-        else
+        } else
             baseActivity.displayError(context.getResources().getString(R.string.no_result_found));
     }
 
@@ -354,49 +389,8 @@ public class SearchFragment extends Fragment {
     public TextView getEndPublishView() {
         return endPublishView;
     }
-}
 
-
-
-/*
-    private void configureOnClickListenersDatesSelector() {
-
-        calendarView.setVisibility(View.GONE); // hide calendarView
-
-        layoutDates.findViewById(R.id.start_relativelayout_publish_search)
-                .setOnClickListener(v -> {
-                    TextView dateText = baseActivity.findViewById(R.id.start_date_publish_selected_search);
-
-                    if(calendarView.getVisibility()==View.GONE){
-                        calendarView.setVisibility(View.VISIBLE);
-                        configureCalendarView(dateText);
-                    } else {
-                        calendarView.setVisibility(View.GONE);
-                    }
-                });
-
-        layoutDates.findViewById(R.id.end_relativelayout_publish_search)
-                .setOnClickListener(v -> {
-                    TextView dateText = baseActivity.findViewById(R.id.end_date_publish_selected_search);
-
-                    if(calendarView.getVisibility()==View.GONE){
-                        calendarView.setVisibility(View.VISIBLE);
-                        configureCalendarView(dateText);
-                    } else {
-                        calendarView.setVisibility(View.GONE);
-                    }
-                });
+    public BaseActivity getBaseActivity() {
+        return baseActivity;
     }
-
-
-
-    private void configureCalendarView(final TextView dateTextview) {
-
-        calendarView.setVisibility(View.VISIBLE); // show calendarView
-
-        calendarView.setOnDateChangeListener(((view, year, month, dayOfMonth) -> {
-            String dateText = Utils.create_string_date(year, month, dayOfMonth);
-            dateTextview.setText(dateText); // change date selected into string
-            calendarView.setVisibility(View.GONE); // hide calendar view
-        }));
-    }*/
+}

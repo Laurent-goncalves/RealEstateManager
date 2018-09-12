@@ -71,7 +71,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         baseActivity = (BaseActivity) getActivity();
         context = baseActivity.getApplicationContext();
 
-        // We recover in the bundle the property in json format
+        // We recover the property to be displayed
         if(getArguments()!=null){
 
             // recover mode selected (search, list, map)
@@ -94,11 +94,11 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                 listImages.add(new ImageProperty(0, property.getMainImagePath(),null,idProp)); // add main image
 
             recoverImagesProperty(idProp);
-        }
 
-        if(property!=null){
-            configureViews();
-            configureImagesProperty();
+            if(property!=null){
+                configureViews();
+                configureImagesProperty();
+            }
         }
 
         return view;
@@ -111,7 +111,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
 
             switch(modeSelected){
                 case MODE_SEARCH:
-                    searchActivity.getListFragLayout().setBackgroundColor(context.getResources().getColor(R.color.colorGrey));
+                    if(modeDevice.equals(MODE_TABLET))
+                        searchActivity.getListFragLayout().setBackgroundColor(context.getResources().getColor(R.color.colorGrey));
                     baseActivity.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:

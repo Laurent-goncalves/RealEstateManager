@@ -253,9 +253,11 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
             switch (id) {
                 case R.id.mapsactivity_menu_item:
                     mainActivity.launchMapsActivity();
+                    mainActivity.finish();
                     break;
                 case R.id.search_property_menu_item:
                     mainActivity.launchSearchActivity();
+                    mainActivity.finish();
                     break;
                 default:
                     break;
@@ -269,9 +271,11 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
             switch (id) {
                 case R.id.search_property_menu_item:
                     mapsActivity.launchSearchActivity();
+                    mapsActivity.finish();
                     break;
                 case R.id.mainpage_menu_item:
                     mapsActivity.launchMainActivity();
+                    mapsActivity.finish();
                     break;
                 default:
                     break;
@@ -285,9 +289,11 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
             switch (id) {
                 case R.id.mapsactivity_menu_item:
                     searchActivity.launchMapsActivity();
+                    searchActivity.finish();
                     break;
                 case R.id.mainpage_menu_item:
                     searchActivity.launchMainActivity();
+                    searchActivity.finish();
                     break;
                 default:
                     break;

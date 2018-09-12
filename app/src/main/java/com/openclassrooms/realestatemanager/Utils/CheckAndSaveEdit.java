@@ -48,7 +48,7 @@ public class CheckAndSaveEdit {
 
     private Boolean checkInformation(){
 
-        Boolean answer = false;
+        Boolean answer1 = false;
 
         if(propertyToSave.getPrice() > 0){
             if(propertyToSave.getSurface() > 0){
@@ -58,18 +58,9 @@ public class CheckAndSaveEdit {
                             if(propertyToSave.getDescription()!=null) {
                                 if (propertyToSave.getDescription().length()>0) {
                                     if(propertyToSave.getMainImagePath()!=null){
-                                        if(propertyToSave.getMainImagePath().length()> 0){
-                                            if(propertyToSave.getSold()){
-                                                if(propertyToSave.getDateSold()!=null){
-                                                    if(propertyToSave.getDateSold().length() > 0 )
-                                                        answer=true;
-                                                    else
-                                                        baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
-                                                } else
-                                                    baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
-                                            } else
-                                                answer=true;
-                                        } else
+                                        if(propertyToSave.getMainImagePath().length()> 0)
+                                            answer1=true;
+                                        else
                                             baseActivity.displayError(context.getResources().getString(R.string.check_main_image));
                                     } else
                                         baseActivity.displayError(context.getResources().getString(R.string.check_main_image));
@@ -88,7 +79,27 @@ public class CheckAndSaveEdit {
         } else
             baseActivity.displayError(context.getResources().getString(R.string.check_price));
 
-        return answer;
+        // Check if the property has been sold, but information are missing
+        Boolean answer2 = true;
+
+        if(propertyToSave.getSold()){
+            if(propertyToSave.getDateSold()!=null){
+                if(propertyToSave.getDateSold().length() == 0 ){ // if property sold but no date indicated, inform user
+                    answer2=false;
+                    baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
+                }
+            } else {
+                answer2=false;
+                baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
+            }
+        } else if(propertyToSave.getDateSold()!=null){
+            if(propertyToSave.getDateSold().length() > 0 && !propertyToSave.getSold()){ // if date of sale indicated but property not set to "sold", inform user
+                answer2=false;
+                baseActivity.displayError(context.getResources().getString(R.string.check_sold_status));
+            }
+        }
+
+        return answer1 && answer2;
     }
 
     private void SaveInfoEditFragment(){
@@ -109,7 +120,9 @@ public class CheckAndSaveEdit {
 
             // display property and refresh the list of properties
             baseActivity.changeToDisplayMode(idProp);
-            baseActivity.getListPropertiesFragment().refresh(idProp);
+
+            if(baseActivity.getListPropertiesFragment()!=null)
+                baseActivity.getListPropertiesFragment().refresh(idProp);
 
         } else {
             // insert new property
@@ -121,7 +134,9 @@ public class CheckAndSaveEdit {
 
             // display property and refresh the list of properties
             baseActivity.changeToDisplayMode((int) ContentUris.parseId(uri));
-            baseActivity.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
+
+            if(baseActivity.getListPropertiesFragment()!=null)
+                baseActivity.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
         }
     }
 

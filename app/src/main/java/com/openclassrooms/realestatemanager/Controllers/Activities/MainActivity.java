@@ -25,7 +25,16 @@ public class MainActivity extends BaseActivity  {
 
         idProperty=-1;
 
+        //configureAndShowEditFragment(0);
         configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(fragmentDisplayed.equals(EDIT_FRAG))
+            configureAndShowDisplayFragment(modeSelected, idProperty);
+        else if(modeDevice.equals(MODE_PHONE))
+            configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
     }
 }
 

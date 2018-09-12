@@ -199,13 +199,21 @@ public class SearchAddress implements Disposable{
     private void launchLatLngSearch(String address){
 
         // the address selected is written in the searchView
-        editFragment.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                searchAutoComplete.setText(address);
-            }
-        });
-
+        if(editFragment!=null) {
+            editFragment.getBaseActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchAutoComplete.setText(address);
+                }
+            });
+        } else if(searchFragment!=null){
+            searchFragment.getBaseActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchAutoComplete.setText(address);
+                }
+            });
+        }
 
         // the button save is disabled
         if(editFragment!=null){

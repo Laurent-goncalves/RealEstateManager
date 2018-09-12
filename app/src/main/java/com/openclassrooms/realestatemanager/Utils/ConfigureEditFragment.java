@@ -48,6 +48,7 @@ public class ConfigureEditFragment {
     @BindView(R.id.plus_button) ImageButton buttonPlus;
     @BindView(R.id.less_button) ImageButton buttonLess;
     @BindView(R.id.interest_points_editview) EditText interestView;
+    private TextView dateSold;
     private View view;
     private int roomNb;
     private TextView nbRooms;
@@ -132,7 +133,7 @@ public class ConfigureEditFragment {
         datePublish.setText(property.getDateStart());
 
         // configure date sold
-        TextView dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
+        dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
         dateSold.setText(property.getDateSold());
 
 
@@ -168,6 +169,13 @@ public class ConfigureEditFragment {
         CalendarDialog calendarDialog = CalendarDialog.newInstance(dateType);
         calendarDialog.setTargetFragment(editFragment,0);
         calendarDialog.show(ft, "calendarDialog");
+    }
+
+    @OnClick(R.id.switch_sold)
+    public void onClickSwitchSold(){
+        if(!switchSold.isChecked()){
+            dateSold.setText("");
+        }
     }
 
     @OnClick(R.id.plus_button)

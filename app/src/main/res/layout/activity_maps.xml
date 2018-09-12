@@ -92,13 +92,31 @@
 
             </android.support.v7.widget.Toolbar>
 
-            <fragment
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <!-- FRAGMENT MAPS -->
+            <FrameLayout
+                android:id="@+id/fragment_maps_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context=".Controllers.Activities.MapsActivity"
-                class="com.google.android.gms.maps.SupportMapFragment"/>
+                android:layout_height="match_parent">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context=".Controllers.Activities.MapsActivity"
+                    class="com.google.android.gms.maps.SupportMapFragment"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:indeterminateDrawable="@drawable/progress" >
+                </ProgressBar>
+
+            </FrameLayout>
 
             <ScrollView
                 android:id="@+id/fragment_layout"
@@ -130,15 +148,5 @@
             app:menu="@menu/navigation_drawer_menu" />
 
     </android.support.v4.widget.DrawerLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:visibility="gone"
-        android:layout_gravity="center"
-        android:indeterminateDrawable="@drawable/progress" >
-    </ProgressBar>
 
 </FrameLayout>

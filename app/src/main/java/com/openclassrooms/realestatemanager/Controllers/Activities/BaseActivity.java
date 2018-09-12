@@ -132,6 +132,10 @@ public class BaseActivity extends AppCompatActivity {
 
     public void returnToSearchCriteria(){
 
+        // change icons toolbar
+        if(toolbarManager!=null)
+            toolbarManager.setIconsToolbarListPropertiesMode(modeSelected);
+
         // remove the displayFragment
         if(displayFragment!=null)
             this.getFragmentManager().beginTransaction().remove(displayFragment).commit();

@@ -6,14 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
-import android.widget.TextView;
-
-import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -21,6 +17,7 @@ public class CalendarDialog extends DialogFragment {
 
     @BindView(R.id.calendar_view_dialog) CalendarView calendarView;
     private static final String TYPE_DATE = "type_date";
+    private static final String SOLD_DATE = "sold_date";
     private static final String PUBLISH_DATE = "publish_date";
     private static final String PUBLISH_DATE_START = "publish_date_start";
     private static final String PUBLISH_DATE_END = "publish_date_end";
@@ -54,25 +51,34 @@ public class CalendarDialog extends DialogFragment {
                     String date = Utils.create_string_date(year, month, dayOfMonth);
 
 
-                    if(dateType.equals(PUBLISH_DATE)) {
-                        EditFragment editFragment =(EditFragment) getTargetFragment();
-                        editFragment.getDatePublish().setText(date); // change date selected into string
-                    } else if(dateType.equals(TYPE_DATE)) {
-                        EditFragment editFragment =(EditFragment) getTargetFragment();
-                        editFragment.getDateSold().setText(date); // change date selected into string
-                    } else if (dateType.equals(PUBLISH_DATE_START)){
-                        SearchFragment searchFragment =(SearchFragment) getTargetFragment();
-                        searchFragment.getStartPublishView().setText(date); // change date selected into string
-                    } else if (dateType.equals(PUBLISH_DATE_END)){
-                        SearchFragment searchFragment =(SearchFragment) getTargetFragment();
-                        searchFragment.getEndPublishView().setText(date); // change date selected into string
-                    }
+            switch (dateType) {
+                case PUBLISH_DATE: {
+                    EditFragment editFragment = (EditFragment) getTargetFragment();
+                    editFragment.getDatePublish().setText(date); // change date selected into string
 
-                    this.dismiss();
-                }));
-    }
+                    break;
+                }
+                case SOLD_DATE: {
+                    EditFragment editFragment = (EditFragment) getTargetFragment();
+                    editFragment.getDateSold().setText(date); // change date selected into string
 
-    public CalendarView getCalendarView() {
-        return calendarView;
+                    break;
+                }
+                case PUBLISH_DATE_START: {
+                    SearchFragment searchFragment = (SearchFragment) getTargetFragment();
+                    searchFragment.getStartPublishView().setText(date); // change date selected into string
+
+                    break;
+                }
+                case PUBLISH_DATE_END: {
+                    SearchFragment searchFragment = (SearchFragment) getTargetFragment();
+                    searchFragment.getEndPublishView().setText(date); // change date selected into string
+
+                    break;
+                }
+            }
+
+            this.dismiss();
+        }));
     }
 }

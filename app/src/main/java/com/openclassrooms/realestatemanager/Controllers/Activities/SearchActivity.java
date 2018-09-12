@@ -30,7 +30,8 @@ public class SearchActivity extends BaseActivity {
             listFragLayout = findViewById(R.id.fragment_list_layout);
             listFragLayout.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGrey));
             configureAndShowListPropertiesFragment(MODE_SEARCH,null);
-        }
+        } else
+
 
         configureAndShowSearchFragment();
 
@@ -43,7 +44,12 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
+        if(fragmentDisplayed.equals(EDIT_FRAG))
+            configureAndShowDisplayFragment(modeSelected, idProperty);
+        else if(fragmentDisplayed.equals(DISPLAY_FRAG) && modeDevice.equals(MODE_PHONE))
+            configureAndShowListPropertiesFragment(modeSelected,listProperties);
+        else
+            returnToSearchCriteria();
     }
 
     public ScrollView getListFragLayout() {

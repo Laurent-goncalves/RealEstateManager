@@ -17,6 +17,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- ACTIVITIES -->
+        <activity
+            android:name=".Controllers.Activities.MainActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".Controllers.Activities.MapsActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+        <activity android:name=".Controllers.Activities.SearchActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+        <activity
+            android:name=".Controllers.Activities.BaseActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+
+        <!-- CONTENT PROVIDERS -->
         <provider
             android:name=".Models.Provider.ImageContentProvider"
             android:authorities="com.openclassrooms.realestatemanager.provider"
@@ -30,18 +56,7 @@
             android:authorities="com.openclassrooms.realestatemanager.provider"
             android:exported="true" />
 
-        <activity
-            android:name=".Controllers.Activities.MainActivity"
-            android:noHistory="true"
-            android:configChanges="keyboardHidden|orientation"
-            android:windowSoftInputMode="stateHidden|adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+        <!-- META DATA -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key2" />
@@ -49,20 +64,6 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".Controllers.Activities.MapsActivity"
-            android:noHistory="true"
-            android:configChanges="keyboardHidden|orientation"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity android:name=".Controllers.Activities.SearchActivity"
-            android:noHistory="true"
-            android:configChanges="keyboardHidden|orientation"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity
-            android:name=".Controllers.Activities.BaseActivity"
-            android:noHistory="true"
-            android:configChanges="keyboardHidden|orientation"
-            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
     </application>
 
 </manifest>
