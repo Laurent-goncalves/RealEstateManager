@@ -1,10 +1,8 @@
 package com.openclassrooms.realestatemanager.Views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,9 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
@@ -70,9 +66,6 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
         this.changesOngoing=changesOngoing;
         this.database = PropertyDatabase.getInstance(context);
         this.baseActivity = baseActivity;
-
-        //extraPanel.setX(-600);
-        //extraPanel.setVisibility(View.GONE);
     }
 
     public void setExtraImage(String imagePath){

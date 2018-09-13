@@ -9,6 +9,8 @@ import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
@@ -156,7 +158,9 @@ public class SearchAddress implements Disposable{
 
             @Override
             public void onError(Throwable e) {
-                System.out.println("eee error - " + e.toString());
+                String text = context.getResources().getString(R.string.error_list_addresses) + "\n" + e.toString();
+                Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+                toast.show();
             }
 
             @Override
@@ -178,7 +182,8 @@ public class SearchAddress implements Disposable{
             searchAutoComplete.setText(listSuggestions.get(0));
             //launchLatLngSearch(listSuggestions.get(0));
             launchLatLngSearch(listSuggArray[0]);
-        }
+        } else
+            baseActivity.displayError(context.getResources().getString(R.string.error_address_not_found));
     }
 
     private void buildListSuggestions(Suggestions suggestions){
@@ -200,26 +205,16 @@ public class SearchAddress implements Disposable{
 
         // the address selected is written in the searchView
         if(editFragment!=null) {
-            editFragment.getBaseActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    searchAutoComplete.setText(address);
-                }
-            });
+            editFragment.getBaseActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
         } else if(searchFragment!=null){
-            searchFragment.getBaseActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    searchAutoComplete.setText(address);
-                }
-            });
+            searchFragment.getBaseActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
         }
 
         // the button save is disabled
         if(editFragment!=null){
             editFragment.getButtonSave().setEnabled(false);
             editFragment.getButtonCancel().setEnabled(false);
-        } else {
+        } else if (searchFragment!=null){
             searchFragment.getButtonSearch().setEnabled(false);
             searchFragment.getButtonCancel().setEnabled(false);
         }
@@ -241,7 +236,9 @@ public class SearchAddress implements Disposable{
 
             @Override
             public void onError(Throwable e) {
-                System.out.println("eee error - " + e.toString());
+                String text = context.getResources().getString(R.string.error_latlng_address) + "\n" + e.toString();
+                Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+                toast.show();
             }
 
             @Override
@@ -289,7 +286,7 @@ public class SearchAddress implements Disposable{
                     "&key=" + context.getResources().getString(R.string.google_static_maps_key);
 
             // Get static Map through Async task
-            MyAsync obj = new MyAsync(urlImage) {
+            MyAsync obj = new MyAsync(urlImage, context) {
                 @Override
                 protected void onPostExecute(Bitmap bitmap) {
                     super.onPostExecute(bitmap);
@@ -319,9 +316,12 @@ public class SearchAddress implements Disposable{
     private static class MyAsync extends AsyncTask<Void, Void, Bitmap> {
 
         private String urlImage;
+        @SuppressLint("StaticFieldLeak")
+        private static Context context;
 
-        public MyAsync(String urlImage) {
+        public MyAsync(String urlImage, Context context) {
             this.urlImage = urlImage;
+            MyAsync.context = context;
         }
 
         @Override
@@ -335,15 +335,15 @@ public class SearchAddress implements Disposable{
                 InputStream input = connection.getInputStream();
                 return BitmapFactory.decodeStream(input);
             } catch (IOException e) {
-                e.printStackTrace();
+                displayError(e.toString(), MyAsync.context);
                 return null;
             }
         }
     }
+
+    public static void displayError(String exception, Context context){
+        String text = context.getResources().getString(R.string.error_static_map_address) + "\n" + exception;
+        Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+        toast.show();
+    }
 }
-
-/*
-
-https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&key=AIzaSyAo8Xn0NUmP-GeDRDwyxzasemNR9nen6sw
-
- */

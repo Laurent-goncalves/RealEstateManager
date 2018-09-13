@@ -3,9 +3,7 @@ package com.openclassrooms.realestatemanager.Views;
 import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
 import butterknife.ButterKnife;

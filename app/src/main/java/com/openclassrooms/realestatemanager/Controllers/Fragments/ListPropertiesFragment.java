@@ -38,7 +38,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private BaseActivity baseActivity;
     private MapsActivity mapsActivity;
     private SearchActivity searchActivity;
-    private View view;
     private Context context;
     private String modeDevice;
     private final static String BUNDLE_DEVICE = "bundle_device";
@@ -47,7 +46,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private static final String MODE_SEARCH = "mode_search";
     private static final String MODE_DISPLAY = "mode_display";
-    private static final String MODE_SELECTED = "mode_selected";
     private static final String LIST_PROPERTIES_JSON = "list_properties_json";
     private static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
     private String modeSelected;
@@ -94,7 +92,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.property_item_list, container, false);
+        View view = inflater.inflate(R.layout.property_item_list, container, false);
         ButterKnife.bind(this, view);
         configureListProperties();
         return view;
@@ -161,16 +159,12 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
                 if (baseActivity != null)
                     context = baseActivity.getApplicationContext();
-                /*if (mapsActivity != null)
-                    context = mapsActivity.getApplicationContext();*/
 
                 if (context != null) {
 
                     // Create adapter passing in the sample user data
                     if (baseActivity != null)
                         adapter = new PropertiesRecyclerViewAdapter(listProperties, context, position, callbackListProperties, baseActivity, modeSelected);
-                    /*else if (mapsActivity != null)
-                        adapter = new PropertiesRecyclerViewAdapter(listProperties, context, position, callbackListProperties, mapsActivity, modeSelected);*/
 
                     // Attach the adapter to the recyclerview to populate items
                     recyclerView.setAdapter(adapter);

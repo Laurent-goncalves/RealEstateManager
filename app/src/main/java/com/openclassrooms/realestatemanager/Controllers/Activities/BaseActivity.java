@@ -27,7 +27,6 @@ public class BaseActivity extends AppCompatActivity {
 
     protected static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     protected static int RESULT_LOAD_MAIN_IMAGE_ = 3;
-    protected static final String MODE_SELECTED = "mode_selected";
     protected static final String MODE_NEW = "NEW";
     protected static final String MODE_UPDATE = "UPDATE";
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
@@ -37,19 +36,13 @@ public class BaseActivity extends AppCompatActivity {
     protected static final String MODE_DISPLAY = "mode_display";
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     protected static final String LIST_PROPERTIES_JSON = "list_properties_json";
-    protected final static String EXTRA_PROPERTY_ID = "property_id";
-    protected final static String BUNDLE_PROP_ID = "property_id";
-
-    protected final static String BUNDLE_FRAG = "fragment_displayed";
     protected final static String LIST_FRAG = "fragment_list";
     protected final static String SEARCH_FRAG = "fragment_search";
     protected final static String DISPLAY_FRAG = "fragment_display";
     protected final static String EDIT_FRAG = "fragment_edit";
-
     protected final static String BUNDLE_DEVICE = "bundle_device";
     protected final static String MODE_TABLET = "mode_tablet";
     protected final static String MODE_PHONE = "mode_phone";
-
     protected String fragmentDisplayed;
     @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
@@ -74,39 +67,6 @@ public class BaseActivity extends AppCompatActivity {
             modeDevice=MODE_TABLET;
         } else { // MODE PHONE
             modeDevice=MODE_PHONE;
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(BUNDLE_FRAG, fragmentDisplayed);
-        outState.putString(BUNDLE_DEVICE, modeDevice);
-        outState.putString(BUNDLE_MODE_SELECTED, modeSelected);
-        outState.putInt(BUNDLE_PROP_ID, idProperty);
-    }
-
-    protected void showSaveInstanceFragment(Bundle bundle){
-
-        fragmentDisplayed = bundle.getString(BUNDLE_FRAG,null);
-        modeDevice = bundle.getString(BUNDLE_DEVICE,null);
-        modeSelected = bundle.getString(BUNDLE_MODE_SELECTED,null);
-
-        if(fragmentDisplayed !=null){
-            switch (fragmentDisplayed) {
-                case LIST_FRAG:
-                    configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
-                    break;
-                case SEARCH_FRAG:
-                    configureAndShowSearchFragment();
-                    break;
-                case DISPLAY_FRAG:
-                    configureAndShowDisplayFragment(modeSelected, bundle.getInt(BUNDLE_PROP_ID));
-                    break;
-                case EDIT_FRAG:
-                    configureAndShowEditFragment(bundle.getInt(BUNDLE_PROP_ID));
-                    break;
-            }
         }
     }
 
@@ -213,18 +173,24 @@ public class BaseActivity extends AppCompatActivity {
 
         bundle.putString(BUNDLE_DEVICE, modeDevice);
 
-        if(modeSelected.equals(MODE_DISPLAY))
-            bundle.putString(BUNDLE_MODE_SELECTED,MODE_DISPLAY);
-        else if(modeSelected.equals(MODE_SEARCH)) {
-            bundle.putString(BUNDLE_MODE_SELECTED,MODE_SEARCH);
-            Gson gson = new Gson();
-            String listPropertiesJson = gson.toJson(listProp);
-            bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
-        } else if (modeSelected.equals(MODE_DISPLAY_MAPS)) {
-            bundle.putString(BUNDLE_MODE_SELECTED,MODE_DISPLAY_MAPS);
-            Gson gson = new Gson();
-            String listPropertiesJson = gson.toJson(listProp);
-            bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
+        switch (modeSelected) {
+            case MODE_DISPLAY:
+                bundle.putString(BUNDLE_MODE_SELECTED, MODE_DISPLAY);
+                break;
+            case MODE_SEARCH: {
+                bundle.putString(BUNDLE_MODE_SELECTED, MODE_SEARCH);
+                Gson gson = new Gson();
+                String listPropertiesJson = gson.toJson(listProp);
+                bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
+                break;
+            }
+            case MODE_DISPLAY_MAPS: {
+                bundle.putString(BUNDLE_MODE_SELECTED, MODE_DISPLAY_MAPS);
+                Gson gson = new Gson();
+                String listPropertiesJson = gson.toJson(listProp);
+                bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
+                break;
+            }
         }
 
         // configure and show the listPropertiesFragment
@@ -329,7 +295,8 @@ public class BaseActivity extends AppCompatActivity {
                 editFragment.setMainImage(imagePath);
             } else
                 editFragment.setMainImage(null);
-        }
+        } else
+            displayError(getResources().getString(R.string.error_image_recovering));
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -338,6 +305,10 @@ public class BaseActivity extends AppCompatActivity {
 
     public void setListProperties(List<Property> listProperties) {
         this.listProperties = listProperties;
+    }
+
+    public List<Property> getListProperties() {
+        return listProperties;
     }
 
     public EditFragment getEditFragment() {
@@ -367,4 +338,47 @@ public class BaseActivity extends AppCompatActivity {
     public String getModeDevice() {
         return modeDevice;
     }
+
+    public SearchFragment getSearchFragment() {
+        return searchFragment;
+    }
 }
+
+
+
+/*
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_FRAG, fragmentDisplayed);
+        outState.putString(BUNDLE_DEVICE, modeDevice);
+        outState.putString(BUNDLE_MODE_SELECTED, modeSelected);
+        outState.putInt(BUNDLE_PROP_ID, idProperty);
+    }
+
+    protected void showSaveInstanceFragment(Bundle bundle){
+
+        fragmentDisplayed = bundle.getString(BUNDLE_FRAG,null);
+        modeDevice = bundle.getString(BUNDLE_DEVICE,null);
+        modeSelected = bundle.getString(BUNDLE_MODE_SELECTED,null);
+
+        if(fragmentDisplayed !=null){
+            switch (fragmentDisplayed) {
+                case LIST_FRAG:
+                    configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+                    break;
+                case SEARCH_FRAG:
+                    configureAndShowSearchFragment();
+                    break;
+                case DISPLAY_FRAG:
+                    configureAndShowDisplayFragment(modeSelected, bundle.getInt(BUNDLE_PROP_ID));
+                    break;
+                case EDIT_FRAG:
+                    configureAndShowEditFragment(bundle.getInt(BUNDLE_PROP_ID));
+                    break;
+            }
+        }
+    }
+
+ */

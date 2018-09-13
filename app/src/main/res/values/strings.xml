@@ -44,8 +44,16 @@
     <string name="delete_confirmation">Are you sure that you want to delete this image ?</string>
     <string name="confirm">Confirm</string>
     <string name="no_image_saved">No image saved \n Please select an image or click on cancel</string>
-    <string name="image_saved">Image saved !</string>
+    <string name="image_added">Image added !</string>
     <string name="image_updated">Image updated !</string>
+
+    <!-- INTEREST POINTS API -->
+    <string name="error_interest_points">Error to get interest points</string>
+
+    <!-- SEARCH ADDRESS API -->
+    <string name="error_list_addresses">Error to get list of suggestions</string>
+    <string name="error_latlng_address">Error to get latitude and longitude of selected address</string>
+    <string name="error_static_map_address">Error to get static map of selected address</string>
 
     <!-- STATUS IMAGES-->
     <string name="status_OK">OK</string>
@@ -73,6 +81,9 @@
     <string name="main_image">Main image</string>
     <string name="extra_images">Extra images</string>
     <string name="ok">OK</string>
+
+    <string name="error_address_not_found">Address not found</string>
+    <string name="error_image_recovering">Image cannot be recovered.</string>
 
     <string name="give_permission">Please give your permission</string>
 
@@ -106,6 +117,9 @@
     <!-- MAPS -->
     <string name="error_geolocalization">Error geolocalization</string>
     <string name="error_current_location">Error to get current location</string>
+    <string name="error_map_init">Problem to initialize the map</string>
+
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

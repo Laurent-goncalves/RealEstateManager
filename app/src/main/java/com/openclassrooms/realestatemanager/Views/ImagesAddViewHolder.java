@@ -3,9 +3,7 @@ package com.openclassrooms.realestatemanager.Views;
 import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
 import butterknife.OnClick;
@@ -33,12 +31,9 @@ public class ImagesAddViewHolder extends BaseImageViewHolder {
         deleteIcon.setVisibility(View.GONE);
         titleImage.setVisibility(View.GONE);
 
-
         if (inEdition){
-            //extraPanel.setVisibility(View.VISIBLE);
             view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_expanded);
         } else {
-            //extraPanel.setVisibility(View.GONE);
             view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_reduced);
         }
 
@@ -55,10 +50,6 @@ public class ImagesAddViewHolder extends BaseImageViewHolder {
 
         if(imagePath!=null) {
 
-            // send a message Toast to the user
-            Toast toast = Toast.makeText(context,context.getResources().getString(R.string.image_saved),Toast.LENGTH_LONG);
-            toast.show();
-
             // Update imageProperty
             imageProperty.setImagePath(imagePath);
             imageProperty.setDescription(description);
@@ -68,6 +59,10 @@ public class ImagesAddViewHolder extends BaseImageViewHolder {
 
             // Close extra panel
             closeExtraPanel();
+
+            // send a message Toast to the user
+            Toast toast = Toast.makeText(context,context.getResources().getString(R.string.image_added),Toast.LENGTH_LONG);
+            toast.show();
 
         } else {
 

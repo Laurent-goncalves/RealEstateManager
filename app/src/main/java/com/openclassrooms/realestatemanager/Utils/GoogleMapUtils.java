@@ -17,7 +17,6 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -30,6 +29,7 @@ import com.openclassrooms.realestatemanager.Models.Provider.MapsContentProvider;
 import com.openclassrooms.realestatemanager.R;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class GoogleMapUtils {
@@ -46,7 +46,6 @@ public class GoogleMapUtils {
     private LatLng currentLatLng;
     private MapsActivity mapsActivity;
     private SharedPreferences sharedPreferences;
-    private GoogleMapUtils mGoogleMapUtils;
     private List<Property> listProperties;
     private String modeDevice;
     List<Marker> listMarkers;
@@ -55,7 +54,6 @@ public class GoogleMapUtils {
         this.context = context;
         this.modeDevice=modeDevice;
         this.mapsActivity=mapsActivity;
-        this.mGoogleMapUtils=this;
         sharedPreferences = mapsActivity.getSharedPreferences();
         listProperties = new ArrayList<>();
         SupportMapFragment mapFragment = (SupportMapFragment) mapsActivity.getSupportFragmentManager()
@@ -64,7 +62,9 @@ public class GoogleMapUtils {
         try {
             MapsInitializer.initialize(context);
         } catch (Exception e) {
-            e.printStackTrace();
+            String text = context.getResources().getString(R.string.error_map_init) + "\n" + e.toString();
+            Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+            toast.show();
         }
 
         mapFragment.getMapAsync(googleMap -> mMap = googleMap);
@@ -219,7 +219,7 @@ public class GoogleMapUtils {
 
     private void createMarkerForEachProperty(List<Property> listProperties){
 
-        listMarkers = new ArrayList<Marker>();
+        listMarkers = new ArrayList<>();
         mMap.clear();
         MarkerOptions markerOptions;
 
@@ -267,7 +267,7 @@ public class GoogleMapUtils {
     public void centerToMarker(int idProp){
 
         for(Marker marker : listMarkers){
-            if(marker.getTag().toString().equals(String.valueOf(idProp)))
+            if(Objects.requireNonNull(marker.getTag()).toString().equals(String.valueOf(idProp)))
                 marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             else
                 marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));

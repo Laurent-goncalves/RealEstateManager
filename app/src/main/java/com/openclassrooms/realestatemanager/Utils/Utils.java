@@ -81,22 +81,26 @@ public class Utils {
      * @param context
      * @return
      */
-    public static Boolean isInternetAvailable(Context context){
 
+    public static Boolean isWifiEnabled(Context context) {
         WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        return wifi != null && wifi.isWifiEnabled();
+    }
 
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static Boolean isNetworkEnabled(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo netInfo = null;
         if (cm != null) {
             netInfo = cm.getActiveNetworkInfo();
         }
 
-        if(wifi!=null)
-            return wifi.isWifiEnabled() || (netInfo != null && netInfo.isConnectedOrConnecting());
-        else
-            return netInfo != null && netInfo.isConnectedOrConnecting();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public static Boolean isInternetAvailable(Context context){
+        return isNetworkEnabled(context) || isWifiEnabled(context);
     }
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {

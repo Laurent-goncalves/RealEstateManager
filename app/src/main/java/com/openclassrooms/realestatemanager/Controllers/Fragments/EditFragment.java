@@ -4,6 +4,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -130,7 +131,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 1: {
@@ -221,10 +222,6 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     public Property getProperty() {
         return property;
-    }
-
-    public String getMode() {
-        return modeSelected;
     }
 
     public String getInterestPoints() {

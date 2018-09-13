@@ -2,10 +2,13 @@ package com.openclassrooms.realestatemanager.Models;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.PlaceNearby.PlaceNearby;
 import com.openclassrooms.realestatemanager.Models.PlaceNearby.Result;
+import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ApiStream;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import java.util.ArrayList;
@@ -48,7 +51,9 @@ public class ListPointsInterest implements Disposable {
 
             @Override
             public void onError(Throwable e) {
-                System.out.println("eee error - " + e.toString());
+                String text = context.getResources().getString(R.string.error_interest_points) + "\n" + e.toString();
+                Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+                toast.show();
             }
 
             @Override
@@ -59,8 +64,6 @@ public class ListPointsInterest implements Disposable {
 
                 if(editFragment!=null)
                     editFragment.setInterestPoints(listPointsInterest.toString());
-
-
             }
         });
     }

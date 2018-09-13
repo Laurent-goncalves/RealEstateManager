@@ -32,14 +32,7 @@ public class SearchActivity extends BaseActivity {
             configureAndShowListPropertiesFragment(MODE_SEARCH,null);
         } else
 
-
         configureAndShowSearchFragment();
-
-
-        /*if(savedInstanceState!=null){
-            showSaveInstanceFragment(savedInstanceState);
-        } else
-            configureAndShowSearchFragment();*/
     }
 
     @Override

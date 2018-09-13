@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
@@ -31,15 +30,6 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
 
         // set image
         Utils.setImageBitmapInView(imageProperty.getImagePath(),image, baseActivity);
-
-        // set title and layout
-        finalizeLayoutImage(imageProperty, positionSelected);
-    }
-
-    public void configureImagesViews(ImageProperty imageProperty, MapsActivity mapsActivity, int positionSelected) {
-
-        // set image
-        Utils.setImageBitmapInView(imageProperty.getImagePath(),image, mapsActivity);
 
         // set title and layout
         finalizeLayoutImage(imageProperty, positionSelected);

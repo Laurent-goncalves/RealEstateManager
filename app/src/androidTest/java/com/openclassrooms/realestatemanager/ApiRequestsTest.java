@@ -3,12 +3,17 @@ package com.openclassrooms.realestatemanager;
 
 import android.arch.persistence.room.Room;
 import android.content.ContentUris;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.rule.ActivityTestRule;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -35,6 +40,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +70,7 @@ public class ApiRequestsTest {
     private Uri uriInsert;
 
     // Property for demo
-    private Property PROPERTY_DEMO = new Property(0, "Appartment", 125000d,30.25d,1,
+    private Property PROPERTY_DEMO = new Property(0, "Apartment", 125000d,30.25d,1,
             "description","address",null,false,"01/06/2018","02/06/2018",0d,0d,"Eric",null,null);
 
     @Before
@@ -112,39 +120,126 @@ public class ApiRequestsTest {
 
     }
 
+    private EditFragment editFragment;
+
     @Test
     public void TEST_latLngRequest(){
-
-        mActivityTestRule.getActivity().configureAndShowDisplayFragment(PROPERTY_DEMO);
-
-        waiting_time(1000);
-
-        mActivityTestRule.getActivity().setCurrentPositionDisplayed(-1);
-
-        mActivityTestRule.getActivity().configureAndShowEditFragment(PROPERTY_DEMO);
-
-        EditFragment editFragment = mActivityTestRule.getActivity().getEditFragment();
-
-        waiting_time(2000);
-
-        //SearchView.SearchAutoComplete searchAutoComplete = editFragment.getSearchView().findViewById(android.support.v7.appcompat.R.id.search_src_text);
 
         mActivityTestRule.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                mActivityTestRule.getActivity().configureAndShowListPropertiesFragment("mode_display",null);
+
+                waiting_time(3000);
+
+                mActivityTestRule.getActivity().configureAndShowDisplayFragment("mode_display",idProp);
+
+                waiting_time(3000);
+
+                mActivityTestRule.getActivity().setCurrentPositionDisplayed(-1);
+
+                mActivityTestRule.getActivity().configureAndShowEditFragment(idProp);
+
+                waiting_time(2000);
+
+                editFragment = mActivityTestRule.getActivity().getEditFragment();
+
+                waiting_time(2000);
+
                 editFragment.getSearchView().setQuery("rue Saint-Nicolas, Paris, France",true);
-                //searchAutoComplete.setText("rue Saint-Nicolas, Paris, France");
+
+                waiting_time(3000);
+
+                Assert.assertTrue(editFragment.getLatLngAddress().latitude!=0d);
+                Assert.assertTrue(editFragment.getLatLngAddress().longitude!=0d);
+                Assert.assertTrue(editFragment.getStaticMap()!=null);
+                Assert.assertTrue(editFragment.getInterestPoints()!=null);
             }
         });
+    }
 
-        waiting_time(8000);
+    @Test
+    public void Test_Internet_Connection(){
 
-        Assert.assertTrue(editFragment.getLatLngAddress().latitude!=0d);
-        Assert.assertTrue(editFragment.getLatLngAddress().longitude!=0d);
-        Assert.assertTrue(editFragment.getStaticMap()!=null);
-        Assert.assertTrue(editFragment.getInterestPoints()!=null);
+        //ShowAvailable();
 
+        // Disable wifi
+        WifiManager wifiManager = (WifiManager) mActivityTestRule.getActivity().getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(false);
 
+        //ShowAvailable();
+
+        // Disable internet connection
+        try {
+            setMobileDataEnabled(mActivityTestRule.getActivity().getApplicationContext(), false);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        // check that no internet connection are available
+        Assert.assertFalse(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
+
+        try {
+
+            // Restore wifi
+            wifiManager.setWifiEnabled(true);
+            Assert.assertTrue(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
+
+            // Restore internet connection
+            setMobileDataEnabled(mActivityTestRule.getActivity().getApplicationContext(), true);
+            Assert.assertTrue(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void ShowAvailable()
+    {
+        ConnectivityManager connectivityMgr = (ConnectivityManager)
+                mActivityTestRule.getActivity().getApplicationContext()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] nwInfos = connectivityMgr.getAllNetworkInfo();
+        for (NetworkInfo nwInfo : nwInfos)
+        {
+            System.out.println("eee " + "Network Type Name: " +nwInfo.getTypeName());
+            System.out.println("eee " +  "Network available: " + nwInfo.isAvailable());
+            System.out.println("eee " +"Network c_or-c: " + nwInfo.isConnectedOrConnecting());
+            System.out.println("eee " + "Network connected: " + nwInfo.isConnected());
+            System.out.println("eee " + "---------------------------------------------------------- ");
+        }
+
+    }
+
+    public void setMobileDataEnabled(Context context, boolean enabled) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        final ConnectivityManager conman = (ConnectivityManager)  context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final Class conmanClass = Class.forName(conman.getClass().getName());
+        final Field connectivityManagerField = conmanClass.getDeclaredField("mService");
+        connectivityManagerField.setAccessible(true);
+        final Object connectivityManager = connectivityManagerField.get(conman);
+        final Class connectivityManagerClass =  Class.forName(connectivityManager.getClass().getName());
+        final Method setMobileDataEnabledMethod = connectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
+        setMobileDataEnabledMethod.setAccessible(true);
+
+        setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
     }
 
     private void waiting_time(int time){
@@ -155,22 +250,4 @@ public class ApiRequestsTest {
         }
     }
 
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
-    }
 }

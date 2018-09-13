@@ -19,10 +19,7 @@ import com.openclassrooms.realestatemanager.R;
 
 public class ToolbarManager implements NavigationView.OnNavigationItemSelectedListener{
 
-    private static final String MODE_SEARCH = "mode_search";
     private static final String MODE_DISPLAY = "mode_display";
-    private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
-    private final static String MODE_PHONE = "mode_phone";
     protected final static String MODE_TABLET = "mode_tablet";
     private MainActivity mainActivity;
     private MapsActivity mapsActivity;

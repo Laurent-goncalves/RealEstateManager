@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
@@ -28,11 +27,9 @@ public class BasePropertyFragment extends Fragment {
     protected Context context;
     protected List<ImageProperty> listImages;
     protected BaseActivity baseActivity;
-    protected MainActivity mainActivity;
     protected SearchActivity searchActivity;
     protected MapsActivity mapsActivity;
     protected String buttonReturnText;
-
     protected String modeSelected;
     protected final static String BUNDLE_DEVICE = "bundle_device";
     protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
@@ -41,7 +38,6 @@ public class BasePropertyFragment extends Fragment {
     protected static final String MODE_DISPLAY = "mode_display";
     protected static final String MODE_SELECTED = "mode_selected";
     protected static final String MODE_SEARCH = "mode_search";
-
     protected String modeDevice;
     protected final static String MODE_TABLET = "mode_tablet";
     protected final static String MODE_PHONE = "mode_phone";

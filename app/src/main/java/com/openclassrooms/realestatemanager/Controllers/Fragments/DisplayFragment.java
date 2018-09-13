@@ -173,8 +173,6 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         // set the main image
         if(property.getMainImagePath()!=null && baseActivity!=null)
             Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
-        /*else if (property.getMainImagePath()!=null && mapsActivity!=null)
-            Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, mapsActivity);*/
 
         // set the type of property
         String typeProp = property.getType();
@@ -260,8 +258,6 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     public void changeMainImage(int position){
         if(listImages.get(position)!=null && baseActivity!=null)
             Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, baseActivity);
-        /*else if(listImages.get(position)!=null && mapsActivity!=null)
-            Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, mapsActivity);*/
     }
 
 }

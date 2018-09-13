@@ -38,26 +38,9 @@ public class MainActivity extends BaseActivity  {
     }
 }
 
-//android:configChanges="keyboardHidden|orientation"
 
 
+        /*PropertyDatabase db = PropertyDatabase.getInstance(getApplicationContext());
 
-        /*if(getIntent()!=null){
-            Bundle bundle = getIntent().getExtras();
-            if(bundle!=null) {
-                if (bundle.getInt(EXTRA_PROPERTY_ID, -1) != -1) {
-                    configureAndShowDisplayFragment(bundle.getInt(EXTRA_PROPERTY_ID, -1));
-                }
-            } else {
-                /*Intent intent = new Intent(this,MapsActivity.class);
-                startActivity(intent);
-                configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
-            }
-        } else {
-            Intent intent = new Intent(this,MapsActivity.class);
-            startActivity(intent);
-
-        }*/
-
-// Show ListPropertiesFragment
-// configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+        db.imageDao().deleteAllImage();
+        db.propertyDao().deleteAllProperties();*/
