@@ -40,6 +40,7 @@ public class SearchFragment extends Fragment {
     private int roomNbMin;
     private Context context;
     private LatLng searchLoc;
+    private int radius;
     private View view;
     private ConfigureSearchFragment searchConfig;
 
@@ -71,6 +72,7 @@ public class SearchFragment extends Fragment {
 
     public void launchSearchProperties(){
         roomNbMin = searchConfig.getRoomNbMin();
+        radius = searchConfig.getRadiusVal();
         new LaunchSearchQuery(view, context,this);
     }
 
@@ -146,5 +148,9 @@ public class SearchFragment extends Fragment {
 
     public EditText getSurfaceSupView() {
         return surfaceSupView;
+    }
+
+    public int getRadius() {
+        return radius;
     }
 }

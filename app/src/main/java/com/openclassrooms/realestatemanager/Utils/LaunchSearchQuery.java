@@ -171,7 +171,7 @@ public class LaunchSearchQuery {
 
     private void filterResultsByLocation(List<Property> listPropertyTemp){
 
-        Double radius = Double.parseDouble(context.getResources().getString(R.string.radius));
+        Double radius = Double.parseDouble(String.valueOf(searchFragment.getRadius()));
         List<Property> listProperties = new ArrayList<>();
 
         if(searchFragment.getSearchLoc()!=null){

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.CalendarDialog;
@@ -21,6 +22,8 @@ import butterknife.OnClick;
 
 public class ConfigureSearchFragment {
 
+    @BindView(R.id.seekbar_radius) SeekBar seekbarRadius;
+    @BindView(R.id.radius_value) TextView radiusView;
     @BindView(R.id.start_date_publish_selected_search) TextView startPublishView;
     @BindView(R.id.end_date_publish_selected_search) TextView endPublishView;
     @BindView(R.id.start_icon_expand_search) ImageButton iconExpandStart;
@@ -34,6 +37,7 @@ public class ConfigureSearchFragment {
     private ImageButton buttonLess;
     private int roomNbMin;
     private TextView nbRoomsView;
+    private int radiusVal;
 
 
     public ConfigureSearchFragment(View view, Context context, SearchFragment searchFragment) {
@@ -54,6 +58,7 @@ public class ConfigureSearchFragment {
         buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         nbRoomsView.setText(context.getResources().getString(R.string.any));
 
+        configureSeekBarForRadius();
         configureDateSelector();
         new SearchAddress(searchFragment,context);
     }
@@ -80,6 +85,33 @@ public class ConfigureSearchFragment {
         CalendarDialog calendarDialog = CalendarDialog.newInstance(dateType);
         calendarDialog.setTargetFragment(searchFragment,0);
         calendarDialog.show(ft, "calendarDialog");
+    }
+
+    private void configureSeekBarForRadius(){
+
+        // Initialize seekbar (value = 1000m)
+        radiusVal = 1000;
+        String text = String.valueOf(radiusVal) + " m";
+        seekbarRadius.setProgress(radiusVal);
+        radiusView.setText(text);
+
+        // set on change listener
+        seekbarRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                String text = String.valueOf(progress) + " m";
+                radiusVal = progress;
+                radiusView.setText(text);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
     }
 
     @OnClick(R.id.plus_button)
@@ -129,5 +161,7 @@ public class ConfigureSearchFragment {
         return roomNbMin;
     }
 
-
+    public int getRadiusVal() {
+        return radiusVal;
+    }
 }

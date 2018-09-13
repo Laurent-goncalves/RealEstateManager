@@ -81,7 +81,7 @@ public class ImageUpdateViewHolder extends BaseImageViewHolder {
 
         if(imagePath!=null) {
             // send a message Toast to the user
-            Toast toast = Toast.makeText(context,context.getResources().getString(R.string.image_saved),Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(context,context.getResources().getString(R.string.image_added),Toast.LENGTH_LONG);
             toast.show();
 
             // set new image and new description

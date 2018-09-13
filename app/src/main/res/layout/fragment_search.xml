@@ -15,6 +15,7 @@
         android:layout_marginBottom="20dp"
         android:textAlignment="center"
         android:textStyle="bold"
+        android:textSize="22sp"
         android:text="@string/search_properties"/>
 
     <!-- SOLD ?-->
@@ -308,6 +309,35 @@
         android:gravity="start|center_vertical"
         android:background="@drawable/background_edittext"
         android:maxLines="1"/>
+
+    <!-- RADIUS FOR LOCALIZATION -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radius_title"/>
+
+        <SeekBar
+            android:id="@+id/seekbar_radius"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:max="5000"/>
+
+        <TextView
+            android:id="@+id/radius_value"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"/>
+
+    </LinearLayout>
+
 
     <!-- BUTTONS -->
     <RelativeLayout

@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/text_monthly_calculation"
-        android:layout_width="405dp"
+        android:layout_width="355dp"
         android:layout_height="50dp"
         android:gravity="center"
         android:layout_marginTop="@dimen/margin_top"
@@ -19,7 +19,7 @@
     <!-- INTEREST RATE-->
     <TextView
         android:id="@+id/text_interest_rate"
-        android:layout_width="@dimen/views_width"
+        android:layout_width="@dimen/views_width_title"
         android:layout_height="@dimen/views_height"
         android:textSize="@dimen/text_size"
         android:gravity="center"
@@ -47,7 +47,7 @@
     <!-- DURATION -->
     <TextView
         android:id="@+id/text_duration"
-        android:layout_width="@dimen/views_width"
+        android:layout_width="@dimen/views_width_title"
         android:layout_height="@dimen/views_height"
         android:gravity="center"
         android:textSize="@dimen/text_size"
@@ -75,7 +75,7 @@
     <!-- CONTRIBUTION -->
     <TextView
         android:id="@+id/text_contribution"
-        android:layout_width="@dimen/views_width"
+        android:layout_width="@dimen/views_width_title"
         android:layout_height="@dimen/views_height"
         android:gravity="center"
         android:textSize="@dimen/text_size"
@@ -103,7 +103,7 @@
     <!-- CALCULATION -->
     <TextView
         android:id="@+id/button_calculation"
-        android:layout_width="405dp"
+        android:layout_width="355dp"
         android:layout_height="@dimen/views_height"
         android:padding="3dp"
         android:background="@drawable/background_edittext"

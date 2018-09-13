@@ -55,7 +55,8 @@ public class MapsActivity extends BaseActivity {
     public void configureAndShowDisplayFragment(String modeSelected, int idProperty){
 
         // change icons toolbar
-        toolbarManager.setIconsToolbarDisplayMode(modeSelected, modeDevice);
+        if(toolbarManager!=null)
+            toolbarManager.setIconsToolbarDisplayMode(modeSelected, modeDevice);
 
         displayFragment = new DisplayFragment();
 

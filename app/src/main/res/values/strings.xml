@@ -109,6 +109,7 @@
 
     <!-- SEARCH FRAGMENT-->
     <string name="radius">1000</string>
+    <string name="radius_title">Radius (m): </string>
     <string name="any">any</string>
     <string name="radius_camera">1000</string>
     <string name="return_to_the_search">Return to search query</string>

@@ -5,6 +5,7 @@
     <dimen name="extra_panel_width_reduced">125sp</dimen>
 
     <!-- MONTHLY PAYMENT CALCULATION -->
+    <dimen name="views_width_title">150dp</dimen>
     <dimen name="views_width">200dp</dimen>
     <dimen name="views_height">60dp</dimen>
     <dimen name="margin_top">5dp</dimen>

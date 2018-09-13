@@ -124,9 +124,11 @@ public class SearchAddress implements Disposable{
     private void setOnClickListenerItemSelectionSearchView(){
         // when clicking on an item from the list autocomplete
         searchAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
-            String address = listSuggestions.get(position);
-            searchAutoComplete.setText(address);
-            launchLatLngSearch(address);
+            if(listSuggestions.size()>=position+1) {
+                String address = listSuggestions.get(position);
+                searchAutoComplete.setText(address);
+                launchLatLngSearch(address);
+            }
         });
     }
 
@@ -182,7 +184,7 @@ public class SearchAddress implements Disposable{
             searchAutoComplete.setText(listSuggestions.get(0));
             //launchLatLngSearch(listSuggestions.get(0));
             launchLatLngSearch(listSuggArray[0]);
-        } else
+        } else if(submit)
             baseActivity.displayError(context.getResources().getString(R.string.error_address_not_found));
     }
 
