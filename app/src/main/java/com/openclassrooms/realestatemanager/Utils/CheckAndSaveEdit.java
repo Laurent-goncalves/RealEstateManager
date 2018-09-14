@@ -4,18 +4,16 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.design.widget.Snackbar;
-
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
-
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class CheckAndSaveEdit {
 
@@ -26,15 +24,15 @@ public class CheckAndSaveEdit {
     private Context context;
     private Property propertyToSave;
     private int idProp;
+    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
     private PropertyContentProvider propertyContentProvider;
     private ImageContentProvider imageContentProvider;
-    private BaseActivity baseActivity;
     private String typeEdit;
 
-    public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivity baseActivity, String typeEdit) {
+    public CheckAndSaveEdit(EditFragment editFragment, Context context, ListPropertiesFragment.BaseActivityListener baseActivityListener, String typeEdit) {
         this.editFragment = editFragment;
         this.context=context;
-        this.baseActivity=baseActivity;
+        this.baseActivityListener=baseActivityListener;
         this.typeEdit=typeEdit;
         idProp = editFragment.getProperty().getId();
         newlistImages = editFragment.getListImages();
@@ -62,23 +60,23 @@ public class CheckAndSaveEdit {
                                         if(propertyToSave.getMainImagePath().length()> 0)
                                             answer1=true;
                                         else
-                                            baseActivity.displayError(context.getResources().getString(R.string.check_main_image));
+                                            baseActivityListener.displayError(context.getResources().getString(R.string.check_main_image));
                                     } else
-                                        baseActivity.displayError(context.getResources().getString(R.string.check_main_image));
+                                        baseActivityListener.displayError(context.getResources().getString(R.string.check_main_image));
                                 } else
-                                    baseActivity.displayError(context.getResources().getString(R.string.check_description));
+                                    baseActivityListener.displayError(context.getResources().getString(R.string.check_description));
                             } else
-                                baseActivity.displayError(context.getResources().getString(R.string.check_description));
+                                baseActivityListener.displayError(context.getResources().getString(R.string.check_description));
                         } else
-                            baseActivity.displayError(context.getResources().getString(R.string.check_room_number));
+                            baseActivityListener.displayError(context.getResources().getString(R.string.check_room_number));
                     } else
-                        baseActivity.displayError(context.getResources().getString(R.string.check_date_publish));
+                        baseActivityListener.displayError(context.getResources().getString(R.string.check_date_publish));
                 } else
-                    baseActivity.displayError(context.getResources().getString(R.string.check_date_publish));
+                    baseActivityListener.displayError(context.getResources().getString(R.string.check_date_publish));
             } else
-                baseActivity.displayError(context.getResources().getString(R.string.check_surface));
+                baseActivityListener.displayError(context.getResources().getString(R.string.check_surface));
         } else
-            baseActivity.displayError(context.getResources().getString(R.string.check_price));
+            baseActivityListener.displayError(context.getResources().getString(R.string.check_price));
 
         // Check if the property has been sold, but information are missing
         Boolean answer2 = true;
@@ -87,16 +85,16 @@ public class CheckAndSaveEdit {
             if(propertyToSave.getDateSold()!=null){
                 if(propertyToSave.getDateSold().length() == 0 ){ // if property sold but no date indicated, inform user
                     answer2=false;
-                    baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
+                    baseActivityListener.displayError(context.getResources().getString(R.string.check_sold_date));
                 }
             } else {
                 answer2=false;
-                baseActivity.displayError(context.getResources().getString(R.string.check_sold_date));
+                baseActivityListener.displayError(context.getResources().getString(R.string.check_sold_date));
             }
         } else if(propertyToSave.getDateSold()!=null){
             if(propertyToSave.getDateSold().length() > 0 && !propertyToSave.getSold()){ // if date of sale indicated but property not set to "sold", inform user
                 answer2=false;
-                baseActivity.displayError(context.getResources().getString(R.string.check_sold_status));
+                baseActivityListener.displayError(context.getResources().getString(R.string.check_sold_status));
             }
         }
 
@@ -120,13 +118,13 @@ public class CheckAndSaveEdit {
             updateListImagesPropertyInDatabase(idProp);
 
             // display property and refresh the list of properties
-            baseActivity.changeToDisplayMode(idProp);
+            baseActivityListener.changeToDisplayMode(idProp);
 
-            if(baseActivity.getListPropertiesFragment()!=null)
-                baseActivity.getListPropertiesFragment().refresh(idProp);
+            if(baseActivityListener.getListPropertiesFragment()!=null)
+                baseActivityListener.getListPropertiesFragment().refresh(idProp);
 
             // Message to the user
-            Snackbar.make(baseActivity.findViewById(R.id.fragment_position), R.string.snackbar_sucess_update, Snackbar.LENGTH_LONG).show();
+            baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_update));
 
         } else { // --------------------------- NEW PROPERTY -------------------------------------------------
             // insert new property
@@ -137,13 +135,13 @@ public class CheckAndSaveEdit {
             insertListImagesPropertyInDatabase(uri);
 
             // display property and refresh the list of properties
-            baseActivity.changeToDisplayMode((int) ContentUris.parseId(uri));
+            baseActivityListener.changeToDisplayMode((int) ContentUris.parseId(uri));
 
-            if(baseActivity.getListPropertiesFragment()!=null)
-                baseActivity.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
+            if(baseActivityListener.getListPropertiesFragment()!=null)
+                baseActivityListener.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
 
             // Message to the user
-            Snackbar.make(baseActivity.findViewById(R.id.fragment_position), R.string.snackbar_sucess_add, Snackbar.LENGTH_LONG).show();
+            baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_add));
         }
     }
 

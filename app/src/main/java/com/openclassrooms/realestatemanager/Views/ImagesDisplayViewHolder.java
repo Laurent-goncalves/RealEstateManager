@@ -5,10 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
-import com.openclassrooms.realestatemanager.Utils.Utils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import static android.view.View.GONE;
@@ -27,11 +26,10 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void configureImagesViews(ImageProperty imageProperty, BaseActivity baseActivity, int positionSelected) {
+    public void configureImagesViews(ImageProperty imageProperty, ListPropertiesFragment.BaseActivityListener baseActivityListener, int positionSelected) {
 
         // set image
-        // TODO : modifier
-        //Utils.setImageBitmapInView(imageProperty.getImagePath(),image, baseActivity);
+        baseActivityListener.setImage(imageProperty.getImagePath(),image);
 
         // set title and layout
         finalizeLayoutImage(imageProperty, positionSelected);

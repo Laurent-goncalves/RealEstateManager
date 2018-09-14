@@ -35,7 +35,7 @@ public class SearchFragment extends Fragment {
     @BindView(R.id.buttonSearchCancel) Button buttonCancel;
     @BindView(R.id.buttonSearch) Button buttonSearch;
     private static final String MODE_SEARCH = "mode_search";
-    private BaseActivity baseActivity;
+    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
     private SearchActivity searchActivity;
     private int roomNbMin;
     private Context context;
@@ -56,14 +56,21 @@ public class SearchFragment extends Fragment {
         ButterKnife.bind(this,view);
 
         // Assign variables
-        baseActivity = (BaseActivity) getActivity();
         searchActivity= (SearchActivity) getActivity();
-        if(baseActivity!=null)
-            this.context = baseActivity.getApplicationContext();
+        this.context = getActivity().getApplicationContext();
 
         // Configure searchFragment fields
         searchConfig = new ConfigureSearchFragment(view,context,this);
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if(context instanceof ListPropertiesFragment.BaseActivityListener){
+            baseActivityListener = (ListPropertiesFragment.BaseActivityListener) context;
+        }
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -79,9 +86,9 @@ public class SearchFragment extends Fragment {
     public void displayResults(List<Property> results) {
         if (results.size() > 0){ // if at least one result, show list properties
             searchActivity.setListProperties(results);
-            baseActivity.configureAndShowListPropertiesFragment(MODE_SEARCH, results);
+            baseActivityListener.configureAndShowListPropertiesFragment(MODE_SEARCH, results);
         } else
-            baseActivity.displayError(context.getResources().getString(R.string.no_result_found));
+            baseActivityListener.displayError(context.getResources().getString(R.string.no_result_found));
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -92,7 +99,7 @@ public class SearchFragment extends Fragment {
         searchLoc = latLng;
 
         // Enable button save and cancel
-        baseActivity.runOnUiThread(() -> {
+        searchActivity.runOnUiThread(() -> {
             buttonSearch.setEnabled(true);
             buttonCancel.setEnabled(true);
         });
@@ -116,10 +123,6 @@ public class SearchFragment extends Fragment {
 
     public TextView getEndPublishView() {
         return endPublishView;
-    }
-
-    public BaseActivity getBaseActivity() {
-        return baseActivity;
     }
 
     public SearchActivity getSearchActivity() {

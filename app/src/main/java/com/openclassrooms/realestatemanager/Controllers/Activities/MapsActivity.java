@@ -2,7 +2,9 @@ package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -49,6 +51,22 @@ public class MapsActivity extends BaseActivity {
         displayLayout.setVisibility(View.GONE);
 
         configureAndShowMap();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    configureAndShowMap();
+                } else {
+                    displayError(getApplicationContext().getResources().getString(R.string.give_permission));
+                }
+                break;
+            }
+        }
     }
 
     @Override

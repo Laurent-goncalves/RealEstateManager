@@ -209,7 +209,7 @@ public class SearchAddress implements Disposable{
         if(editFragment!=null) {
             editFragment.getBaseActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
         } else if(searchFragment!=null){
-            searchFragment.getBaseActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
+            searchFragment.getSearchActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
         }
 
         // the button save is disabled

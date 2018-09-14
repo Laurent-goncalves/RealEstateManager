@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
@@ -68,8 +68,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         // Set the variables
         listImages = new ArrayList<>();
         callbackImageChange = this;
-        baseActivity = (BaseActivity) getActivity();
-        context = baseActivity.getApplicationContext();
+        context = getActivity().getApplicationContext();
 
         // We recover the property to be displayed
         if(getArguments()!=null){
@@ -104,6 +103,15 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if(context instanceof ListPropertiesFragment.BaseActivityListener){
+            baseActivityListener = (ListPropertiesFragment.BaseActivityListener) context;
+        }
+    }
+
     @OnClick(R.id.buttonReturn)
     public void returnToList(){
 
@@ -113,7 +121,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                 case MODE_SEARCH:
                     if(modeDevice.equals(MODE_TABLET))
                         searchActivity.getListFragLayout().setBackgroundColor(context.getResources().getColor(R.color.colorGrey));
-                    baseActivity.returnToSearchCriteria();
+                    baseActivityListener.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:
                     mapsActivity.changeToMapMode(idProp);
@@ -123,10 +131,10 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
             switch (modeSelected) {
 
                 case MODE_DISPLAY:
-                    baseActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+                    baseActivityListener.configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
                     break;
                 case MODE_SEARCH:
-                    baseActivity.returnToSearchCriteria();
+                    baseActivityListener.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:
                     mapsActivity.changeToMapMode(idProp);
@@ -171,9 +179,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     private void configureViews() {
 
         // set the main image
-        //if(property.getMainImagePath()!=null && baseActivity!=null)
-            // TODO : modifier
-            //Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
+        if(property.getMainImagePath()!=null && baseActivityListener!=null)
+            baseActivityListener.setImage(property.getMainImagePath(), mainImageView);
 
         // set the type of property
         String typeProp = property.getType();
@@ -243,8 +250,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                         = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
                 // Create adapter passing in the sample user data
-                if(baseActivity!=null)
-                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, baseActivity);
+                if(baseActivityListener!=null)
+                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, baseActivityListener);
                 /*else if(mapsActivity!=null)
                     adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, mapsActivity);*/
 
@@ -257,9 +264,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     }
 
     public void changeMainImage(int position){
-        //if(listImages.get(position)!=null && baseActivity!=null)
-            // TODO : modifier
-            //Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, baseActivity);
+        if(listImages.get(position)!=null && baseActivityListener!=null)
+            baseActivityListener.setImage(listImages.get(position).getImagePath(),mainImageView);
     }
 
 }

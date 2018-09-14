@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -55,18 +56,18 @@ public class ConfigureEditFragment {
     private Context context;
     private Property property;
     private EditFragment editFragment;
+    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
     private List<ImageProperty> listImages;
-    private BaseActivity baseActivity;
     private static final String PUBLISH_DATE = "publish_date";
     private static final String SOLD_DATE = "sold_date";
 
-    public ConfigureEditFragment(View view, EditFragment editFragment, Context context, Property property, List<ImageProperty> listImages, BaseActivity baseActivity) {
+    public ConfigureEditFragment(View view, EditFragment editFragment, Context context, Property property, List<ImageProperty> listImages, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
         ButterKnife.bind(this, view);
         this.view=view;
         this.context=context;
         this.property = property;
         this.editFragment=editFragment;
-        this.baseActivity=baseActivity;
+        this.baseActivityListener=baseActivityListener;
         this.listImages = listImages;
         configureAllAreas();
         configureImagesProperty();
@@ -122,8 +123,7 @@ public class ConfigureEditFragment {
     }
 
     private void configureMainImage(){
-        // TODO : modifier
-        //Utils.setImageBitmapInView(property.getMainImagePath(), mainImage, editFragment.getBaseActivity());
+        baseActivityListener.setImage(property.getMainImagePath(), mainImage);
         editFragment.setMainImagePath(property.getMainImagePath());
     }
 
@@ -211,7 +211,7 @@ public class ConfigureEditFragment {
                     = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
             // Create adapter passing in the sample user data
-            ImagesEditAdapter adapter = new ImagesEditAdapter(listImages, property, context, editFragment.getCallbackImageSelect(), baseActivity);
+            ImagesEditAdapter adapter = new ImagesEditAdapter(listImages, property, context, editFragment.getCallbackImageSelect(), baseActivityListener);
             editFragment.setAdapter(adapter);
 
             // Attach the adapter to the recyclerview to populate items

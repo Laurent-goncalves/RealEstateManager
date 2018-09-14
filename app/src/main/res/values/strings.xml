@@ -46,6 +46,7 @@
     <string name="no_image_saved">No image saved \n Please select an image or click on cancel</string>
     <string name="image_added">Image added !</string>
     <string name="image_updated">Image updated !</string>
+    <string name="error_image_load">Image cannot be loaded.</string>
 
     <!-- INTEREST POINTS API -->
     <string name="error_interest_points">Error to get interest points</string>

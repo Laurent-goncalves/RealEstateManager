@@ -37,7 +37,7 @@ public class GoogleMapUtils {
     private GoogleMap mMap;
     private Context context;
     private PlaceDetectionClient mPlaceDetectionClient;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private final static String EXTRA_LAT_CURRENT = "latitude_current_location";
     private final static String EXTRA_LONG_CURRENT = "longitude_current_location";
     private final static String MODE_TABLET = "mode_tablet";

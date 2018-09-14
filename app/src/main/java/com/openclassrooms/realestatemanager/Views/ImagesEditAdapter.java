@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -21,15 +21,15 @@ public class ImagesEditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Property property;
     private CallbackImageSelect mCallbackImageSelect;
     private int positionEdited;
-    private BaseActivity baseActivity;
+    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
 
-    public ImagesEditAdapter(List<ImageProperty> listImages, Property property, Context context, CallbackImageSelect mCallbackImageSelect, BaseActivity baseActivity) {
+    public ImagesEditAdapter(List<ImageProperty> listImages, Property property, Context context, CallbackImageSelect mCallbackImageSelect, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
         this.listImages= listImages;
         this.context=context;
         this.property=property;
         this.positionEdited = -1;
         this.mCallbackImageSelect=mCallbackImageSelect;
-        this.baseActivity=baseActivity;
+        this.baseActivityListener=baseActivityListener;
     }
 
     @Override
@@ -68,11 +68,11 @@ public class ImagesEditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if(listImages.get(position)!=null && property!=null) {
 
                         if(positionEdited==-1)
-                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, false, false, context, baseActivity);
+                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, false, false, context, baseActivityListener);
                         else if(positionEdited==position)
-                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, true, true, context, baseActivity);
+                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, true, true, context, baseActivityListener);
                         else
-                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, false, true, context, baseActivity);
+                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, false, true, context, baseActivityListener);
 
                         viewHolderUpdate.selectPhotoIcon.setOnClickListener(v -> mCallbackImageSelect.getExtraImageFromGallery(holder.getAdapterPosition()));
                         viewHolderUpdate.deleteIcon.setOnClickListener(v -> mCallbackImageSelect.alertDeleteImage(holder.getAdapterPosition()));
@@ -89,9 +89,9 @@ public class ImagesEditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     if(listImages.get(position)!=null && property!=null) {
 
                         if(positionEdited==position)
-                            viewHolderAdd.configureImagesViews(listImages.get(position),this,true, true, context, baseActivity);
+                            viewHolderAdd.configureImagesViews(listImages.get(position),this,true, true, context, baseActivityListener);
                         else
-                            viewHolderAdd.configureImagesViews(listImages.get(position),this,false,false, context, baseActivity);
+                            viewHolderAdd.configureImagesViews(listImages.get(position),this,false,false, context, baseActivityListener);
 
                         viewHolderAdd.selectPhotoIcon.setOnClickListener(v -> mCallbackImageSelect.getExtraImageFromGallery(holder.getAdapterPosition()));
                     }

@@ -1,15 +1,21 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
@@ -20,11 +26,13 @@ import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import java.io.File;
 import java.util.List;
 import butterknife.BindView;
+import pub.devrel.easypermissions.EasyPermissions;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
-
-public class BaseActivity extends AppCompatActivity implements ListPropertiesFragment.ListPropertiesFragmentListener {
+public class BaseActivity extends AppCompatActivity implements ListPropertiesFragment.BaseActivityListener {
 
     protected static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     protected static int RESULT_LOAD_MAIN_IMAGE_ = 3;
@@ -47,6 +55,8 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
     protected String fragmentDisplayed;
     @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
+    protected static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
+    private static final int PERMISSIONS_REQUEST_ACCESS_IMAGE_GALLERY = 202;
     protected List<Property> listProperties;
     protected ToolbarManager toolbarManager;
     protected EditFragment editFragment;
@@ -57,6 +67,8 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
     protected int viewHolderPosition;
     protected String modeDevice;
     protected String modeSelected;
+    protected String imagePath;
+    protected ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,12 +312,56 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
             displayError(getResources().getString(R.string.error_image_recovering));
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        System.out.println("eee ");
+
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_IMAGE_GALLERY: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setImage(imagePath, imageView);
+                } else {
+                    displayError(getApplicationContext().getResources().getString(R.string.give_permission));
+                }
+                break;
+            }
+        }
     }
 
+    @Override
+    public void setImage(String imagePath, ImageView imageView) {
+
+        try {
+            Bitmap bitmap;
+
+            if(imagePath==null){
+                imageView.setImageDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.placeholder));
+            } else {
+
+                File f = new File(imagePath);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+                String[] galleryPermissions = {READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+                if (EasyPermissions.hasPermissions(this.getApplicationContext(), galleryPermissions)) {
+
+                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
+
+                    if(bitmap!=null)
+                        imageView.setImageBitmap(bitmap);
+
+                } else {
+                    EasyPermissions.requestPermissions(this, "Access for storage",
+                            101, galleryPermissions);
+                    this.imagePath=imagePath;
+                    this.imageView=imageView;
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(this.getApplicationContext(),getResources().getString(R.string.error_image_load),Toast.LENGTH_LONG).show();
+        }
+    }
 
     // -------------------------------------------------------------------------------------------------------
     // ------------------------------------------ GETTER AND SETTER ------------------------------------------
@@ -327,6 +383,11 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         return listPropertiesFragment;
     }
 
+    @Override
+    public void showSnackBar(String text) {
+        Snackbar.make(this.findViewById(R.id.fragment_position), text, Snackbar.LENGTH_LONG).show();
+    }
+
     public int getCurrentPropertyDisplayed(){
         return idProperty;
     }
@@ -343,18 +404,10 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         return navigationView;
     }
 
-    public String getModeDevice() {
-        return modeDevice;
-    }
-
     public SearchFragment getSearchFragment() {
         return searchFragment;
     }
 
-    @Override
-    public void onClickItemList(int position) {
-
-    }
 }
 
 

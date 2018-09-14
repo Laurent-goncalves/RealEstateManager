@@ -4,20 +4,11 @@ package com.openclassrooms.realestatemanager.Controllers.Fragments;
 import android.app.Fragment;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
@@ -25,8 +16,6 @@ import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
-
-import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,11 +25,11 @@ public class BasePropertyFragment extends Fragment {
     protected Property property;
     protected Context context;
     protected List<ImageProperty> listImages;
-    protected BaseActivity baseActivity;
     protected SearchActivity searchActivity;
     protected MapsActivity mapsActivity;
     protected String buttonReturnText;
     protected String modeSelected;
+    protected ListPropertiesFragment.BaseActivityListener baseActivityListener;
     protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_MAIN_IMAGE = 77;
     protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_EXTRA_IMAGE = 88;
     protected final static String BUNDLE_DEVICE = "bundle_device";
@@ -67,7 +56,7 @@ public class BasePropertyFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_base_property, container, false);
     }
 
-    protected void requestPermissionAccessImageGallery(int requestCode){
+    /*protected void requestPermissionAccessImageGallery(int requestCode){
 
         permissionAccessStorage = false;
 
@@ -80,7 +69,7 @@ public class BasePropertyFragment extends Fragment {
                     new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
                     requestCode);
         }
-    }
+    }*/
 
     protected void recoverModeSelected(){
 
@@ -165,9 +154,5 @@ public class BasePropertyFragment extends Fragment {
 
     public List<ImageProperty> getListImages() {
         return listImages;
-    }
-
-    public BaseActivity getBaseActivity() {
-        return baseActivity;
     }
 }

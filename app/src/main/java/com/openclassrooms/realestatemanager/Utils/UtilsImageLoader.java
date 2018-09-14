@@ -22,7 +22,7 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.support.test.InstrumentationRegistry.getContext;
 
 
-public class UtilsImageLoader implements EasyPermissions.PermissionCallbacks {
+public class UtilsImageLoader {
 
     private BaseActivity baseActivity;
     private String imagePath;
@@ -61,28 +61,9 @@ public class UtilsImageLoader implements EasyPermissions.PermissionCallbacks {
             }
 
         } catch (Exception e) {
-            System.out.println("eee exception = " + e.toString());
+
         }
     }
-
-
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        setImageBitmapInView(imagePath, imageView, baseActivity);
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        Toast.makeText(baseActivity.getApplicationContext(),"please give your permission",Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        System.out.println("eee ");
-    }
-
-
 }
 
     /*@AfterPermissionGranted(READ_EXTERNAL_STORAGE)

@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
@@ -15,17 +15,17 @@ import java.util.List;
 
 public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayViewHolder> {
 
-    private BaseActivity baseActivity;
+    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
     private List<ImageProperty> listImages;
     private Context context;
     private CallbackImageChange callbackImageChange;
     private int positionSelected;
 
-    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, BaseActivity baseActivity) {
+    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
         this.listImages = listImages;
         this.callbackImageChange = callbackImageChange;
         this.context = context;
-        this.baseActivity=baseActivity;
+        this.baseActivityListener=baseActivityListener;
         this.positionSelected = 0;
     }
 
@@ -40,8 +40,8 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
     @Override
     public void onBindViewHolder(@NonNull ImagesDisplayViewHolder holder, int position) {
         if(listImages!=null) {
-            if(listImages.get(holder.getAdapterPosition())!=null && baseActivity!=null)
-                holder.configureImagesViews(listImages.get(holder.getAdapterPosition()),baseActivity,positionSelected);
+            if(listImages.get(holder.getAdapterPosition())!=null && baseActivityListener!=null)
+                holder.configureImagesViews(listImages.get(holder.getAdapterPosition()), baseActivityListener, positionSelected);
         }
 
         holder.itemView.setOnClickListener(v -> {

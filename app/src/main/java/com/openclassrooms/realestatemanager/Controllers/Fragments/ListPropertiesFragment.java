@@ -11,9 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
@@ -34,13 +35,11 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
     private List<Property> listProperties;
     private CallbackListProperties callbackListProperties;
-    private PropertiesRecyclerViewAdapter adapter;
-    private BaseActivity baseActivity;
     private MapsActivity mapsActivity;
     private SearchActivity searchActivity;
     private Context context;
     private String modeDevice;
-    ListPropertiesFragmentListener mListener;
+    private BaseActivityListener baseActivityListener;
     private final static String BUNDLE_DEVICE = "bundle_device";
     private final static String MODE_TABLET = "mode_tablet";
     private final static String MODE_PHONE = "mode_phone";
@@ -65,9 +64,8 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         super.onCreate(null);
 
         callbackListProperties = this;
-        baseActivity = (BaseActivity) getActivity();
         listProperties = new ArrayList<>();
-
+        context = getActivity().getApplicationContext();
         recoverModeSelected();
         recoverDeviceMode();
 
@@ -94,8 +92,8 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof ListPropertiesFragmentListener){
-            mListener = (ListPropertiesFragmentListener) context;
+        if(context instanceof BaseActivityListener){
+            baseActivityListener = (BaseActivityListener) context;
         }
     }
 
@@ -113,7 +111,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         listProperties = new ArrayList<>();
 
         PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
-        propertyContentProvider.setUtils(baseActivity.getApplicationContext(),true);
+        propertyContentProvider.setUtils(context,true);
 
         final Cursor cursor = propertyContentProvider.query(null, null, null, null, null);
 
@@ -126,7 +124,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
             cursor.close();
         }
 
-        baseActivity.setListProperties(listProperties);
+        baseActivityListener.setListProperties(listProperties);
     }
 
     private void configureListProperties(){
@@ -135,19 +133,14 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(listProperties!=null){
             if (listProperties.size() > 0) {
 
-                // Get context
-                if(baseActivity!=null)
-                    context = baseActivity.getApplicationContext();
-
                 // if at least one result in the list, remove grey background
                 if(modeSelected.equals(MODE_SEARCH) && modeDevice.equals(MODE_TABLET))
                     searchActivity.getListFragLayout().setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
 
-
                 if(context!=null){
 
                     // Create adapter passing in the sample user data
-                    PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties,context, callbackListProperties, baseActivity, modeSelected);
+                    PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties,context, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
                     // Attach the adapter to the recyclerview to populate items
                     recyclerView.setAdapter(adapter);
                     // Set layout manager to position the items
@@ -167,15 +160,10 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(listProperties!=null){
             if (listProperties.size() > 0) {
 
-                if (baseActivity != null)
-                    context = baseActivity.getApplicationContext();
-
                 if (context != null) {
 
                     // Create adapter passing in the sample user data
-                    if (baseActivity != null)
-                        adapter = new PropertiesRecyclerViewAdapter(listProperties, context, position, callbackListProperties, baseActivity, modeSelected);
-
+                    PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties, context, position, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
                     // Attach the adapter to the recyclerview to populate items
                     recyclerView.setAdapter(adapter);
                     // Set layout manager to position the items
@@ -194,7 +182,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     public void showDisplayFragment(int position) {
         if(listProperties!=null) {
             if (listProperties.size() > 0)
-                baseActivity.configureAndShowDisplayFragment(modeSelected, listProperties.get(position).getId());
+                baseActivityListener.configureAndShowDisplayFragment(modeSelected, listProperties.get(position).getId());
         }
     }
 
@@ -227,15 +215,12 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
             // if the mode of display is for mapsActivity, remove button return and icons in toolbar
             if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY_MAPS)) {
                 mapsActivity = (MapsActivity) getActivity();
-                baseActivity = (BaseActivity) getActivity();
                 modeSelected = MODE_DISPLAY_MAPS;
 
             } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY)) {
-                baseActivity = (BaseActivity) getActivity();
                 modeSelected = MODE_DISPLAY;
 
             } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_SEARCH)) {
-                baseActivity = (BaseActivity) getActivity();
                 modeSelected = MODE_SEARCH;
             }
         }
@@ -259,9 +244,30 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     }
 
 
-    public interface ListPropertiesFragmentListener{
+    public interface BaseActivityListener {
 
-        void onClickItemList(int position);
+        void configureAndShowDisplayFragment(String modeSelected, int idProp);
 
+        void setListProperties(List<Property> listProperties);
+
+        void setImage(String imagePath, ImageView mainImage);
+
+        void returnToSearchCriteria();
+
+        void configureAndShowListPropertiesFragment(String modeSelected, List<Property> listProperties);
+
+        void changeToDisplayMode(int idProp);
+
+        void displayAlertDeletion(int viewholderposition);
+
+        void displayError(String errorText);
+
+        ListPropertiesFragment getListPropertiesFragment();
+
+        void showSnackBar(String text);
+
+        void getMainImage();
+
+        void getExtraImage(int viewHolderPosition);
     }
 }

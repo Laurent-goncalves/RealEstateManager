@@ -11,11 +11,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
-import com.openclassrooms.realestatemanager.Utils.Utils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -46,7 +45,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     protected ImagesEditAdapter adapter;
     protected Boolean inEdition;
     protected Boolean changesOngoing;
-    protected BaseActivity baseActivity;
+    protected ListPropertiesFragment.BaseActivityListener baseActivityListener;
 
     public BaseImageViewHolder(View itemView) {
         super(itemView);
@@ -58,20 +57,19 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     // ------------------------------------- CONFIGURATION VIEW ------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, BaseActivity baseActivity) {
+    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
         // Initialize variables
         this.context=context;
         this.adapter=adapter;
         this.inEdition = inEdition;
         this.changesOngoing=changesOngoing;
         this.database = PropertyDatabase.getInstance(context);
-        this.baseActivity = baseActivity;
+        this.baseActivityListener = baseActivityListener;
     }
 
     public void setExtraImage(String imagePath){
         this.imagePath=imagePath;
-        // TODO : modifier
-        //Utils.setImageBitmapInView(imagePath, image, baseActivity);
+        baseActivityListener.setImage(imagePath, image);
         addPhotoButton.setVisibility(View.GONE);
     }
 
