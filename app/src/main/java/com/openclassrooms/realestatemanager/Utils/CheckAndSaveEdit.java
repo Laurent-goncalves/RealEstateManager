@@ -4,6 +4,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
@@ -107,7 +108,7 @@ public class CheckAndSaveEdit {
         // Create contentProviders
         createContentProviders();
 
-        if(typeEdit.equals(MODE_UPDATE)){
+        if(typeEdit.equals(MODE_UPDATE)){ // -------------- UPDATE PROPERTY ----------------------------------
 
             propertyContentProvider.update(ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, propertyToSave.getId()),
                     Property.createContentValuesFromPropertyUpdate(propertyToSave),null,null);
@@ -124,7 +125,10 @@ public class CheckAndSaveEdit {
             if(baseActivity.getListPropertiesFragment()!=null)
                 baseActivity.getListPropertiesFragment().refresh(idProp);
 
-        } else {
+            // Message to the user
+            Snackbar.make(baseActivity.findViewById(R.id.fragment_position), R.string.snackbar_sucess_update, Snackbar.LENGTH_LONG).show();
+
+        } else { // --------------------------- NEW PROPERTY -------------------------------------------------
             // insert new property
             final Uri uri = propertyContentProvider.insert(PropertyContentProvider.URI_ITEM,
                     Property.createContentValuesFromPropertyInsert(propertyToSave));
@@ -137,6 +141,9 @@ public class CheckAndSaveEdit {
 
             if(baseActivity.getListPropertiesFragment()!=null)
                 baseActivity.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
+
+            // Message to the user
+            Snackbar.make(baseActivity.findViewById(R.id.fragment_position), R.string.snackbar_sucess_add, Snackbar.LENGTH_LONG).show();
         }
     }
 

@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +24,7 @@ import java.util.List;
 import butterknife.BindView;
 
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements ListPropertiesFragment.ListPropertiesFragmentListener {
 
     protected static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     protected static int RESULT_LOAD_MAIN_IMAGE_ = 3;
@@ -299,6 +300,13 @@ public class BaseActivity extends AppCompatActivity {
             displayError(getResources().getString(R.string.error_image_recovering));
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        System.out.println("eee ");
+    }
+
+
     // -------------------------------------------------------------------------------------------------------
     // ------------------------------------------ GETTER AND SETTER ------------------------------------------
     // -------------------------------------------------------------------------------------------------------
@@ -341,6 +349,11 @@ public class BaseActivity extends AppCompatActivity {
 
     public SearchFragment getSearchFragment() {
         return searchFragment;
+    }
+
+    @Override
+    public void onClickItemList(int position) {
+
     }
 }
 

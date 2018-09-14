@@ -1,32 +1,21 @@
 package com.openclassrooms.realestatemanager.Utils;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.provider.MediaStore;
 import android.support.annotation.StyleableRes;
-import android.widget.ImageView;
-
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.PolyUtil;
 import com.google.maps.android.SphericalUtil;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
-import com.openclassrooms.realestatemanager.R;
-
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,8 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Created by Philippe on 21/02/2018.
@@ -152,26 +139,6 @@ public class Utils {
 
     public static Boolean isLocationInsideBounds(LatLng searchLoc, LatLng propertyLoc, Double radius){
         return SphericalUtil.computeDistanceBetween(searchLoc, propertyLoc) <= radius;
-    }
-
-    public static List<Property> getFilteredListProperties(List<Property> listProp, LatLng cameraTarget, Context context){
-
-        List<Property> propertyList = new ArrayList<>();
-        Double radius = Double.parseDouble(context.getResources().getString(R.string.radius_camera));
-
-        if(listProp!=null){
-            for(Property property : listProp){
-
-                if(property.getLng()!=0 && property.getLat()!=0){
-                    LatLng locProp = new LatLng(property.getLat(), property.getLng());
-                    if(SphericalUtil.computeDistanceBetween(cameraTarget, locProp) <= radius)
-                        propertyList.add(property);
-
-                }
-            }
-        }
-
-        return propertyList;
     }
 
     public static List<String> getInterestPoints(List<String> listTypes, Context context) {
@@ -306,66 +273,6 @@ public class Utils {
 
     public static Double calculateMonthlyPayment(Double propertyPrice, Double duration, Double interestRate, Double contribution){
         return (propertyPrice-contribution)*(interestRate/1200)/(1 - Math.pow(1+interestRate/1200, -12*duration));
-    }
-
-    public static void setImageBitmapInView(String imagePath, ImageView imageView, BaseActivity baseActivity){
-
-        try {
-            Bitmap bitmap;
-            if(imagePath==null)
-                imageView.setImageDrawable(baseActivity.getApplicationContext().getResources().getDrawable(R.drawable.placeholder));
-
-            File f= new File(imagePath);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-            String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-            if (EasyPermissions.hasPermissions(baseActivity, galleryPermissions)) {
-
-                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-
-                if(bitmap!=null)
-                    imageView.setImageBitmap(bitmap);
-
-            } else {
-                EasyPermissions.requestPermissions(baseActivity, "Access for storage",
-                        101, galleryPermissions);
-            }
-
-        } catch (Exception e) {
-            System.out.println("eee exception = " + e.toString());
-        }
-    }
-
-    public static void setImageBitmapInView(String imagePath, ImageView imageView, MapsActivity mapsActivity){
-
-        try {
-            Bitmap bitmap;
-            if(imagePath==null)
-                imageView.setImageDrawable(mapsActivity.getApplicationContext().getResources().getDrawable(R.drawable.placeholder));
-
-            File f= new File(imagePath);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-            String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-            if (EasyPermissions.hasPermissions(mapsActivity, galleryPermissions)) {
-
-                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-
-                if(bitmap!=null)
-                    imageView.setImageBitmap(bitmap);
-
-            } else {
-                EasyPermissions.requestPermissions(mapsActivity, "Access for storage",
-                        101, galleryPermissions);
-            }
-
-        } catch (Exception e) {
-            System.out.println("eee exception = " + e.toString());
-        }
     }
 
     public static Boolean isInTheList(ImageProperty image, List<ImageProperty> list){

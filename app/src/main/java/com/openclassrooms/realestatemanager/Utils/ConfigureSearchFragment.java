@@ -90,7 +90,7 @@ public class ConfigureSearchFragment {
     private void configureSeekBarForRadius(){
 
         // Initialize seekbar (value = 1000m)
-        radiusVal = 1000;
+        radiusVal = Integer.parseInt(context.getResources().getString(R.string.radius));
         String text = String.valueOf(radiusVal) + " m";
         seekbarRadius.setProgress(radiusVal);
         radiusView.setText(text);

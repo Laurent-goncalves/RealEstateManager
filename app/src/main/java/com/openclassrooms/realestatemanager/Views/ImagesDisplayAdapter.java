@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.Views;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -41,13 +40,13 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
     @Override
     public void onBindViewHolder(@NonNull ImagesDisplayViewHolder holder, int position) {
         if(listImages!=null) {
-            if(listImages.get(position)!=null && baseActivity!=null)
-                holder.configureImagesViews(listImages.get(position),baseActivity,positionSelected);
+            if(listImages.get(holder.getAdapterPosition())!=null && baseActivity!=null)
+                holder.configureImagesViews(listImages.get(holder.getAdapterPosition()),baseActivity,positionSelected);
         }
 
         holder.itemView.setOnClickListener(v -> {
-            positionSelected = position;
-            callbackImageChange.changeMainImage(position);
+            positionSelected = holder.getAdapterPosition();
+            callbackImageChange.changeMainImage(holder.getAdapterPosition());
             notifyDataSetChanged();
         });
     }

@@ -70,7 +70,8 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
 
     public void setExtraImage(String imagePath){
         this.imagePath=imagePath;
-        Utils.setImageBitmapInView(imagePath, image, baseActivity);
+        // TODO : modifier
+        //Utils.setImageBitmapInView(imagePath, image, baseActivity);
         addPhotoButton.setVisibility(View.GONE);
     }
 

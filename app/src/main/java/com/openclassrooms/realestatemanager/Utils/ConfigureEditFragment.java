@@ -122,7 +122,8 @@ public class ConfigureEditFragment {
     }
 
     private void configureMainImage(){
-        Utils.setImageBitmapInView(property.getMainImagePath(), mainImage, editFragment.getBaseActivity());
+        // TODO : modifier
+        //Utils.setImageBitmapInView(property.getMainImagePath(), mainImage, editFragment.getBaseActivity());
         editFragment.setMainImagePath(property.getMainImagePath());
     }
 

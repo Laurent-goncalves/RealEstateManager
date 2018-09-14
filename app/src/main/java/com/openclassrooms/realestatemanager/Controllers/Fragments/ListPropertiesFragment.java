@@ -40,6 +40,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private SearchActivity searchActivity;
     private Context context;
     private String modeDevice;
+    ListPropertiesFragmentListener mListener;
     private final static String BUNDLE_DEVICE = "bundle_device";
     private final static String MODE_TABLET = "mode_tablet";
     private final static String MODE_PHONE = "mode_phone";
@@ -86,6 +87,15 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(listProperties!=null){
             if(listProperties.size()>0 && modeDevice.equals(MODE_TABLET))
                 showDisplayFragment(0);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if(context instanceof ListPropertiesFragmentListener){
+            mListener = (ListPropertiesFragmentListener) context;
         }
     }
 
@@ -246,5 +256,12 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         } else {
             modeDevice = MODE_PHONE;
         }
+    }
+
+
+    public interface ListPropertiesFragmentListener{
+
+        void onClickItemList(int position);
+
     }
 }

@@ -81,12 +81,9 @@
     <string name="main_image">Main image</string>
     <string name="extra_images">Extra images</string>
     <string name="ok">OK</string>
-
     <string name="error_address_not_found">Address not found</string>
     <string name="error_image_recovering">Image cannot be recovered.</string>
-
     <string name="give_permission">Please give your permission</string>
-
     <string name="check_price">Please enter a price above 0.</string>
     <string name="check_surface">Please enter a surface above 0.</string>
     <string name="check_date_publish">Please enter a date of publishing.</string>
@@ -95,6 +92,9 @@
     <string name="check_main_image">Please select a main image for the property.</string>
     <string name="check_sold_date">As the property has been sold, please enter a date of sale.</string>
     <string name="check_sold_status">A date of sale is indicated but the property has not the status "sold". Please check the status.</string>
+
+    <string name="snackbar_sucess_add">New property successfully saved</string>
+    <string name="snackbar_sucess_update">Property successfully updated</string>
 
     <!-- DISPLAY FRAGMENT-->
     <string name="interest_rate">Interest rate</string>

@@ -1,17 +1,31 @@
 package com.openclassrooms.realestatemanager.Views;
 
+import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.UtilsImageLoader;
+
+import java.io.File;
 import java.text.NumberFormat;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 
 public class PropertyViewHolder extends RecyclerView.ViewHolder {
@@ -29,7 +43,8 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
 
     public void configurePropertiesViews(Property property, BaseActivity baseActivity){
         // Main Image
-        Utils.setImageBitmapInView(property.getMainImagePath(),mainImage, baseActivity);
+        new UtilsImageLoader(property.getMainImagePath(), mainImage, baseActivity);
+        //setImageBitmapInView(property.getMainImagePath(),mainImage, baseActivity);
 
         // Finalize layout
         finalizeLayout(property);

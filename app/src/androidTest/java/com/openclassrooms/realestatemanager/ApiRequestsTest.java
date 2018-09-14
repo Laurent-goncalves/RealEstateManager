@@ -10,13 +10,16 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.rule.ActivityTestRule;
 import android.support.v7.widget.SearchView;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
@@ -47,6 +50,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.Manifest.permission.CHANGE_NETWORK_STATE;
+import static android.Manifest.permission.CHANGE_WIFI_STATE;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -72,6 +77,10 @@ public class ApiRequestsTest {
     // Property for demo
     private Property PROPERTY_DEMO = new Property(0, "Apartment", 125000d,30.25d,1,
             "description","address",null,false,"01/06/2018","02/06/2018",0d,0d,"Eric",null,null);
+
+    @Rule public GrantPermissionRule runtimePermissionRule1 = GrantPermissionRule.grant(CHANGE_NETWORK_STATE);
+    @Rule public GrantPermissionRule runtimePermissionRule2 = GrantPermissionRule.grant(CHANGE_WIFI_STATE);
+
 
     @Before
     public void setUp() {
@@ -162,54 +171,57 @@ public class ApiRequestsTest {
     @Test
     public void Test_Internet_Connection(){
 
-        //ShowAvailable();
+        Context context = mActivityTestRule.getActivity().getApplicationContext();
 
         // Disable wifi
         WifiManager wifiManager = (WifiManager) mActivityTestRule.getActivity().getApplicationContext()
                 .getSystemService(Context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(false);
 
-        //ShowAvailable();
 
-        // Disable internet connection
-        try {
-            setMobileDataEnabled(mActivityTestRule.getActivity().getApplicationContext(), false);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        mActivityTestRule.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context,"You have 15 seconds to desactivate internet",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        waiting_time(15000);
 
         // check that no internet connection are available
         Assert.assertFalse(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
 
-        try {
+        // Re-activate wifi
+        wifiManager.setWifiEnabled(true);
 
-            // Restore wifi
-            wifiManager.setWifiEnabled(true);
-            Assert.assertTrue(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
+        waiting_time(3000);
 
-            // Restore internet connection
-            setMobileDataEnabled(mActivityTestRule.getActivity().getApplicationContext(), true);
-            Assert.assertTrue(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
+        // Check that internet is available
+        Assert.assertTrue(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        mActivityTestRule.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context,"Please restore internet connection",Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+
+
+
+
+    @Test
+    public void testtt(){
+
+
+
+
+        mActivityTestRule.getActivity().setMobileDataEnabled(false);
+        //setMobileDataEnabled(mActivityTestRule.getActivity().getApplicationContext(), true);
+
+        //Assert.assertFalse(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
     }
 
     public void ShowAvailable()
@@ -229,18 +241,8 @@ public class ApiRequestsTest {
 
     }
 
-    public void setMobileDataEnabled(Context context, boolean enabled) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        final ConnectivityManager conman = (ConnectivityManager)  context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final Class conmanClass = Class.forName(conman.getClass().getName());
-        final Field connectivityManagerField = conmanClass.getDeclaredField("mService");
-        connectivityManagerField.setAccessible(true);
-        final Object connectivityManager = connectivityManagerField.get(conman);
-        final Class connectivityManagerClass =  Class.forName(connectivityManager.getClass().getName());
-        final Method setMobileDataEnabledMethod = connectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
-        setMobileDataEnabledMethod.setAccessible(true);
 
-        setMobileDataEnabledMethod.invoke(connectivityManager, enabled);
-    }
+
 
     private void waiting_time(int time){
         try {

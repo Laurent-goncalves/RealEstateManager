@@ -171,8 +171,9 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     private void configureViews() {
 
         // set the main image
-        if(property.getMainImagePath()!=null && baseActivity!=null)
-            Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
+        //if(property.getMainImagePath()!=null && baseActivity!=null)
+            // TODO : modifier
+            //Utils.setImageBitmapInView(property.getMainImagePath(), mainImageView, baseActivity);
 
         // set the type of property
         String typeProp = property.getType();
@@ -256,8 +257,9 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     }
 
     public void changeMainImage(int position){
-        if(listImages.get(position)!=null && baseActivity!=null)
-            Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, baseActivity);
+        //if(listImages.get(position)!=null && baseActivity!=null)
+            // TODO : modifier
+            //Utils.setImageBitmapInView(listImages.get(position).getImagePath(),mainImageView, baseActivity);
     }
 
 }

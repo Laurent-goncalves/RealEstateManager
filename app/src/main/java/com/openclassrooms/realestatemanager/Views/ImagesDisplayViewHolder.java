@@ -12,6 +12,7 @@ import com.openclassrooms.realestatemanager.Utils.Utils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 
 public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
@@ -29,7 +30,8 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
     public void configureImagesViews(ImageProperty imageProperty, BaseActivity baseActivity, int positionSelected) {
 
         // set image
-        Utils.setImageBitmapInView(imageProperty.getImagePath(),image, baseActivity);
+        // TODO : modifier
+        //Utils.setImageBitmapInView(imageProperty.getImagePath(),image, baseActivity);
 
         // set title and layout
         finalizeLayoutImage(imageProperty, positionSelected);
@@ -40,8 +42,10 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
         String title = imageProperty.getDescription();
         if(title==null)
             titleImage.setVisibility(GONE);
-        else
+        else {
+            titleImage.setVisibility(VISIBLE);
             titleImage.setText(title);
+        }
 
         // add or remove background (borders around) according to position selected
         if(this.getAdapterPosition()==positionSelected)

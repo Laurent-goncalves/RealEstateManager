@@ -53,6 +53,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     private RecyclerView recyclerView;
     private ImagesEditAdapter adapter;
     private View view;
+    private int viewHolderPosition;
     private static final String BUNDLE_TYPE_EDIT = "type_edit";
     private static final String MODE_UPDATE = "UPDATE";
     private String typeEdit;
@@ -122,29 +123,39 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @OnClick(R.id.main_image_selector)
     public void onClickListener(){
-        baseActivity.getMainImage();
+        requestPermissionAccessImageGallery(PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_MAIN_IMAGE);
+
+        if(permissionAccessStorage)
+            baseActivity.getMainImage();
     }
 
     public void setMainImage(String imagePath){
         mainImagePath = imagePath;
-        Utils.setImageBitmapInView(imagePath,mainImage,baseActivity);
+
+        // TODO : modifier
+        //Utils.setImageBitmapInView(imagePath,mainImage,baseActivity);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case 1: {
+            case PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_MAIN_IMAGE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    permissionAccessStorage = true;
+                    baseActivity.getMainImage();
+                } else {
+                    Toast.makeText(baseActivity, context.getResources().getString(R.string.give_permission), Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+            case PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_EXTRA_IMAGE: {
 
-                    File f= new File(mainImagePath);
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-                    Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
-                    mainImage.setImageBitmap(bitmap);
-
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    permissionAccessStorage = true;
+                    baseActivity.getExtraImage(viewHolderPosition);
                 } else {
                     Toast.makeText(baseActivity, context.getResources().getString(R.string.give_permission), Toast.LENGTH_LONG).show();
                 }
@@ -175,7 +186,12 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @Override
     public void getExtraImageFromGallery(int viewHolderPosition) {
-        baseActivity.getExtraImage(viewHolderPosition);
+
+        requestPermissionAccessImageGallery(PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_EXTRA_IMAGE);
+        this.viewHolderPosition = viewHolderPosition;
+
+        if(permissionAccessStorage)
+            baseActivity.getExtraImage(viewHolderPosition);
     }
 
     @Override
@@ -272,3 +288,27 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         return buttonSave;
     }
 }
+
+
+    /*@Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    File f= new File(mainImagePath);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+                    Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),options);
+                    mainImage.setImageBitmap(bitmap);
+
+                } else {
+                    Toast.makeText(baseActivity, context.getResources().getString(R.string.give_permission), Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
+    }*/
