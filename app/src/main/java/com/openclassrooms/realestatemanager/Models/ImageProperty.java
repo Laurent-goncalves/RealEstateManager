@@ -3,10 +3,10 @@ package com.openclassrooms.realestatemanager.Models;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.net.Uri;
 
 
 @Entity(foreignKeys = @ForeignKey(entity = Property.class, parentColumns = "id", childColumns = "idProperty"))
@@ -25,12 +25,14 @@ public class ImageProperty {
         this.idProperty = idProperty;
     }
 
+    @Ignore
     public ImageProperty(String imagePath, String description, int idProperty) {
         this.imagePath = imagePath;
         this.description = description;
         this.idProperty = idProperty;
     }
 
+    @Ignore
     public ImageProperty() {
     }
 

@@ -82,6 +82,8 @@
     <string name="main_image">Main image</string>
     <string name="extra_images">Extra images</string>
     <string name="ok">OK</string>
+    <string name="warning_title">Warning!</string>
+    <string name="change_item_list">Are you sure to change of property ? All changes will be discarded</string>
     <string name="error_address_not_found">Address not found</string>
     <string name="error_image_recovering">Image cannot be recovered.</string>
     <string name="give_permission">Please give your permission</string>

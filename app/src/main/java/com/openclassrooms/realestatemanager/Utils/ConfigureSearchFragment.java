@@ -5,23 +5,41 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Handler;
+import android.support.v7.widget.SearchView;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
+import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.R;
+
+import java.util.Arrays;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemSelected;
+import butterknife.OnTextChanged;
 
 
 public class ConfigureSearchFragment {
 
+    @BindView(R.id.address_edit_text_search) android.support.v7.widget.SearchView locationView;
+    @BindView(R.id.switch_sold_search) Switch soldSwitch;
+    @BindView(R.id.list_type_properties_search) Spinner listPropTypes;
+    @BindView(R.id.price_inf_search) EditText priceInfView;
+    @BindView(R.id.price_sup_search) EditText priceSupView;
+    @BindView(R.id.surface_inf_search) EditText surfaceInfView;
+    @BindView(R.id.surface_sup_search) EditText surfaceSupView;
     @BindView(R.id.seekbar_radius) SeekBar seekbarRadius;
     @BindView(R.id.radius_value) TextView radiusView;
     @BindView(R.id.start_date_publish_selected_search) TextView startPublishView;
@@ -35,20 +53,67 @@ public class ConfigureSearchFragment {
     private static final String PUBLISH_DATE_END = "publish_date_end";
     private ImageButton buttonPlus;
     private ImageButton buttonLess;
-    private int roomNbMin;
+    private SearchQuery query;
     private TextView nbRoomsView;
-    private int radiusVal;
 
 
     public ConfigureSearchFragment(View view, Context context, SearchFragment searchFragment) {
         ButterKnife.bind(this, view);
         this.context = context;
         this.searchFragment = searchFragment;
+        this.query = searchFragment.getSearchQuery();
         configureSearchFragment();
     }
 
+    // ----------------------------------------------------------------------------------------------------------
+    // ------------------------------------ CONFIGURATION SEARCHFRAGMENT ----------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
     private void configureSearchFragment(){
-        roomNbMin = 0;
+
+        configureDateSelector();
+
+        // configure switch sold
+        soldSwitch.setChecked(query.getSoldStatus());
+
+        // configure type property
+        listPropTypes.setSelection(Utils.getIndexFromList(query.getTypeProperty(), Arrays.asList(context.getResources().getStringArray(R.array.type_property))));
+
+        // configure publication date start
+        startPublishView.setText(query.getDatePublishStart());
+
+        // configure publication date end
+        endPublishView.setText(query.getDatePublishEnd());
+
+        // configure price inf
+        if(query.getPriceInf()!=0)
+            priceInfView.setText(String.valueOf(query.getPriceInf()));
+
+        // configure price sup
+        if(query.getPriceSup()!=0)
+            priceSupView.setText(String.valueOf(query.getPriceSup()));
+
+        // configure surface inf
+        if(query.getSurfaceInf()!=0)
+            surfaceInfView.setText(String.valueOf(query.getSurfaceInf()));
+
+        // configure surface sup
+        if(query.getSurfaceSup()!=0)
+            surfaceSupView.setText(String.valueOf(query.getSurfaceSup()));
+
+        // configure room number
+        configureRoomNumberView();
+
+        // configure address
+        new SearchAddress(searchFragment,context);
+        SearchView.SearchAutoComplete searchAutoComplete = locationView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchAutoComplete.setText(query.getAddress());
+
+        // configure radius
+        configureSeekBarForRadius();
+    }
+
+    private void configureRoomNumberView(){
         LinearLayout buttonSelect = layoutRooms.findViewById(R.id.room_number_selector_search);
         nbRoomsView = buttonSelect.findViewById(R.id.text_selection);
         buttonPlus = buttonSelect.findViewById(R.id.plus_button);
@@ -57,10 +122,7 @@ public class ConfigureSearchFragment {
         buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         nbRoomsView.setText(context.getResources().getString(R.string.any));
-
-        configureSeekBarForRadius();
-        configureDateSelector();
-        new SearchAddress(searchFragment,context);
+        updateRoomNumber();
     }
 
     private void configureDateSelector(){
@@ -90,9 +152,8 @@ public class ConfigureSearchFragment {
     private void configureSeekBarForRadius(){
 
         // Initialize seekbar (value = 1000m)
-        radiusVal = Integer.parseInt(context.getResources().getString(R.string.radius));
-        String text = String.valueOf(radiusVal) + " m";
-        seekbarRadius.setProgress(radiusVal);
+        String text = String.valueOf(query.getRadius()) + " m";
+        seekbarRadius.setProgress(query.getRadius());
         radiusView.setText(text);
 
         // set on change listener
@@ -100,8 +161,9 @@ public class ConfigureSearchFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 String text = String.valueOf(progress) + " m";
-                radiusVal = progress;
+                query.setRadius(progress);
                 radiusView.setText(text);
+                searchFragment.getSearchQuery().setRadius(progress);
             }
 
             @Override
@@ -114,54 +176,99 @@ public class ConfigureSearchFragment {
         });
     }
 
+    private void updateRoomNumber(){
+        if(query.getRoomNbMin()==0)
+            nbRoomsView.setText(context.getResources().getString(R.string.any));
+        else {
+            String text = "+" + String.valueOf(query.getRoomNbMin());
+            nbRoomsView.setText(text);
+        }
+        searchFragment.getSearchQuery().setRoomNbMin(query.getRoomNbMin());
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // ---------------------------------- LISTENERS FOR UPDATING SEARCH QUERY -----------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
+    @OnClick(R.id.switch_sold_search)
+    public void onClickSwitchSold(){
+        searchFragment.getSearchQuery().setSoldStatus(soldSwitch.isChecked());
+    }
+
+    @OnItemSelected(R.id.list_type_properties_search)
+    public void onTypePropertySelected(){
+        searchFragment.getSearchQuery().setTypeProperty(listPropTypes.getSelectedItem().toString());
+    }
+
+    @OnTextChanged(R.id.price_inf_search)
+    public void onPriceInfChanged(){
+        if(priceInfView.getText().toString().length()==0)
+            searchFragment.getSearchQuery().setPriceInf(0d);
+        else
+            searchFragment.getSearchQuery().setPriceInf(Double.parseDouble(priceInfView.getText().toString()));
+    }
+
+    @OnTextChanged(R.id.price_sup_search)
+    public void onPriceSupChanged(){
+        if(priceSupView.getText().toString().length()==0)
+            searchFragment.getSearchQuery().setPriceSup(0d);
+        else
+            searchFragment.getSearchQuery().setPriceSup(Double.parseDouble(priceSupView.getText().toString()));
+    }
+
+    @OnTextChanged(R.id.surface_inf_search)
+    public void onSurfaceInfChanged(){
+        if(surfaceInfView.getText().toString().length()==0)
+            searchFragment.getSearchQuery().setSurfaceInf(0d);
+        else
+            searchFragment.getSearchQuery().setSurfaceInf(Double.parseDouble(surfaceInfView.getText().toString()));
+    }
+
+    @OnTextChanged(R.id.surface_sup_search)
+    public void onSurfaceSupChanged(){
+        if(surfaceSupView.getText().toString().length()==0)
+            searchFragment.getSearchQuery().setSurfaceSup(0d);
+        else
+            searchFragment.getSearchQuery().setSurfaceSup(Double.parseDouble(surfaceSupView.getText().toString()));
+    }
+
     @OnClick(R.id.plus_button)
     public void onClickListenerButtonPlus() {
-        if(roomNbMin<10) {
-            roomNbMin++;
-            if(roomNbMin==0)
-                nbRoomsView.setText(context.getResources().getString(R.string.any));
-            else {
-                String text = "+" + String.valueOf(roomNbMin);
-                nbRoomsView.setText(text);
-            }
+        if(query.getRoomNbMin()<10) {
+            int roomNb = query.getRoomNbMin();
+            roomNb++;
+            query.setRoomNbMin(roomNb);
+            updateRoomNumber();
         }
-        buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
-        new Handler().postDelayed(() -> buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
+        changeColorButton(100,buttonPlus);
     }
 
     @OnClick(R.id.less_button)
     public void onClickListenerButtonLess() {
-        if(roomNbMin>=1) {
-            roomNbMin--;
-            if(roomNbMin==0)
-                nbRoomsView.setText(context.getResources().getString(R.string.any));
-            else {
-                String text = "+" + String.valueOf(roomNbMin);
-                nbRoomsView.setText(text);
-            }
+        if(query.getRoomNbMin()>=1) {
+            int roomNb = query.getRoomNbMin();
+            roomNb--;
+            query.setRoomNbMin(roomNb);
+            updateRoomNumber();
         }
+        changeColorButton(101,buttonLess);
+    }
 
-        buttonLess.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-
-        new Handler().postDelayed(() -> buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
+    private void changeColorButton(int duration, ImageButton button){
+        button.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+        new Handler().postDelayed(() -> button.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), duration);
     }
 
     @OnClick(R.id.buttonSearchCancel)
     public void cancel(){
-        searchFragment.getSearchActivity().launchMainActivity();
+        searchFragment.stopActivity();
+        //searchFragment.getSearchActivity().launchMainActivity();
     }
 
     @OnClick(R.id.buttonSearch)
     public void search(){
+        searchFragment.getBaseActivityListener().setSearchQuery(searchFragment.getSearchQuery());
         searchFragment.launchSearchProperties();
-    }
-
-    public int getRoomNbMin() {
-        return roomNbMin;
-    }
-
-    public int getRadiusVal() {
-        return radiusVal;
     }
 }

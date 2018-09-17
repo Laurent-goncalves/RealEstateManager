@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
 import butterknife.OnClick;
@@ -19,7 +20,7 @@ public class ImagesAddViewHolder extends BaseImageViewHolder {
     // ---------------------------------------------------------------------------------------------------
 
     @Override
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
+    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, BaseActivityListener baseActivityListener) {
 
         super.configureImagesViews(imageProperty, adapter, inEdition, changesOngoing, context, baseActivityListener);
 

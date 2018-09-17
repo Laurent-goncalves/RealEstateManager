@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -11,22 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
-import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
-import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataListPropertiesFrag;
 import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -39,122 +31,68 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private SearchActivity searchActivity;
     private Context context;
     private String modeDevice;
+    private String fragmentDisplayed;
     private BaseActivityListener baseActivityListener;
-    private final static String BUNDLE_DEVICE = "bundle_device";
     private final static String MODE_TABLET = "mode_tablet";
-    private final static String MODE_PHONE = "mode_phone";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private static final String MODE_SEARCH = "mode_search";
-    private static final String MODE_DISPLAY = "mode_display";
-    private static final String LIST_PROPERTIES_JSON = "list_properties_json";
-    private static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
     private String modeSelected;
+    private int itemSelected;
     @BindView(R.id.list_properties_recycler_view) RecyclerView recyclerView;
     @BindView(R.id.fragment_list_properties) FrameLayout fragmentView;
 
     public ListPropertiesFragment() {
     }
 
-    /*private Property PROPERTY_DEMO = new Property(0, "Appartment", 125000d,30.25d,1,
-            "description","address","School, Subway",false,"01/06/2018","02/06/2018",0d,0d,"Eric",null,null);
-*/
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
 
+        // Assign variables
         callbackListProperties = this;
-        listProperties = new ArrayList<>();
         context = getActivity().getApplicationContext();
-        recoverModeSelected();
-        recoverDeviceMode();
 
-
-        if(modeSelected.equals(MODE_SEARCH) && modeDevice.equals(MODE_TABLET))
-            searchActivity = (SearchActivity) getActivity();
-
-        if(modeSelected.equals(MODE_DISPLAY)){
-            recoverListProperties(); // recover all properties
-        } else {
-            Gson gson = new Gson();
-            String json = getArguments().getString(LIST_PROPERTIES_JSON,null);
-            Type listPropType = new TypeToken<ArrayList<Property>>(){}.getType();
-            listProperties = gson.fromJson(json,listPropType);
-        }
-
-        if(listProperties!=null){
-            if(listProperties.size()>0 && modeDevice.equals(MODE_TABLET))
-                showDisplayFragment(0);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if(context instanceof BaseActivityListener){
-            baseActivityListener = (BaseActivityListener) context;
-        }
+        // Restore datas
+        SaveAndRestoreDataListPropertiesFrag.recoverDatas(getArguments(),savedInstanceState,this,context,baseActivityListener);
+        recoverActivities();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.property_item_list, container, false);
+
+        // Assign views
         ButterKnife.bind(this, view);
-        configureListProperties();
+
+        // Configure fragment
+        configureFragment();
+
         return view;
     }
 
-    private void recoverListProperties(){
+    // ------------------------------------------------------------------------------------------------------
+    // --------------------------------------  CONFIGURE FRAGMENT  ------------------------------------------
+    // ------------------------------------------------------------------------------------------------------
 
-        listProperties = new ArrayList<>();
+    private void configureFragment(){
 
-        PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
-        propertyContentProvider.setUtils(context,true);
+        if(modeDevice.equals(MODE_TABLET)){ // ------------------ TABLET
 
-        final Cursor cursor = propertyContentProvider.query(null, null, null, null, null);
-
-        if (cursor != null){
-            if(cursor.getCount() >0){
-                while (cursor.moveToNext()) {
-                    listProperties.add(Property.getPropertyFromCursor(cursor));
-                }
+            if(itemSelected!=-1){ // if one item is selected in the list
+                listProperties.get(itemSelected).setSelected(true);
+            } else if(!modeSelected.equals(MODE_DISPLAY_MAPS)){ // if no item is selected, select the first one of the list
+                showDisplayFragment(0);
             }
-            cursor.close();
-        }
 
-        baseActivityListener.setListProperties(listProperties);
-    }
+            configureListProperties(itemSelected);
 
-    private void configureListProperties(){
-
-        // Set the adapter
-        if(listProperties!=null){
-            if (listProperties.size() > 0) {
-
-                // if at least one result in the list, remove grey background
-                if(modeSelected.equals(MODE_SEARCH) && modeDevice.equals(MODE_TABLET))
-                    searchActivity.getListFragLayout().setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
-
-                if(context!=null){
-
-                    // Create adapter passing in the sample user data
-                    PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties,context, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
-                    // Attach the adapter to the recyclerview to populate items
-                    recyclerView.setAdapter(adapter);
-                    // Set layout manager to position the items
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                }
-            } else {
-                fragmentView.setBackgroundColor(Color.GRAY);
-            }
-        } else {
-            fragmentView.setBackgroundColor(Color.GRAY);
+        } else { // --------------------------------------------- PHONE
+            configureListProperties(-1);
         }
     }
 
-    public void refreshListProperties(int position){
+    public void configureListProperties(int position){
 
         // Set the adapter
         if(listProperties!=null){
@@ -163,7 +101,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                 if (context != null) {
 
                     // Create adapter passing in the sample user data
-                    PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(listProperties, context, position, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
+                    PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(this,listProperties, context, position, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
                     // Attach the adapter to the recyclerview to populate items
                     recyclerView.setAdapter(adapter);
                     // Set layout manager to position the items
@@ -189,85 +127,74 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     @Override
     public void changeMarkerMap(int idProp) {
         if(modeSelected.equals(MODE_DISPLAY_MAPS)){
-            mapsActivity.getGoogleMapUtils().centerToMarker(idProp);
+            mapsActivity.getConfigureMap().centerToMarker(idProp);
         }
     }
 
-    public void refresh(int idProp) {
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        // Recover list of properties and position of the idProp
-        recoverListProperties();
-        int position = Utils.getIdPositionFromList(idProp, listProperties);
-
-        listProperties.get(position).setSelected(true);
-
-        // Configure the list of properties
-        refreshListProperties(position);
-
-        // Show property
-        showDisplayFragment(position);
-    }
-
-    private void recoverModeSelected(){
-
-        if(getArguments()!=null) {
-
-            // if the mode of display is for mapsActivity, remove button return and icons in toolbar
-            if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY_MAPS)) {
-                mapsActivity = (MapsActivity) getActivity();
-                modeSelected = MODE_DISPLAY_MAPS;
-
-            } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY)) {
-                modeSelected = MODE_DISPLAY;
-
-            } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_SEARCH)) {
-                modeSelected = MODE_SEARCH;
-            }
+        if(context instanceof BaseActivityListener){
+            baseActivityListener = (BaseActivityListener) context;
         }
     }
 
-    private void recoverDeviceMode(){
+    // ------------------------------------------------------------------------------------------------------
+    // --------------------------------------  SAVE & RESTORE DATAS  ----------------------------------------
+    // ------------------------------------------------------------------------------------------------------
 
-        if(getArguments()!=null) {
-            if (getArguments().getString(BUNDLE_DEVICE)!=null){
-                if (Objects.equals(getArguments().getString(BUNDLE_DEVICE), MODE_TABLET)) {
-                    modeDevice = MODE_TABLET;
-                } else {
-                    modeDevice = MODE_PHONE;
-                }
-            } else {
-                modeDevice = MODE_PHONE;
-            }
-        } else {
-            modeDevice = MODE_PHONE;
-        }
+    private void recoverActivities(){
+        if(getModeSelected().equals(MODE_SEARCH) && getModeDevice().equals(MODE_TABLET))
+            setSearchActivity((SearchActivity) getActivity());
+
+        if(getModeSelected().equals(MODE_DISPLAY_MAPS) && getModeDevice().equals(MODE_TABLET))
+            setMapsActivity((MapsActivity) getActivity());
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, listProperties, modeSelected, fragmentDisplayed,modeDevice);
+    }
 
-    public interface BaseActivityListener {
+    // --------------------------------------------------------------------------------------------------------
+    // ------------------------------------ GETTERS AND SETTERS ------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
 
-        void configureAndShowDisplayFragment(String modeSelected, int idProp);
+    public String getModeDevice() {
+        return modeDevice;
+    }
 
-        void setListProperties(List<Property> listProperties);
+    public String getModeSelected() {
+        return modeSelected;
+    }
 
-        void setImage(String imagePath, ImageView mainImage);
+    public void setListProperties(List<Property> listProperties) {
+        this.listProperties = listProperties;
+    }
 
-        void returnToSearchCriteria();
+    public void setModeDevice(String modeDevice) {
+        this.modeDevice = modeDevice;
+    }
 
-        void configureAndShowListPropertiesFragment(String modeSelected, List<Property> listProperties);
+    public void setModeSelected(String modeSelected) {
+        this.modeSelected = modeSelected;
+    }
 
-        void changeToDisplayMode(int idProp);
+    public void setItemSelected(int itemSelected) {
+        this.itemSelected = itemSelected;
+    }
 
-        void displayAlertDeletion(int viewholderposition);
+    public void setMapsActivity(MapsActivity mapsActivity) {
+        this.mapsActivity = mapsActivity;
+    }
 
-        void displayError(String errorText);
+    public void setSearchActivity(SearchActivity searchActivity) {
+        this.searchActivity = searchActivity;
+    }
 
-        ListPropertiesFragment getListPropertiesFragment();
-
-        void showSnackBar(String text);
-
-        void getMainImage();
-
-        void getExtraImage(int viewHolderPosition);
+    public void setFragmentDisplayed(String fragmentDisplayed) {
+        this.fragmentDisplayed = fragmentDisplayed;
     }
 }

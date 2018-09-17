@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
@@ -24,12 +25,12 @@ public class CheckAndSaveEdit {
     private Context context;
     private Property propertyToSave;
     private int idProp;
-    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
+    private BaseActivityListener baseActivityListener;
     private PropertyContentProvider propertyContentProvider;
     private ImageContentProvider imageContentProvider;
     private String typeEdit;
 
-    public CheckAndSaveEdit(EditFragment editFragment, Context context, ListPropertiesFragment.BaseActivityListener baseActivityListener, String typeEdit) {
+    public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivityListener baseActivityListener, String typeEdit) {
         this.editFragment = editFragment;
         this.context=context;
         this.baseActivityListener=baseActivityListener;
@@ -120,9 +121,6 @@ public class CheckAndSaveEdit {
             // display property and refresh the list of properties
             baseActivityListener.changeToDisplayMode(idProp);
 
-            if(baseActivityListener.getListPropertiesFragment()!=null)
-                baseActivityListener.getListPropertiesFragment().refresh(idProp);
-
             // Message to the user
             baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_update));
 
@@ -136,9 +134,6 @@ public class CheckAndSaveEdit {
 
             // display property and refresh the list of properties
             baseActivityListener.changeToDisplayMode((int) ContentUris.parseId(uri));
-
-            if(baseActivityListener.getListPropertiesFragment()!=null)
-                baseActivityListener.getListPropertiesFragment().refresh((int) ContentUris.parseId(uri));
 
             // Message to the user
             baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_add));

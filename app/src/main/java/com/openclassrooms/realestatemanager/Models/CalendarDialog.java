@@ -55,25 +55,25 @@ public class CalendarDialog extends DialogFragment {
                 case PUBLISH_DATE: {
                     EditFragment editFragment = (EditFragment) getTargetFragment();
                     editFragment.getDatePublish().setText(date); // change date selected into string
-
+                    editFragment.getProperty().setDateStart(date);
                     break;
                 }
                 case SOLD_DATE: {
                     EditFragment editFragment = (EditFragment) getTargetFragment();
                     editFragment.getDateSold().setText(date); // change date selected into string
-
+                    editFragment.getProperty().setDateSold(date);
                     break;
                 }
                 case PUBLISH_DATE_START: {
                     SearchFragment searchFragment = (SearchFragment) getTargetFragment();
                     searchFragment.getStartPublishView().setText(date); // change date selected into string
-
+                    searchFragment.getSearchQuery().setDatePublishStart(date);
                     break;
                 }
                 case PUBLISH_DATE_END: {
                     SearchFragment searchFragment = (SearchFragment) getTargetFragment();
                     searchFragment.getEndPublishView().setText(date); // change date selected into string
-
+                    searchFragment.getSearchQuery().setDatePublishEnd(date);
                     break;
                 }
             }

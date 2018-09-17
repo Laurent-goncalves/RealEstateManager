@@ -6,11 +6,13 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
@@ -29,7 +31,9 @@ public class BasePropertyFragment extends Fragment {
     protected MapsActivity mapsActivity;
     protected String buttonReturnText;
     protected String modeSelected;
-    protected ListPropertiesFragment.BaseActivityListener baseActivityListener;
+    protected String typeEdit;
+    protected int idProperty;
+    protected BaseActivityListener baseActivityListener;
     protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_MAIN_IMAGE = 77;
     protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_EXTRA_IMAGE = 88;
     protected final static String BUNDLE_DEVICE = "bundle_device";
@@ -48,6 +52,11 @@ public class BasePropertyFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,20 +65,9 @@ public class BasePropertyFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_base_property, container, false);
     }
 
-    /*protected void requestPermissionAccessImageGallery(int requestCode){
-
-        permissionAccessStorage = false;
-
-        if (ContextCompat.checkSelfPermission(context,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            permissionAccessStorage = true;
-        } else {
-            ActivityCompat.requestPermissions(baseActivity,
-                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                    requestCode);
-        }
-    }*/
+    // -----------------------------------------------------------------------------------------
+    // ----------------------------------- RECOVER DATAS ---------------------------------------
+    // -----------------------------------------------------------------------------------------
 
     protected void recoverModeSelected(){
 
@@ -112,7 +110,7 @@ public class BasePropertyFragment extends Fragment {
         }
     }
 
-    protected void recoverProperty(int idProp){
+    public void recoverProperty(int idProp){
 
         if(idProp!=-1){
 
@@ -132,7 +130,7 @@ public class BasePropertyFragment extends Fragment {
         }
     }
 
-    protected void recoverImagesProperty(int idProp){
+    public void recoverImagesProperty(int idProp){
 
         if(idProp!=-1){
 
@@ -152,7 +150,35 @@ public class BasePropertyFragment extends Fragment {
         }
     }
 
+    // -----------------------------------------------------------------------------------------
+    // -------------------------------- GETTERS and SETTERS ------------------------------------
+    // -----------------------------------------------------------------------------------------
+
     public List<ImageProperty> getListImages() {
         return listImages;
+    }
+
+    public void setModeSelected(String modeSelected) {
+        this.modeSelected = modeSelected;
+    }
+
+    public void setModeDevice(String modeDevice) {
+        this.modeDevice = modeDevice;
+    }
+
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+
+    public void setListImages(List<ImageProperty> listImages) {
+        this.listImages = listImages;
+    }
+
+    public void setIdProperty(int idProperty) {
+        this.idProperty = idProperty;
+    }
+
+    public void setTypeEdit(String typeEdit) {
+        this.typeEdit = typeEdit;
     }
 }

@@ -23,7 +23,6 @@
         <!-- ACTIVITIES -->
         <activity
             android:name=".Controllers.Activities.MainActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,14 +33,12 @@
 
         <activity
             android:name=".Controllers.Activities.MapsActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity android:name=".Controllers.Activities.SearchActivity"
-            android:configChanges="keyboardHidden|orientation"
+        <activity
+            android:name=".Controllers.Activities.SearchActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name=".Controllers.Activities.BaseActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <!-- CONTENT PROVIDERS -->

@@ -65,10 +65,16 @@ public class PropertyConstructor {
         type=listProperties.getSelectedItem().toString();
 
         // get surface
-        surface=Double.parseDouble(surfaceEdit.getText().toString());
+        if(surfaceEdit.getText().toString().length()==0)
+            surface= 0d;
+        else
+            surface=Double.parseDouble(surfaceEdit.getText().toString());
 
         // get price
-        price=Double.parseDouble(priceEdit.getText().toString());
+        if(priceEdit.getText().toString().length()==0)
+            price= 0d;
+        else
+            price=Double.parseDouble(priceEdit.getText().toString());
 
         // get room number
         TextView nbRooms = relativeLayoutNbRooms.findViewById(R.id.room_number_selector).findViewById(R.id.text_selection);
@@ -98,19 +104,14 @@ public class PropertyConstructor {
         datesold = dateSold.getText().toString();
 
         // Get static map
-        if (editFragment.getStaticMap() != null)
-            mapStatic = Utils.getBitmapAsByteArray(editFragment.getStaticMap());
+        if (editFragment.getProperty().getMap() != null)
+            mapStatic = editFragment.getProperty().getMap();
         else
             mapStatic = null;
 
         // Get lat and lng
-        if (editFragment.getLatLngAddress() != null) {
-            lat = editFragment.getLatLngAddress().latitude;
-            lng = editFragment.getLatLngAddress().longitude;
-        } else {
-            lat = 0d;
-            lng = 0d;
-        }
+        lat = editFragment.getProperty().getLat();
+        lng = editFragment.getProperty().getLng();
 
         // get Main Image URI
         if (editFragment.getMainImagePath() != null)
@@ -118,5 +119,4 @@ public class PropertyConstructor {
         else
             mainImagePath = null;
     }
-
 }

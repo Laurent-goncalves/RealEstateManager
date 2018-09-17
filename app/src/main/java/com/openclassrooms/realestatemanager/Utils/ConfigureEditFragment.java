@@ -17,22 +17,22 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.model.LatLng;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
+import java.util.Arrays;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
+import butterknife.OnItemSelected;
+import butterknife.OnTextChanged;
 
 public class ConfigureEditFragment {
 
@@ -56,12 +56,12 @@ public class ConfigureEditFragment {
     private Context context;
     private Property property;
     private EditFragment editFragment;
-    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
+    private BaseActivityListener baseActivityListener;
     private List<ImageProperty> listImages;
     private static final String PUBLISH_DATE = "publish_date";
     private static final String SOLD_DATE = "sold_date";
 
-    public ConfigureEditFragment(View view, EditFragment editFragment, Context context, Property property, List<ImageProperty> listImages, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
+    public ConfigureEditFragment(View view, EditFragment editFragment, Context context, Property property, List<ImageProperty> listImages, BaseActivityListener baseActivityListener) {
         ButterKnife.bind(this, view);
         this.view=view;
         this.context=context;
@@ -73,6 +73,10 @@ public class ConfigureEditFragment {
         configureImagesProperty();
     }
 
+    // ----------------------------------------------------------------------------------------------------------
+    // ------------------------------------- CONFIGURATION EDITFRAGMENT -----------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
     private void configureAllAreas(){
 
         if(property!=null){
@@ -82,6 +86,9 @@ public class ConfigureEditFragment {
 
             // configure switch (sold ?)
             configureSwitchSold();
+
+            // configure type property
+            listProperties.setSelection(Utils.getIndexFromList(property.getType(), Arrays.asList(context.getResources().getStringArray(R.array.type_property))));
 
             // configure price
             priceEdit.setText(String.valueOf(property.getPrice()));
@@ -172,36 +179,6 @@ public class ConfigureEditFragment {
         calendarDialog.show(ft, "calendarDialog");
     }
 
-    @OnClick(R.id.switch_sold)
-    public void onClickSwitchSold(){
-        if(!switchSold.isChecked()){
-            dateSold.setText("");
-        }
-    }
-
-    @OnClick(R.id.plus_button)
-    public void onClickListenerButtonPlus() {
-        if(roomNb<10) {
-            roomNb++;
-            nbRooms.setText(String.valueOf(roomNb));
-        }
-        buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-
-        new Handler().postDelayed(() -> buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
-    }
-
-    @OnClick(R.id.less_button)
-    public void onClickListenerButtonLess() {
-        if(roomNb>=1) {
-            roomNb--;
-            nbRooms.setText(String.valueOf(roomNb));
-        }
-
-        buttonLess.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-
-        new Handler().postDelayed(() -> buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
-    }
-
     private void configureImagesProperty(){
 
         if(context!=null){
@@ -224,10 +201,84 @@ public class ConfigureEditFragment {
     }
 
     private void configureSwitchSold(){
-        if(property.getSold())
+        if(property.getSold()) {
             switchSold.setChecked(true);
-        else
+        } else {
             switchSold.setChecked(false);
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // ---------------------------------- LISTENERS FOR UPDATING PROPERTY ---------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+
+    @OnTextChanged(R.id.surface_edit_text)
+    public void onSurfaceChanged(){
+        if(surfaceEdit.getText().toString().length()==0)
+            editFragment.getProperty().setSurface(0d);
+        else
+            editFragment.getProperty().setSurface(Double.parseDouble(surfaceEdit.getText().toString()));
+    }
+
+    @OnTextChanged(R.id.price_edit_text)
+    public void onPriceChanged(){
+        if(priceEdit.getText().toString().length()==0)
+            editFragment.getProperty().setPrice(0d);
+        else
+            editFragment.getProperty().setPrice(Double.parseDouble(priceEdit.getText().toString()));
+    }
+
+    @OnTextChanged(R.id.estateagent_edit_text)
+    public void onEstateAgentChanged(){
+        editFragment.getProperty().setEstateAgent(estateAgentEdit.getText().toString());
+    }
+
+    @OnTextChanged(R.id.interest_points_editview)
+    public void onInterestPointsChanged(){
+        editFragment.getProperty().setInterestPoints(interestView.getText().toString());
+    }
+
+    @OnTextChanged(R.id.description_edit_text)
+    public void onDescriptionChanged(){
+        editFragment.getProperty().setDescription(descriptionEdit.getText().toString());
+    }
+
+    @OnItemSelected(R.id.list_type_properties)
+    public void onTypePropertySelected(){
+        editFragment.getProperty().setType(listProperties.getSelectedItem().toString());
+    }
+
+    @OnClick(R.id.switch_sold)
+    public void onClickSwitchSold(){
+        if(!switchSold.isChecked()){
+            dateSold.setText("");
+        }
+        editFragment.getProperty().setSold(switchSold.isChecked());
+    }
+
+    @OnClick(R.id.plus_button)
+    public void onClickListenerButtonPlus() {
+        if(roomNb<10) {
+            roomNb++;
+            editFragment.getProperty().setRoomNumber(roomNb);
+            nbRooms.setText(String.valueOf(roomNb));
+        }
+        buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        new Handler().postDelayed(() -> buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
+    }
+
+    @OnClick(R.id.less_button)
+    public void onClickListenerButtonLess() {
+        if(roomNb>=1) {
+            roomNb--;
+            editFragment.getProperty().setRoomNumber(roomNb);
+            nbRooms.setText(String.valueOf(roomNb));
+        }
+
+        buttonLess.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        new Handler().postDelayed(() -> buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
     }
 }
 

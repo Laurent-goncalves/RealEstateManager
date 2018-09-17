@@ -1,13 +1,11 @@
 package com.openclassrooms.realestatemanager.Models;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
 
 /** Le type de bien (appartement, loft, manoir, etc) ;
  Le prix du bien (en dollar) ;
@@ -66,6 +64,7 @@ public class Property {
         this.mainImagePath=mainImagePath;
     }
 
+    @Ignore
     public Property() {
     }
 

@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import java.text.NumberFormat;
@@ -26,7 +27,7 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void configurePropertiesViews(Property property, ListPropertiesFragment.BaseActivityListener baseActivityListener){
+    public void configurePropertiesViews(Property property, BaseActivityListener baseActivityListener){
         // Main Image
         baseActivityListener.setImage(property.getMainImagePath(), mainImage);
 

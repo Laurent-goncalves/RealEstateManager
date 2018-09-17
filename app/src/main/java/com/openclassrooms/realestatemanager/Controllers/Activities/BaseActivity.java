@@ -22,17 +22,23 @@ import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragmen
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
+import com.openclassrooms.realestatemanager.Models.CallbackPropertyAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
+import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.ConverterJSON;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataActivity;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Views.PropertyViewHolder;
 import java.io.File;
 import java.util.List;
 import butterknife.BindView;
 import pub.devrel.easypermissions.EasyPermissions;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
-public class BaseActivity extends AppCompatActivity implements ListPropertiesFragment.BaseActivityListener {
+public class BaseActivity extends AppCompatActivity implements BaseActivityListener {
 
     protected static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     protected static int RESULT_LOAD_MAIN_IMAGE_ = 3;
@@ -41,22 +47,27 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     protected static final String BUNDLE_TYPE_EDIT = "type_edit";
     protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
+    protected static final String BUNDLE_SEARCH_QUERY = "bundle_search_query";
+    protected static final String BUNDLE_ITEM_LIST_SELECTED = "bundle_item_selected_in_the_list";
     protected static final String MODE_SEARCH = "mode_search";
     protected static final String MODE_DISPLAY = "mode_display";
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
-    protected static final String LIST_PROPERTIES_JSON = "list_properties_json";
+    protected static final String BUNDLE_LIST_PROPERTIES = "bundle_list_properties";
     protected final static String LIST_FRAG = "fragment_list";
     protected final static String SEARCH_FRAG = "fragment_search";
     protected final static String DISPLAY_FRAG = "fragment_display";
     protected final static String EDIT_FRAG = "fragment_edit";
+    protected final static String MAPS_FRAG = "fragment_maps";
     protected final static String BUNDLE_DEVICE = "bundle_device";
     protected final static String MODE_TABLET = "mode_tablet";
     protected final static String MODE_PHONE = "mode_phone";
-    protected String fragmentDisplayed;
     @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
     protected static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
-    private static final int PERMISSIONS_REQUEST_ACCESS_IMAGE_GALLERY = 202;
+    protected static final int PERMISSIONS_REQUEST_ACCESS_IMAGE_GALLERY = 202;
+    protected static final int PERMISSIONS_REQUEST_ACCESS_MAIN_IMAGE_GALLERY = 203;
+    protected static final int PERMISSIONS_REQUEST_ACCESS_EXTRA_IMAGE_GALLERY = 204;
+    protected String fragmentDisplayed;
     protected List<Property> listProperties;
     protected ToolbarManager toolbarManager;
     protected EditFragment editFragment;
@@ -69,6 +80,8 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
     protected String modeSelected;
     protected String imagePath;
     protected ImageView imageView;
+    protected SearchQuery searchQuery;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +126,12 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         if(displayFragment!=null)
             this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
 
+        searchFragment = new SearchFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(BUNDLE_SEARCH_QUERY, ConverterJSON.convertSearchQueryToJson(searchQuery));
+        searchFragment.setArguments(bundle);
+
         FragmentTransaction fragTransReplace = getFragmentManager().beginTransaction();
         fragTransReplace.replace(R.id.fragment_position, searchFragment);
         fragTransReplace.commit();
@@ -132,6 +151,9 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         displayFragment = new DisplayFragment();
         fragmentDisplayed = DISPLAY_FRAG;
 
+        if(listPropertiesFragment!=null)
+            listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
+
         // create a bundle
         Bundle bundle = new Bundle();
         bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
@@ -141,7 +163,7 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         // configure and show the editFragment
         displayFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_position, displayFragment);
+        fragmentTransaction.replace(R.id.fragment_position, displayFragment, DISPLAY_FRAG);
         fragmentTransaction.commit();
     }
 
@@ -153,6 +175,9 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         editFragment = new EditFragment();
         fragmentDisplayed = EDIT_FRAG;
         idProperty = propertyId;
+
+        if(listPropertiesFragment!=null)
+            listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
 
         // create a bundle
         Bundle bundle = new Bundle();
@@ -168,7 +193,7 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         // configure and show the editFragment
         editFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_position, editFragment);
+        fragmentTransaction.replace(R.id.fragment_position, editFragment, EDIT_FRAG);
         fragmentTransaction.commit();
     }
 
@@ -180,6 +205,7 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
 
         listPropertiesFragment = new ListPropertiesFragment();
         fragmentDisplayed = LIST_FRAG;
+        listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
 
         // Create a bundle
         Bundle bundle = new Bundle();
@@ -192,16 +218,12 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
                 break;
             case MODE_SEARCH: {
                 bundle.putString(BUNDLE_MODE_SELECTED, MODE_SEARCH);
-                Gson gson = new Gson();
-                String listPropertiesJson = gson.toJson(listProp);
-                bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
+                bundle.putString(BUNDLE_LIST_PROPERTIES, ConverterJSON.convertListPropertyToJson(listProp));
                 break;
             }
             case MODE_DISPLAY_MAPS: {
                 bundle.putString(BUNDLE_MODE_SELECTED, MODE_DISPLAY_MAPS);
-                Gson gson = new Gson();
-                String listPropertiesJson = gson.toJson(listProp);
-                bundle.putString(LIST_PROPERTIES_JSON, listPropertiesJson);
+                bundle.putString(BUNDLE_LIST_PROPERTIES, ConverterJSON.convertListPropertyToJson(listProp));
                 break;
             }
         }
@@ -211,11 +233,11 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
 
         if(modeDevice.equals(MODE_TABLET)){ // MODE TABLET
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_list, listPropertiesFragment);
+            fragmentTransaction.replace(R.id.fragment_list, listPropertiesFragment,LIST_FRAG);
             fragmentTransaction.commit();
         } else { // MODE PHONE
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment);
+            fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment,LIST_FRAG);
             fragmentTransaction.commit();
         }
     }
@@ -228,13 +250,16 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         fragmentDisplayed = SEARCH_FRAG;
         searchFragment = new SearchFragment();
 
+        if(listPropertiesFragment!=null)
+            listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
+
         // Create bundle
         Bundle bundle = new Bundle();
         bundle.putString(BUNDLE_DEVICE, modeDevice);
         bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_position, searchFragment);
+        fragmentTransaction.replace(R.id.fragment_position, searchFragment, SEARCH_FRAG);
         fragmentTransaction.commit();
     }
 
@@ -271,19 +296,78 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         toast.show();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,listProperties,idProperty,outState);
+    }
+
+    @Override
+    public void changeOfPropertySelected(PropertyViewHolder holder, int position, CallbackPropertyAdapter callbackPropertyAdapter) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(getResources().getString(R.string.warning_title));
+        builder.setMessage(getResources().getString(R.string.change_item_list));
+        builder.setPositiveButton(getResources().getString(R.string.confirm), (dialog, id) -> {
+            callbackPropertyAdapter.proceedToChangeOfPropertySelection(holder,position);
+                    })
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void setSearchQuery(SearchQuery searchQuery) {
+        this.searchQuery=searchQuery;
+    }
+
+    @Override
+    public void stopActivity() {
+        launchMainActivity();
+        finish();
+    }
+
+    @Override
+    public void showSnackBar(String text) {
+        Snackbar.make(this.findViewById(R.id.fragment_position), text, Snackbar.LENGTH_LONG).show();
+    }
+
     // -------------------------------------------------------------------------------------------------------
     // -------------------------------------- LOADING IMAGE FROM DEVICE --------------------------------------
     // -------------------------------------------------------------------------------------------------------
 
     public void getMainImage() {
-        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(i, RESULT_LOAD_MAIN_IMAGE_);
+        String[] galleryPermissions = {READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this.getApplicationContext(), galleryPermissions)) {
+
+            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_MAIN_IMAGE_);
+
+        } else {
+            EasyPermissions.requestPermissions(this, "Access for storage",
+                    PERMISSIONS_REQUEST_ACCESS_MAIN_IMAGE_GALLERY, galleryPermissions);
+        }
     }
 
     public void getExtraImage(int viewHolderPosition) {
+
         this.viewHolderPosition= viewHolderPosition;
-        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
+        String[] galleryPermissions = {READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        if (EasyPermissions.hasPermissions(this.getApplicationContext(), galleryPermissions)) {
+
+            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE_VIEWHOLDER);
+
+        } else {
+            EasyPermissions.requestPermissions(this, "Access for storage",
+                    PERMISSIONS_REQUEST_ACCESS_EXTRA_IMAGE_GALLERY, galleryPermissions);
+        }
+    }
+
+    @Override
+    public String getFragmentDisplayed() {
+        return fragmentDisplayed;
     }
 
     @Override
@@ -325,6 +409,24 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
                 }
                 break;
             }
+            case PERMISSIONS_REQUEST_ACCESS_MAIN_IMAGE_GALLERY: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getMainImage();
+                } else {
+                    displayError(getApplicationContext().getResources().getString(R.string.give_permission));
+                }
+                break;
+            }
+            case PERMISSIONS_REQUEST_ACCESS_EXTRA_IMAGE_GALLERY: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getMainImage();
+                } else {
+                    displayError(getApplicationContext().getResources().getString(R.string.give_permission));
+                }
+                break;
+            }
         }
     }
 
@@ -353,7 +455,7 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
 
                 } else {
                     EasyPermissions.requestPermissions(this, "Access for storage",
-                            101, galleryPermissions);
+                            PERMISSIONS_REQUEST_ACCESS_IMAGE_GALLERY, galleryPermissions);
                     this.imagePath=imagePath;
                     this.imageView=imageView;
                 }
@@ -383,11 +485,6 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         return listPropertiesFragment;
     }
 
-    @Override
-    public void showSnackBar(String text) {
-        Snackbar.make(this.findViewById(R.id.fragment_position), text, Snackbar.LENGTH_LONG).show();
-    }
-
     public int getCurrentPropertyDisplayed(){
         return idProperty;
     }
@@ -408,6 +505,13 @@ public class BaseActivity extends AppCompatActivity implements ListPropertiesFra
         return searchFragment;
     }
 
+    public void setFragmentDisplayed(String fragmentDisplayed) {
+        this.fragmentDisplayed = fragmentDisplayed;
+    }
+
+    public void setModeSelected(String modeSelected) {
+        this.modeSelected = modeSelected;
+    }
 }
 
 

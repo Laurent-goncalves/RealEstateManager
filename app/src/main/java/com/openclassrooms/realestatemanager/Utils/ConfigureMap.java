@@ -3,15 +3,11 @@ package com.openclassrooms.realestatemanager.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Toast;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,37 +21,39 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.Property;
-import com.openclassrooms.realestatemanager.Models.Provider.MapsContentProvider;
 import com.openclassrooms.realestatemanager.R;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 
-public class GoogleMapUtils {
+public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
 
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
+    private final static String MODE_TABLET = "mode_tablet";
+    private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private GoogleMap mMap;
     private Context context;
     private PlaceDetectionClient mPlaceDetectionClient;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
-    private final static String EXTRA_LAT_CURRENT = "latitude_current_location";
-    private final static String EXTRA_LONG_CURRENT = "longitude_current_location";
-    private final static String MODE_TABLET = "mode_tablet";
-    private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
-    private boolean permissionGranted = true;
+    private boolean permissionGranted;
     private LatLng currentLatLng;
     private MapsActivity mapsActivity;
     private SharedPreferences sharedPreferences;
     private List<Property> listProperties;
+    private List<Property> fullListProperties;
     private String modeDevice;
-    List<Marker> listMarkers;
+    private List<Marker> listMarkers;
 
-    public GoogleMapUtils(Context context, String modeDevice, MapsActivity mapsActivity) {
+    public ConfigureMap(Context context, String modeDevice, MapsActivity mapsActivity) {
         this.context = context;
         this.modeDevice=modeDevice;
         this.mapsActivity=mapsActivity;
+        initialization();
+        getLocationPermission();
+    }
+
+    private void initialization(){
         sharedPreferences = mapsActivity.getSharedPreferences();
-        listProperties = new ArrayList<>();
         SupportMapFragment mapFragment = (SupportMapFragment) mapsActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
@@ -71,8 +69,55 @@ public class GoogleMapUtils {
 
         // Construct a PlaceDetectionClient.
         mPlaceDetectionClient = Places.getPlaceDetectionClient(context);
-        getLocationPermission();
     }
+
+    // --------------------------------------------------------------------------------------------------------
+    // ---------------------------------------- RESTORE STATE -------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
+
+    public void restoreData(List<Property> listPropertiesSaved, LatLng cameraPosition){
+        fullListProperties = new ArrayList<>(UtilsGoogleMap.getAllProperties(mapsActivity.getApplicationContext()));
+        listProperties = new ArrayList<>(listPropertiesSaved);
+        currentLatLng = UtilsGoogleMap.findLastCurrentLocation(sharedPreferences);
+        getPropertiesCloseToTarget(cameraPosition);
+    }
+
+    // --------------------------------------------------------------------------------------------------------
+    // ---------------------------------------- GET PROPERTIES ------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
+
+    public void launchMapConfiguration(){
+        if(permissionGranted){ // if permission for geolocalization
+            // get all properties not sold from the database
+            fullListProperties = new ArrayList<>(UtilsGoogleMap.getAllProperties(mapsActivity.getApplicationContext()));
+            // find current location (and search properties closed to current location)
+            getCurrentLocation();
+        }
+    }
+
+    private void getPropertiesCloseToTarget(LatLng cameraTarget) {
+        listProperties = new ArrayList<>(UtilsGoogleMap.filterListPropertiesByLocation(cameraTarget, fullListProperties));
+        configureMapWithMarkers();
+    }
+
+    private void configureMapWithMarkers(){
+        updateMarkers(listProperties);
+        mapsActivity.setListProperties(listProperties);
+        mapsActivity.getProgressBar().setVisibility(View.GONE);
+        mapsActivity.setCameraTarget(mMap.getCameraPosition().target);
+        if(modeDevice.equals(MODE_TABLET)){
+            mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS, listProperties);
+        }
+    }
+
+    @Override
+    public void onCameraIdle() {
+        getPropertiesCloseToTarget(mMap.getCameraPosition().target);
+    }
+
+    // --------------------------------------------------------------------------------------------------------
+    // ------------------------------------ GET CURRENT LOCATION ----------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
 
     private void getLocationPermission() {
 
@@ -80,11 +125,11 @@ public class GoogleMapUtils {
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             permissionGranted = true;
-            getCurrentLocation();
         } else {
             ActivityCompat.requestPermissions(mapsActivity,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            permissionGranted = false;
         }
     }
 
@@ -102,7 +147,7 @@ public class GoogleMapUtils {
                     if (task.isSuccessful() && task.getResult() != null) {
 
                         // Recover the latitude and longitude of current location
-                        currentLatLng = findPlaceHighestLikelihood(task);
+                        currentLatLng = UtilsGoogleMap.findPlaceHighestLikelihood(task);
 
                         if(currentLatLng.longitude>=-123 && currentLatLng.longitude<=-122
                                 && currentLatLng.latitude>=37 && currentLatLng.latitude<=38) // for Travis integration tests
@@ -115,7 +160,7 @@ public class GoogleMapUtils {
                     }
 
                     if(currentLatLng!=null) {
-                        saveLastCurrentLocation(currentLatLng);
+                        UtilsGoogleMap.saveLastCurrentLocation(sharedPreferences,currentLatLng);
                         moveCameraToDefinedPosition();
                     } else
                         setCurrentLocationByDefault();
@@ -134,6 +179,11 @@ public class GoogleMapUtils {
 
     }
 
+    private void setCurrentLocationByDefault(){
+        currentLatLng = UtilsGoogleMap.findLastCurrentLocation(sharedPreferences);
+        moveCameraToDefinedPosition();
+    }
+
     private void moveCameraToDefinedPosition(){
         if(currentLatLng!=null) {
             // Show the initial position
@@ -141,60 +191,12 @@ public class GoogleMapUtils {
                     .newLatLngZoom(new LatLng(currentLatLng.latitude, currentLatLng.longitude), 15));
         }
 
-        getPropertiesCloseToTarget();
+        getPropertiesCloseToTarget(currentLatLng);
     }
 
-    private void setCurrentLocationByDefault(){
-        currentLatLng = findLastCurrentLocation();
-        moveCameraToDefinedPosition();
-    }
-
-    private LatLng findLastCurrentLocation(){
-
-        saveLastCurrentLocation(new LatLng(48.866667, 2.333333)); // for Travis integration tests
-
-        Float latitude = sharedPreferences.getFloat(EXTRA_LAT_CURRENT,0);
-        Float longitude = sharedPreferences.getFloat(EXTRA_LONG_CURRENT,0);
-
-        LatLng last_location;
-
-        if(latitude == 0 && longitude == 0)
-            last_location=new LatLng(48.866667, 2.333333);
-        else
-            last_location = new LatLng(latitude,longitude);
-
-        return last_location;
-    }
-
-    private void saveLastCurrentLocation(LatLng current_loc){
-        sharedPreferences.edit().putFloat(EXTRA_LAT_CURRENT,(float) current_loc.latitude).apply();
-        sharedPreferences.edit().putFloat(EXTRA_LONG_CURRENT,(float) current_loc.longitude).apply();
-    }
-
-    private LatLng findPlaceHighestLikelihood(@NonNull Task<PlaceLikelihoodBufferResponse> task){
-
-        Place placeHighestLikelihood = null;
-        float percentage = 0;
-
-        PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
-
-        for (PlaceLikelihood placeLikelihood : likelyPlaces) {       // for each placeLikelihood
-
-            if(placeLikelihood.getLikelihood() > percentage) {       // if the likelihood is higher than the other ones,
-                placeHighestLikelihood = placeLikelihood.getPlace(); //   set this place as placeLikelihood
-                percentage = placeLikelihood.getLikelihood();        //   set this percentage as highest likelihood
-            }
-        }
-
-        LatLng current_location=null;
-
-        if(placeHighestLikelihood!=null)
-            current_location = placeHighestLikelihood.getLatLng();
-
-        likelyPlaces.release();
-
-        return current_location;
-    }
+    // --------------------------------------------------------------------------------------------------------
+    // --------------------------------------------- MARKERS --------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
 
     private void updateMarkers(List<Property> listProp){
         createMarkerForEachProperty(listProp);
@@ -237,33 +239,6 @@ public class GoogleMapUtils {
         }
     }
 
-    private void getPropertiesCloseToTarget() {
-
-        listProperties = new ArrayList<>();
-
-        MapsContentProvider mapsContentProvider = new MapsContentProvider();
-        mapsContentProvider.setParametersQuery(mapsActivity.getApplicationContext());
-
-        final Cursor cursor = mapsContentProvider.query(null, null, null, null, null);
-
-        if (cursor != null){
-            if(cursor.getCount() >0){
-                while (cursor.moveToNext()) {
-                    listProperties.add(Property.getPropertyFromCursor(cursor));
-                }
-            }
-            cursor.close();
-        }
-
-        updateMarkers(listProperties);
-        mapsActivity.setListProperties(listProperties);
-        mapsActivity.getProgressBar().setVisibility(View.GONE);
-
-        if(modeDevice.equals(MODE_TABLET)){
-            mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS,listProperties);
-        }
-    }
-
     public void centerToMarker(int idProp){
 
         for(Marker marker : listMarkers){
@@ -282,7 +257,15 @@ public class GoogleMapUtils {
         }
     }
 
+    // --------------------------------------------------------------------------------------------------------
+    // --------------------------------------- GETTERS AND SETTERS --------------------------------------------
+    // --------------------------------------------------------------------------------------------------------
+
     public GoogleMap getMap() {
         return mMap;
+    }
+
+    public LatLng getCurrentLatLng() {
+        return currentLatLng;
     }
 }

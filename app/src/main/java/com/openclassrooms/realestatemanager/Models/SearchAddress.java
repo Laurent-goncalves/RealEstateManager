@@ -126,6 +126,12 @@ public class SearchAddress implements Disposable{
         searchAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
             if(listSuggestions.size()>=position+1) {
                 String address = listSuggestions.get(position);
+
+                if(editFragment!=null)
+                    editFragment.getProperty().setAddress(address);
+                else if(searchFragment!=null)
+                    searchFragment.getSearchQuery().setAddress(address);
+
                 searchAutoComplete.setText(address);
                 launchLatLngSearch(address);
             }
@@ -180,9 +186,13 @@ public class SearchAddress implements Disposable{
         searchAutoComplete.setAdapter(autocompleteAdapter);
 
         if(submit && listSuggestions.size()>=1){
-            // the unique item of the list is written in the searchView
             searchAutoComplete.setText(listSuggestions.get(0));
-            //launchLatLngSearch(listSuggestions.get(0));
+
+            if(editFragment!=null)
+                editFragment.getProperty().setAddress(listSuggestions.get(0));
+            else if(searchFragment!=null)
+                searchFragment.getSearchQuery().setAddress(listSuggestions.get(0));
+
             launchLatLngSearch(listSuggArray[0]);
         } else if(submit)
             baseActivity.displayError(context.getResources().getString(R.string.error_address_not_found));

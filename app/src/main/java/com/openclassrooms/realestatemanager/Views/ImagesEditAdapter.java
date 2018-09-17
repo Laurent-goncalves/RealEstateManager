@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -21,9 +22,9 @@ public class ImagesEditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Property property;
     private CallbackImageSelect mCallbackImageSelect;
     private int positionEdited;
-    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
+    private BaseActivityListener baseActivityListener;
 
-    public ImagesEditAdapter(List<ImageProperty> listImages, Property property, Context context, CallbackImageSelect mCallbackImageSelect, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
+    public ImagesEditAdapter(List<ImageProperty> listImages, Property property, Context context, CallbackImageSelect mCallbackImageSelect, BaseActivityListener baseActivityListener) {
         this.listImages= listImages;
         this.context=context;
         this.property=property;

@@ -7,36 +7,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
+import com.openclassrooms.realestatemanager.Models.CallbackPropertyAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import java.util.List;
 import java.util.Objects;
 
 
-public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<PropertyViewHolder>  {
+public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<PropertyViewHolder> implements CallbackPropertyAdapter {
 
     private final static String MODE_TABLET = "mode_tablet";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private final List<Property> listProperties;
     private Context context;
     private CallbackListProperties callbackListProperties;
-    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
+    private CallbackPropertyAdapter callbackPropertyAdapter;
+    private BaseActivityListener baseActivityListener;
+    private final static String EDIT_FRAG = "fragment_edit";
     private int propertySelected;
     private String modeSelected;
     private String modeDevice;
+    private ListPropertiesFragment listPropertiesFragment;
 
-    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, CallbackListProperties callbackListProperties, ListPropertiesFragment.BaseActivityListener baseActivityListener, String modeSelected, String modeDevice) {
-        this.listProperties = listProperties;
-        this.context=context;
-        this.callbackListProperties=callbackListProperties;
-        this.baseActivityListener = baseActivityListener;
-        this.propertySelected=-1;
-        this.modeSelected=modeSelected;
-        this.modeDevice=modeDevice;
-    }
-
-    public PropertiesRecyclerViewAdapter(List<Property> listProperties, Context context, int position, CallbackListProperties callbackListProperties, ListPropertiesFragment.BaseActivityListener baseActivityListener, String modeSelected, String modeDevice) {
+    public PropertiesRecyclerViewAdapter(ListPropertiesFragment listPropertiesFragment, List<Property> listProperties, Context context, int position, CallbackListProperties callbackListProperties, BaseActivityListener baseActivityListener, String modeSelected, String modeDevice) {
         this.listProperties = listProperties;
         this.context=context;
         this.callbackListProperties=callbackListProperties;
@@ -44,6 +39,8 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
         this.modeSelected=modeSelected;
         this.propertySelected=position;
         this.modeDevice=modeDevice;
+        this.listPropertiesFragment=listPropertiesFragment;
+        callbackPropertyAdapter=this;
     }
 
     @NonNull
@@ -62,21 +59,35 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
         holder.propertyLayout.setOnClickListener(v -> {
 
-                if(modeSelected.equals(MODE_DISPLAY_MAPS))
-                    callbackListProperties.changeMarkerMap(Objects.requireNonNull(listProperties).get(position).getId());
-                else
-                    callbackListProperties.showDisplayFragment(position);
-
-                propertySelected = holder.getAdapterPosition();
-                if (listProperties != null) {
-                    listProperties.get(propertySelected).setSelected(true);
+            // in case of tablet mode and the property selected
+                if(modeDevice.equals(MODE_TABLET) && baseActivityListener.getFragmentDisplayed().equals(EDIT_FRAG) && holder.getAdapterPosition()!= propertySelected && propertySelected!=-1 && listProperties!=null){
+                    baseActivityListener.changeOfPropertySelected(holder, holder.getAdapterPosition(), callbackPropertyAdapter);
+                } else {
+                    proceedToChangeOfPropertySelection(holder,holder.getAdapterPosition());
                 }
-
-                notifyDataSetChanged();
             }
         );
 
         setColorItem(holder);
+    }
+
+    public void proceedToChangeOfPropertySelection(PropertyViewHolder holder, int position){
+
+        // if maps mode, change marker. If not, show displayFragment
+        if(modeSelected.equals(MODE_DISPLAY_MAPS))
+            callbackListProperties.changeMarkerMap(Objects.requireNonNull(listProperties).get(position).getId());
+        else {
+            callbackListProperties.showDisplayFragment(position);
+        }
+
+        // change selected position
+        propertySelected = position;
+        listPropertiesFragment.setItemSelected(position);
+
+        // set the property selected to "true" in the list
+        listProperties.get(propertySelected).setSelected(true);
+
+        notifyDataSetChanged();
     }
 
     private void setColorItem(@NonNull PropertyViewHolder holder){
@@ -103,7 +114,12 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
                 } else if(holder.getAdapterPosition()==0 && modeDevice.equals(MODE_TABLET)){ // if no item selected in the list
                     propertySelected = 0;
                     listProperties.get(holder.getAdapterPosition()).setSelected(true);
-                    callbackListProperties.showDisplayFragment(holder.getAdapterPosition());
+
+                    if(modeSelected.equals(MODE_DISPLAY_MAPS))
+                        callbackListProperties.changeMarkerMap(Objects.requireNonNull(listProperties).get(0).getId());
+                    else
+                        callbackListProperties.showDisplayFragment(holder.getAdapterPosition());
+
                     holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorWhite));
                     holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
                 }

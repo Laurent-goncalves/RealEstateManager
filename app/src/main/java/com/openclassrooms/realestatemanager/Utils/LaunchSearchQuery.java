@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.SearchContentProvider;
+import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,21 +22,15 @@ import butterknife.ButterKnife;
 
 public class LaunchSearchQuery {
 
-    @BindView(R.id.switch_sold_search) Switch soldView;
-    @BindView(R.id.list_type_properties_search) Spinner typePropView;
-    @BindView(R.id.start_date_publish_selected_search) TextView startPublishView;
-    @BindView(R.id.end_date_publish_selected_search) TextView endPublishView;
-    @BindView(R.id.price_inf_search) EditText priceInfView;
-    @BindView(R.id.price_sup_search) EditText priceSupView;
-    @BindView(R.id.surface_inf_search) EditText surfaceInfView;
-    @BindView(R.id.surface_sup_search) EditText surfaceSupView;
     private Context context;
+    private SearchQuery searchQuery;
     private SearchFragment searchFragment;
 
-    public LaunchSearchQuery(View view, Context context, SearchFragment searchFragment) {
+    public LaunchSearchQuery(View view, Context context, SearchFragment searchFragment, SearchQuery searchQuery) {
         ButterKnife.bind(this,view);
         this.context = context;
-        this.searchFragment = searchFragment;
+        this.searchQuery = searchQuery;
+        this.searchFragment=searchFragment;
         launchSearchProperties();
     }
 
@@ -44,80 +39,70 @@ public class LaunchSearchQuery {
     // -------------------------------------------------------------------------------------------------------
 
     private int getSold(){
-        if(soldView.isChecked())
+        if(searchQuery.getSoldStatus())
             return 1;
         else
             return 0;
     }
 
     private Double getSurfaceInf(){
-
-        if(surfaceInfView.getText()!=null){
-            if(surfaceInfView.getText().toString().length()==0) { // if no text written
-                return 0d;
-            } else
-                return Double.parseDouble(surfaceInfView.getText().toString());
-        } else
+        if(searchQuery.getSurfaceInf()==0)
             return 0d;
+        else
+            return searchQuery.getSurfaceInf();
     }
 
     private Double getSurfaceSup(){
-
-        if(surfaceSupView.getText()!=null){
-            if(surfaceSupView.getText().toString().length()==0) { // if no text written
-                return 999d;
-            } else
-                return Double.parseDouble(surfaceSupView.getText().toString());
-        } else
+        if(searchQuery.getSurfaceSup()==0)
             return 999d;
+        else
+            return searchQuery.getSurfaceSup();
     }
 
     private Double getPriceInf(){
-        if(priceInfView.getText()!=null){
-            if(priceInfView.getText().toString().length()==0) { // if no text written
-                return 0d;
-            } else
-                return Double.parseDouble(priceInfView.getText().toString());
-        } else
+        if(searchQuery.getPriceInf()==0)
             return 0d;
+        else
+            return searchQuery.getPriceInf();
     }
 
     private Double getPriceSup(){
-        if(priceSupView.getText()!=null){
-            if(priceSupView.getText().toString().length()==0) { // if no text written
-                return 9999999d;
-            } else
-                return Double.parseDouble(priceSupView.getText().toString());
-        } else
+        if(searchQuery.getPriceSup()==0)
             return 9999999d;
+        else
+            return searchQuery.getPriceSup();
     }
 
     private String getTypeProperty(){
-        return typePropView.getSelectedItem().toString();
+        return searchQuery.getTypeProperty();
     }
 
     private String getDateInf(){
-        if(startPublishView.getText()!=null){
-            if(startPublishView.getText().toString().length()==0) // if no text written
+
+        if(searchQuery.getDatePublishStart()==null)
+            return "01/01/2000";
+        else {
+            if (searchQuery.getDatePublishStart().length() == 0) // if no text written
                 return "01/01/2000";
             else
-                return startPublishView.getText().toString();
-        } else
-            return "01/01/2000";
+                return searchQuery.getDatePublishStart();
+        }
     }
 
     private String getDateSup(){
-        if(endPublishView.getText()!=null){
-            if(endPublishView.getText().toString().length()==0) // if no text written
+
+        if(searchQuery.getDatePublishEnd()==null)
+            return "31/12/9999";
+        else {
+            if (searchQuery.getDatePublishEnd().length() == 0) // if no text written
                 return "31/12/9999";
             else
-                return endPublishView.getText().toString();
-        } else
-            return "31/12/9999";
+                return searchQuery.getDatePublishEnd();
+        }
     }
 
     private int getRoomNbMin(){
-        return searchFragment.getRoomNbMin();
+        return searchFragment.getSearchQuery().getRoomNbMin();
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -171,10 +156,11 @@ public class LaunchSearchQuery {
 
     private void filterResultsByLocation(List<Property> listPropertyTemp){
 
-        Double radius = Double.parseDouble(String.valueOf(searchFragment.getRadius()));
+        Double radius = Double.parseDouble(String.valueOf(searchQuery.getRadius()));
         List<Property> listProperties = new ArrayList<>();
+        LatLng searchLoc = new LatLng(searchQuery.getSearchLocLat(),searchQuery.getSearchLocLng());
 
-        if(searchFragment.getSearchLoc()!=null){
+        if(searchLoc.latitude!=0 && searchLoc.longitude!=0){
 
             if(listPropertyTemp.size()>0){
 
@@ -184,7 +170,7 @@ public class LaunchSearchQuery {
 
                             LatLng propertyLoc = new LatLng(property.getLat(),property.getLng());
 
-                            if(Utils.isLocationInsideBounds(searchFragment.getSearchLoc(),propertyLoc,radius))
+                            if(Utils.isLocationInsideBounds(searchLoc,propertyLoc,radius))
                                 listProperties.add(property);
                         }
                     }

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
@@ -45,7 +46,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     protected ImagesEditAdapter adapter;
     protected Boolean inEdition;
     protected Boolean changesOngoing;
-    protected ListPropertiesFragment.BaseActivityListener baseActivityListener;
+    protected BaseActivityListener baseActivityListener;
 
     public BaseImageViewHolder(View itemView) {
         super(itemView);
@@ -57,7 +58,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     // ------------------------------------- CONFIGURATION VIEW ------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
+    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, BaseActivityListener baseActivityListener) {
         // Initialize variables
         this.context=context;
         this.adapter=adapter;

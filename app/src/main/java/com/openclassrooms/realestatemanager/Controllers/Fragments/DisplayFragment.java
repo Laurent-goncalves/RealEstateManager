@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.SimulationTool;
@@ -107,8 +108,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof ListPropertiesFragment.BaseActivityListener){
-            baseActivityListener = (ListPropertiesFragment.BaseActivityListener) context;
+        if(context instanceof BaseActivityListener){
+            baseActivityListener = (BaseActivityListener) context;
         }
     }
 

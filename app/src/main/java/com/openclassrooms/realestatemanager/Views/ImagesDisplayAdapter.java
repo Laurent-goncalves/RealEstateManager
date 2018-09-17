@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
@@ -15,13 +16,13 @@ import java.util.List;
 
 public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayViewHolder> {
 
-    private ListPropertiesFragment.BaseActivityListener baseActivityListener;
+    private BaseActivityListener baseActivityListener;
     private List<ImageProperty> listImages;
     private Context context;
     private CallbackImageChange callbackImageChange;
     private int positionSelected;
 
-    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, ListPropertiesFragment.BaseActivityListener baseActivityListener) {
+    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, BaseActivityListener baseActivityListener) {
         this.listImages = listImages;
         this.callbackImageChange = callbackImageChange;
         this.context = context;

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -14,16 +16,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
+import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.CheckAndSaveEdit;
 import com.openclassrooms.realestatemanager.Utils.ConfigureEditFragment;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataEditFragment;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImageUpdateViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesAddViewHolder;
@@ -37,27 +42,22 @@ import butterknife.OnClick;
 public class EditFragment extends BasePropertyFragment implements CallbackImageSelect {
 
     @BindView(R.id.address_edit_text) android.support.v7.widget.SearchView searchView;
-    @BindView(R.id.listview_dates) LinearLayout linearLayoutDates;
+    @BindView(R.id.nbrooms_property_layout) RelativeLayout relativeLayoutNbRooms;
     @BindView(R.id.interest_points_editview) EditText interestView;
+    @BindView(R.id.listview_dates) LinearLayout linearLayoutDates;
+    @BindView(R.id.main_image_selected) ImageView mainImage;
     @BindView(R.id.buttonCancel) Button buttonCancel;
     @BindView(R.id.buttonSave) Button buttonSave;
     private TextView datePublish;
     private TextView dateSold;
     private CallbackImageSelect mCallbackImageSelect;
-    private int idProperty;
-    private String interestPoints;
-    private LatLng latLngAddress;
-    private Bitmap staticMap;
     private String mainImagePath;
     private RecyclerView recyclerView;
     private ImagesEditAdapter adapter;
     private View view;
     private int viewHolderPosition;
-    private static final String BUNDLE_TYPE_EDIT = "type_edit";
-    private static final String MODE_UPDATE = "UPDATE";
-    private String typeEdit;
     private BaseActivity baseActivity;
-    @BindView(R.id.main_image_selected) ImageView mainImage;
+
 
     public EditFragment() {
         // Required empty public constructor
@@ -69,53 +69,46 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_edit, container, false);
         ButterKnife.bind(this, view);
-        recyclerView = view.findViewById(R.id.list_images_property_edit);
-        datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
-        dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
-        setRetainInstance(true);
 
-        // Set the callback and context
-        baseActivity = (BaseActivity) getActivity();
-        context = getActivity().getApplicationContext();
-        mCallbackImageSelect = this;
-        listImages = new ArrayList<>();
+        // Assign views and variables
+        initialization();
 
-        // We recover in the bundle the property in json format
-        if(getArguments()!=null){
+        // Restore datas
+        SaveAndRestoreDataEditFragment.recoverDatas(getArguments(),savedInstanceState,this);
 
-            modeSelected = getArguments().getString(MODE_SELECTED,MODE_DISPLAY);
-            idProperty=getArguments().getInt(LAST_PROPERTY_SELECTED,-1);
-            typeEdit=getArguments().getString(BUNDLE_TYPE_EDIT,MODE_UPDATE);
-
-            if(typeEdit!=null){
-
-                if(typeEdit.equals(MODE_UPDATE)){ // mode update property
-                    // Recover the property datas
-                    recoverProperty(idProperty);
-                    recoverImagesProperty(idProperty);
-                } else {
-                    // create empty property
-                    property = new Property(-1,null,0d,0d,0,null,null,
-                            null,false,null,null,0d,0d,null,null,null);
-                }
-            }
-        }
-
-        listImages.add(new ImageProperty()); // Add item for "add a photo"
-
+        // Launch views configuration
         configureViews();
 
         return view;
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // retain this fragment
+        setRetainInstance(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+       super.onSaveInstanceState(outState);
+       SaveAndRestoreDataEditFragment.saveDatas(outState,property,listImages,modeSelected,typeEdit,idProperty);
+    }
+
+
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof ListPropertiesFragment.BaseActivityListener){
-            baseActivityListener = (ListPropertiesFragment.BaseActivityListener) context;
+        if(context instanceof BaseActivityListener){
+            baseActivityListener = (BaseActivityListener) context;
         }
     }
+
+    // -------------------------------------------------------------------------------------------
+    // ------------------------- LISTENERS FOR BUTTONS CANCEL AND SAVE ---------------------------
+    // -------------------------------------------------------------------------------------------
 
     @OnClick(R.id.buttonSave)
     public void onClickListenerButtonSave() {
@@ -130,16 +123,30 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
             baseActivityListener.changeToDisplayMode(idProperty);
     }
 
-    @OnClick(R.id.main_image_selector)
-    public void onClickListener(){
-        baseActivityListener.getMainImage();
+    // -------------------------------------------------------------------------------------------
+    // ----------------------------------- CONFIGURATION VIEWS -----------------------------------
+    // -------------------------------------------------------------------------------------------
+
+    private void initialization(){
+
+        recyclerView = view.findViewById(R.id.list_images_property_edit);
+        datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
+        dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
+
+        // Set the callback and context
+        baseActivity = (BaseActivity) getActivity();
+        context = getActivity().getApplicationContext();
+        mCallbackImageSelect = this;
+        listImages = new ArrayList<>();
     }
 
-    public void setMainImage(String imagePath){
-        mainImagePath = imagePath;
-
-        baseActivityListener.setImage(imagePath,mainImage);
+    private void configureViews(){
+        new ConfigureEditFragment(view,this,context,property,listImages,baseActivityListener);
     }
+
+    // -------------------------------------------------------------------------------------------
+    // ----------------------------------- SELECTION IMAGES --------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
@@ -169,24 +176,9 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         }
     }
 
-    // -------------------------------------------------------------------------------------------
-    // ----------------------------------- CONFIGURATION VIEWS -----------------------------------
-    // -------------------------------------------------------------------------------------------
-
-    private void configureViews(){
-        new ConfigureEditFragment(view,this,context,property,listImages,baseActivityListener);
-    }
-
-    public void setInterestPoints(String interestPoints){
-
-        this.interestPoints = interestPoints;
-
-        // Enable button save and cancel
-        baseActivity.runOnUiThread(() -> {
-            interestView.setText(Utils.removeHooksFromString(interestPoints));
-            buttonSave.setEnabled(true);
-            buttonCancel.setEnabled(true);
-        });
+    @OnClick(R.id.main_image_selector)
+    public void onClickListener(){
+        baseActivityListener.getMainImage();
     }
 
     @Override
@@ -230,39 +222,44 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     // ---------------------------------------------------------------------------------------
 
     public void setLatLngAddress(LatLng latLngAddress) {
-        this.latLngAddress = latLngAddress;
+        property.setLat(latLngAddress.latitude);
+        property.setLng(latLngAddress.longitude);
     }
 
-    public LatLng getLatLngAddress() {
-        return latLngAddress;
+    public void setStaticMap(Bitmap staticMap) {
+        property.setMap(Utils.getBitmapAsByteArray(staticMap));
     }
 
     public Property getProperty() {
         return property;
     }
 
-    public String getInterestPoints() {
-        return interestPoints;
-    }
-
     public CallbackImageSelect getCallbackImageSelect() {
         return mCallbackImageSelect;
-    }
-
-    public void setStaticMap(Bitmap staticMap) {
-        this.staticMap = staticMap;
-    }
-
-    public Bitmap getStaticMap() {
-        return staticMap;
     }
 
     public String getMainImagePath() {
         return mainImagePath;
     }
 
+    public void setMainImage(String imagePath){
+        mainImagePath = imagePath;
+        property.setMainImagePath(mainImagePath);
+        baseActivityListener.setImage(imagePath,mainImage);
+    }
+
     public void setMainImagePath(String mainImagePath) {
         this.mainImagePath = mainImagePath;
+    }
+
+    public void setInterestPoints(String interestPoints){
+
+        // Enable button save and cancel
+        baseActivity.runOnUiThread(() -> {
+            interestView.setText(Utils.removeHooksFromString(interestPoints));
+            buttonSave.setEnabled(true);
+            buttonCancel.setEnabled(true);
+        });
     }
 
     public void setAdapter(ImagesEditAdapter adapter) {
