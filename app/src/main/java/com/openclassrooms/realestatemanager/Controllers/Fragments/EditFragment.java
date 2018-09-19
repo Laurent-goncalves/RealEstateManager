@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -57,7 +56,8 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     private View view;
     private int viewHolderPosition;
     private BaseActivity baseActivity;
-
+    private ConfigureEditFragment configFragment;
+    private Parcelable mListState;
 
     public EditFragment() {
         // Required empty public constructor
@@ -74,7 +74,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         initialization();
 
         // Restore datas
-        SaveAndRestoreDataEditFragment.recoverDatas(getArguments(),savedInstanceState,this);
+        SaveAndRestoreDataEditFragment.recoverDatas(getArguments(),savedInstanceState,this, configFragment);
 
         // Launch views configuration
         configureViews();
@@ -83,19 +83,11 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // retain this fragment
-        setRetainInstance(true);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
-       super.onSaveInstanceState(outState);
-       SaveAndRestoreDataEditFragment.saveDatas(outState,property,listImages,modeSelected,typeEdit,idProperty);
+        super.onSaveInstanceState(outState);
+        SaveAndRestoreDataEditFragment.saveDatas(outState,property,listImages,modeSelected,typeEdit,idProperty,configFragment);
+
     }
-
-
 
     @Override
     public void onAttach(Context context) {
@@ -141,7 +133,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     }
 
     private void configureViews(){
-        new ConfigureEditFragment(view,this,context,property,listImages,baseActivityListener);
+        configFragment = new ConfigureEditFragment(view,this,context,property,listImages,baseActivityListener);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -193,11 +185,10 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     }
 
     public void proceedToDeletion(int viewHolderPosition){
-        ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(viewHolderPosition);
-
+        //ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(viewHolderPosition);
         // destroy item from the list
-        ImageProperty imageProperty = holder.getImageProperty();
-        adapter.deleteImageToList(imageProperty);
+        //ImageProperty imageProperty = holder.getImageProperty();
+        adapter.deleteImageToList(viewHolderPosition);
     }
 
     public void setExtraImage(String imagePath, int holderPosition){

@@ -3,10 +3,12 @@ package com.openclassrooms.realestatemanager.Views;
 import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
+
+import java.util.List;
+
 import butterknife.OnClick;
 
 public class ImagesAddViewHolder extends BaseImageViewHolder {
@@ -20,26 +22,13 @@ public class ImagesAddViewHolder extends BaseImageViewHolder {
     // ---------------------------------------------------------------------------------------------------
 
     @Override
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, BaseActivityListener baseActivityListener) {
+    public void configureImagesViews(List<ImageProperty> listImages, int position, ImagesEditAdapter adapter, Context context, BaseActivityListener baseActivityListener) {
 
-        super.configureImagesViews(imageProperty, adapter, inEdition, changesOngoing, context, baseActivityListener);
-
-        this.imageProperty = new ImageProperty();
+        super.configureImagesViews(listImages,position, adapter, context, baseActivityListener);
 
         // remove uneccessary views
-        image.setVisibility(View.GONE);
         editIcon.setVisibility(View.GONE);
         deleteIcon.setVisibility(View.GONE);
-        titleImage.setVisibility(View.GONE);
-
-        if (inEdition){
-            view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_expanded);
-        } else {
-            view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_reduced);
-        }
-
-        // display the panel to add a photo
-        addPhotoButton.setVisibility(View.VISIBLE);
     }
 
     // ---------------------------------------------------------------------------------------------------
@@ -49,17 +38,14 @@ public class ImagesAddViewHolder extends BaseImageViewHolder {
     @OnClick(R.id.buttonImageOK)
     public void ok(){
 
-        if(imagePath!=null) {
-
-            // Update imageProperty
-            imageProperty.setImagePath(imagePath);
-            imageProperty.setDescription(description);
+        if(imageProperty.getImagePath()!=null) {
 
             // Add new image empty to the list and update the list
-            adapter.addNewImageToList(imageProperty, true);
+            adapter.addNewImageToList();
 
             // Close extra panel
             closeExtraPanel();
+            adapter.notifyDataSetChanged();
 
             // send a message Toast to the user
             Toast toast = Toast.makeText(context,context.getResources().getString(R.string.image_added),Toast.LENGTH_LONG);
@@ -80,13 +66,19 @@ public class ImagesAddViewHolder extends BaseImageViewHolder {
         image.setVisibility(View.GONE);
         titleImage.setVisibility(View.GONE);
 
+        // Re-initialize imageProperty
+        imageProperty.setImagePath(null);
+        imageProperty.setDescription(null);
+
         // add panel "add a photo"
         addPhotoButton.setVisibility(View.VISIBLE);
         closeExtraPanel();
+        adapter.notifyDataSetChanged();
     }
 
     @OnClick(R.id.icon_add_photo)
     public void openExtraPanelToAddPhoto(){
         openExtraPanel();
+        adapter.notifyDataSetChanged();
     }
 }

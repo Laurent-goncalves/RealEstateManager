@@ -37,7 +37,6 @@ public class SaveAndRestoreDataSearchFragment {
                     0d,0d,null, Integer.parseInt(fragment.getContext().getResources().getString(R.string.radius))));
         else
             fragment.setSearchQuery(searchQuery);
-
     }
 }
 

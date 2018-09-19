@@ -42,4 +42,6 @@ public interface BaseActivityListener {
     void setSearchQuery(SearchQuery searchQuery);
 
     void stopActivity();
+
+    void launchMainActivity();
 }

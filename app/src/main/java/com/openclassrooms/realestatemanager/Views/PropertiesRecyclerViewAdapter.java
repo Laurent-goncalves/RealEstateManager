@@ -20,7 +20,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
     private final static String MODE_TABLET = "mode_tablet";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
-    private final List<Property> listProperties;
+    private List<Property> listProperties;
     private Context context;
     private CallbackListProperties callbackListProperties;
     private CallbackPropertyAdapter callbackPropertyAdapter;
@@ -65,8 +65,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
                 } else {
                     proceedToChangeOfPropertySelection(holder,holder.getAdapterPosition());
                 }
-            }
-        );
+            });
 
         setColorItem(holder);
     }
@@ -98,32 +97,40 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
                     if (listProperties.get(holder.getAdapterPosition()) != null) {
                         if (listProperties.get(holder.getAdapterPosition()).getSelected() != null) {
                             if (holder.getAdapterPosition() == propertySelected) {
-                                holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorWhite));
-                                holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+                                setAsSelected(holder,true);
                             } else {
-                                listProperties.get(holder.getAdapterPosition()).setSelected(false);
-                                holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorAccent));
-                                holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
+                                setAsSelected(holder,false);
                             }
                         } else {
-                            listProperties.get(holder.getAdapterPosition()).setSelected(false);
-                            holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorAccent));
-                            holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
+                            setAsSelected(holder,false);
                         }
                     }
-                } else if(holder.getAdapterPosition()==0 && modeDevice.equals(MODE_TABLET)){ // if no item selected in the list
+                } else if(holder.getAdapterPosition()==0 && modeDevice.equals(MODE_TABLET) && !baseActivityListener.getFragmentDisplayed().equals(EDIT_FRAG)){ // if no item selected in the list
+
                     propertySelected = 0;
-                    listProperties.get(holder.getAdapterPosition()).setSelected(true);
+                    setAsSelected(holder,true);
 
                     if(modeSelected.equals(MODE_DISPLAY_MAPS))
                         callbackListProperties.changeMarkerMap(Objects.requireNonNull(listProperties).get(0).getId());
                     else
                         callbackListProperties.showDisplayFragment(holder.getAdapterPosition());
-
-                    holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorWhite));
-                    holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+                } else {
+                    setAsSelected(holder,false);
                 }
             }
+        }
+    }
+
+    private void setAsSelected(@NonNull PropertyViewHolder holder, Boolean isSelected){
+
+        if(isSelected){
+            listProperties.get(holder.getAdapterPosition()).setSelected(true);
+            holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorWhite));
+            holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+        } else {
+            listProperties.get(holder.getAdapterPosition()).setSelected(false);
+            holder.getCostTextView().setTextColor(context.getResources().getColor(R.color.colorAccent));
+            holder.getPropertyLayout().setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
         }
     }
 
@@ -133,5 +140,13 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
             return listProperties.size();
         else
             return 0;
+    }
+
+    public void setPropertySelected(int propertySelected) {
+        this.propertySelected = propertySelected;
+    }
+
+    public void setListProperties(List<Property> listProperties) {
+        this.listProperties = listProperties;
     }
 }

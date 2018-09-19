@@ -9,6 +9,8 @@ import com.openclassrooms.realestatemanager.Controllers.Fragments.ListProperties
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
+import com.openclassrooms.realestatemanager.Models.SearchQuery;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +34,11 @@ public class SaveAndRestoreDataListPropertiesFrag {
 
     // ----------------------------------- SAVE DATA
 
-    public static void saveDatas(Bundle outState, int itemSelected, List<Property> listProperties, String modeSelected, String fragmentDisplayed, String modeDevice){
-
+    public static void saveDatas(Bundle outState, int itemSelected, String modeSelected, String fragmentDisplayed, String modeDevice){
         outState.putInt(BUNDLE_ITEM_LIST_SELECTED, itemSelected);
         outState.putString(BUNDLE_MODE_SELECTED, modeSelected);
         outState.putString(BUNDLE_FRAG_DISPLAYED, fragmentDisplayed);
         outState.putString(BUNDLE_DEVICE, modeDevice);
-
-        Gson gson = new Gson();
-        String listPropertiesJson = gson.toJson(listProperties);
-        outState.putString(BUNDLE_LIST_PROPERTIES, listPropertiesJson);
     }
 
     // ----------------------------------- RESTORE DATA
@@ -84,7 +81,7 @@ public class SaveAndRestoreDataListPropertiesFrag {
                 cursor.close();
             }
         } else {
-            listProperties = ConverterJSON.convertJsonToListProperty(bundle.getString(BUNDLE_LIST_PROPERTIES));
+            listProperties = ConverterJSON.convertJsonToListProperty(bundle.getString(BUNDLE_LIST_PROPERTIES,null));
         }
 
         baseActivityListener.setListProperties(listProperties);

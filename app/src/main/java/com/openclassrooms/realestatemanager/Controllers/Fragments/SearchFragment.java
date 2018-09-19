@@ -180,6 +180,7 @@ public class SearchFragment extends Fragment {
     }
 
     public void stopActivity() {
+        baseActivityListener.launchMainActivity();
         baseActivityListener.stopActivity();
     }
 }

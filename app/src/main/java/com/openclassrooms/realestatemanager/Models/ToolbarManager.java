@@ -1,6 +1,8 @@
 package com.openclassrooms.realestatemanager.Models;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
@@ -20,7 +24,10 @@ import com.openclassrooms.realestatemanager.R;
 public class ToolbarManager implements NavigationView.OnNavigationItemSelectedListener{
 
     private static final String MODE_DISPLAY = "mode_display";
-    protected final static String MODE_TABLET = "mode_tablet";
+    private final static String MODE_TABLET = "mode_tablet";
+    private final static String MAINACTIVITY = "mainactivity";
+    private final static String MAPSACTIVITY = "mapsactivity";
+    private final static String SEARCHACTIVITY = "searchactivity";
     private MainActivity mainActivity;
     private MapsActivity mapsActivity;
     private SearchActivity searchActivity;
@@ -249,12 +256,10 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
             switch (id) {
                 case R.id.mapsactivity_menu_item:
-                    mainActivity.launchMapsActivity();
-                    mainActivity.finish();
+                    changeActivity(mainActivity, MAPSACTIVITY);
                     break;
                 case R.id.search_property_menu_item:
-                    mainActivity.launchSearchActivity();
-                    mainActivity.finish();
+                    changeActivity(mainActivity, SEARCHACTIVITY);
                     break;
                 default:
                     break;
@@ -267,12 +272,10 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
             switch (id) {
                 case R.id.search_property_menu_item:
-                    mapsActivity.launchSearchActivity();
-                    mapsActivity.finish();
+                    changeActivity(mapsActivity, SEARCHACTIVITY);
                     break;
                 case R.id.mainpage_menu_item:
-                    mapsActivity.launchMainActivity();
-                    mapsActivity.finish();
+                    changeActivity(mapsActivity, MAINACTIVITY);
                     break;
                 default:
                     break;
@@ -285,12 +288,10 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
             switch (id) {
                 case R.id.mapsactivity_menu_item:
-                    searchActivity.launchMapsActivity();
-                    searchActivity.finish();
+                    changeActivity(searchActivity, MAPSACTIVITY);
                     break;
                 case R.id.mainpage_menu_item:
-                    searchActivity.launchMainActivity();
-                    searchActivity.finish();
+                    changeActivity(searchActivity, MAINACTIVITY);
                     break;
                 default:
                     break;
@@ -298,8 +299,49 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
             searchActivity.getDrawerLayout().closeDrawer(GravityCompat.START);
         }
-
         return true;
     }
 
+    private void changeActivity(BaseActivity baseActivity, String activityToLaunch){
+        final String EDIT_FRAG = "fragment_edit";
+        if(baseActivity.getFragmentDisplayed()!=null){
+            if(baseActivity.getFragmentDisplayed().equals(EDIT_FRAG)){ // if edit fragment is displayed
+                displayAlertEditFragment(baseActivity, activityToLaunch);
+            } else
+                proceedToChangeOfActivity(baseActivity,activityToLaunch);
+        } else
+            proceedToChangeOfActivity(baseActivity,activityToLaunch);
+    }
+
+    private void displayAlertEditFragment(BaseActivity baseActivity, String activityToLaunch){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(baseActivity);
+        builder.setCancelable(true);
+        builder.setTitle(baseActivity.getApplicationContext().getResources().getString(R.string.warning_title));
+        builder.setMessage(baseActivity.getApplicationContext().getResources().getString(R.string.change_activity_confirmation));
+        builder.setPositiveButton(baseActivity.getApplicationContext().getResources().getString(R.string.confirm),new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            proceedToChangeOfActivity(baseActivity,activityToLaunch);
+                        }
+                    })
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void proceedToChangeOfActivity(BaseActivity baseActivity, String activityToLaunch){
+        switch(activityToLaunch){
+            case MAINACTIVITY:
+                baseActivity.launchMainActivity();
+                break;
+            case MAPSACTIVITY:
+                baseActivity.launchMapsActivity();
+                break;
+            case SEARCHACTIVITY:
+                baseActivity.launchSearchActivity();
+                break;
+        }
+        baseActivity.stopActivity();
+    }
 }

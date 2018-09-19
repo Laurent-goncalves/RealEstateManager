@@ -49,7 +49,9 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     @BindView(R.id.sale_date_text) TextView soldView;
     @BindView(R.id.sold_date_layout) LinearLayout soldDateLayout;
     @BindView(R.id.buttonReturn) Button buttonReturn;
+    private static final String POSITION_IMAGE_SELECTED = "position_image_selected";
     private CallbackImageChange callbackImageChange;
+    private int positionImageSelected;
     private int idProp;
     private ImagesDisplayAdapter adapter;
     private SearchActivity searchActivity;
@@ -70,6 +72,10 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         listImages = new ArrayList<>();
         callbackImageChange = this;
         context = getActivity().getApplicationContext();
+        if(savedInstanceState!=null)
+            positionImageSelected = savedInstanceState.getInt(POSITION_IMAGE_SELECTED,0);
+        else
+            positionImageSelected = 0;
 
         // We recover the property to be displayed
         if(getArguments()!=null){
@@ -112,6 +118,16 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
             baseActivityListener = (BaseActivityListener) context;
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(POSITION_IMAGE_SELECTED,positionImageSelected);
+    }
+
+    // ---------------------------------------------------------------------------------------------------
+    // --------------------------------  LISTENERS BUTTONS  ----------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     @OnClick(R.id.buttonReturn)
     public void returnToList(){
@@ -252,10 +268,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
 
                 // Create adapter passing in the sample user data
                 if(baseActivityListener!=null)
-                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, baseActivityListener);
-                /*else if(mapsActivity!=null)
-                    adapter = new ImagesDisplayAdapter(listImages, context, callbackImageChange, mapsActivity);*/
-
+                    adapter = new ImagesDisplayAdapter(listImages, context,positionImageSelected, callbackImageChange, baseActivityListener);
                 // Attach the adapter to the recyclerview to populate items
                 listImagesView.setAdapter(adapter);
                 // Set layout manager to position the items
@@ -265,6 +278,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     }
 
     public void changeMainImage(int position){
+        positionImageSelected = position;
         if(listImages.get(position)!=null && baseActivityListener!=null)
             baseActivityListener.setImage(listImages.get(position).getImagePath(),mainImageView);
     }

@@ -57,7 +57,7 @@ public class MapsActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,listProperties,idProperty,cameraTarget,outState);
+        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,idProperty,cameraTarget,outState);
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ public class MapsActivity extends BaseActivity {
                     displayFragment = (DisplayFragment) getFragmentManager().findFragmentByTag(DISPLAY_FRAG);
                     break;
                 case MAPS_FRAG:
-                    mConfigureMap.restoreData(listProperties,cameraTarget);
+                    mConfigureMap.restoreData(cameraTarget);
                     break;
             }
 
@@ -149,6 +149,7 @@ public class MapsActivity extends BaseActivity {
     public void changeToMapMode(int idProperty){
 
         this.idProperty = idProperty;
+        fragmentDisplayed = MAPS_FRAG;
 
         // Change icons in toolbar
         toolbarManager.setIconsToolbarMapsMode();
@@ -242,6 +243,10 @@ public class MapsActivity extends BaseActivity {
 
     public void setCameraTarget(LatLng cameraTarget) {
         this.cameraTarget = cameraTarget;
+    }
+
+    public LatLng getCameraTarget() {
+        return cameraTarget;
     }
 }
 

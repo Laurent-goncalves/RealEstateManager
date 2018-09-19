@@ -31,7 +31,6 @@ public class MainActivity extends BaseActivity  {
         configureFragment(savedInstanceState);
     }
 
-
     private void configureFragment(Bundle savedInstanceState){
 
         setModeDevice();
@@ -43,7 +42,7 @@ public class MainActivity extends BaseActivity  {
                 listPropertiesFragment = (ListPropertiesFragment) getFragmentManager().findFragmentByTag(LIST_FRAG);
             }
 
-            switch (fragmentDisplayed) { // the
+            switch (fragmentDisplayed) {
                 case EDIT_FRAG:
                     editFragment = (EditFragment) getFragmentManager().findFragmentByTag(EDIT_FRAG);
                     break;

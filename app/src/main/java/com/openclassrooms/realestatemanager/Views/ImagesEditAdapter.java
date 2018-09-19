@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
@@ -17,18 +16,16 @@ import java.util.List;
 
 public class ImagesEditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<ImageProperty> listImages;
+    private List<ImageProperty> listImages;
     private Context context;
     private Property property;
     private CallbackImageSelect mCallbackImageSelect;
-    private int positionEdited;
     private BaseActivityListener baseActivityListener;
 
     public ImagesEditAdapter(List<ImageProperty> listImages, Property property, Context context, CallbackImageSelect mCallbackImageSelect, BaseActivityListener baseActivityListener) {
         this.listImages= listImages;
         this.context=context;
         this.property=property;
-        this.positionEdited = -1;
         this.mCallbackImageSelect=mCallbackImageSelect;
         this.baseActivityListener=baseActivityListener;
     }
@@ -66,20 +63,12 @@ public class ImagesEditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 ImageUpdateViewHolder viewHolderUpdate = (ImageUpdateViewHolder)holder;
 
                 if(listImages!=null) {
-                    if(listImages.get(position)!=null && property!=null) {
-
-                        if(positionEdited==-1)
-                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, false, false, context, baseActivityListener);
-                        else if(positionEdited==position)
-                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, true, true, context, baseActivityListener);
-                        else
-                            viewHolderUpdate.configureImagesViews(listImages.get(position),this, false, true, context, baseActivityListener);
-
+                    if(listImages.get(holder.getAdapterPosition())!=null && property!=null) {
+                        viewHolderUpdate.configureImagesViews(listImages, holder.getAdapterPosition(),this, context, baseActivityListener);
                         viewHolderUpdate.selectPhotoIcon.setOnClickListener(v -> mCallbackImageSelect.getExtraImageFromGallery(holder.getAdapterPosition()));
                         viewHolderUpdate.deleteIcon.setOnClickListener(v -> mCallbackImageSelect.alertDeleteImage(holder.getAdapterPosition()));
                     }
                 }
-
             break;
 
             case 1: // add
@@ -87,72 +76,23 @@ public class ImagesEditAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 ImagesAddViewHolder viewHolderAdd = (ImagesAddViewHolder) holder;
 
                 if(listImages!=null) {
-                    if(listImages.get(position)!=null && property!=null) {
-
-                        if(positionEdited==position)
-                            viewHolderAdd.configureImagesViews(listImages.get(position),this,true, true, context, baseActivityListener);
-                        else
-                            viewHolderAdd.configureImagesViews(listImages.get(position),this,false,false, context, baseActivityListener);
-
+                    if(listImages.get(holder.getAdapterPosition())!=null && property!=null) {
+                        viewHolderAdd.configureImagesViews(listImages,holder.getAdapterPosition(),this, context, baseActivityListener);
                         viewHolderAdd.selectPhotoIcon.setOnClickListener(v -> mCallbackImageSelect.getExtraImageFromGallery(holder.getAdapterPosition()));
                     }
                 }
-
             break;
         }
     }
 
-    public void addNewImageToList(ImageProperty imageProperty, Boolean newItem){
+    public void addNewImageToList(){
+        ImageProperty newImageProperty = new ImageProperty(); // New empty item in the list
+        listImages.add(newImageProperty);
+    }
 
-        if(newItem){ // if new item in the list
-            listImages.remove(listImages.size()-1); // remove the last item
-            listImages.add(imageProperty); // add the new item
-
-            // New empty item in the list
-            ImageProperty newImageProperty = new ImageProperty();
-            newImageProperty.setIdProperty(imageProperty.getIdProperty());
-            listImages.add(newImageProperty);
-
-        } else {
-            updateItemList(imageProperty);
-        }
+    public void deleteImageToList(int position){
+        listImages.remove(position);
         notifyDataSetChanged();
-    }
-
-    public void setPositionEdited(int positionEdited){
-        this.positionEdited = positionEdited;
-        notifyDataSetChanged();
-    }
-
-    private void updateItemList(ImageProperty imageProperty){
-
-        int index = 0;
-
-        // Find index of the imageProperty to update
-        for(ImageProperty image : listImages){
-            if(image.getId() == imageProperty.getId()){
-                // Update all parameters
-                listImages.get(index).setDescription(imageProperty.getDescription());
-                listImages.get(index).setImagePath(imageProperty.getImagePath());
-                break;
-            } else
-                index++;
-        }
-    }
-
-    public void deleteImageToList(ImageProperty imageProperty){
-
-        int index = 0;
-
-        for(ImageProperty image : listImages){
-            if(image.getId() == imageProperty.getId()){
-                listImages.remove(index);
-                notifyDataSetChanged();
-                break;
-            }
-            else
-                index++;
-        }
     }
 
     @Override

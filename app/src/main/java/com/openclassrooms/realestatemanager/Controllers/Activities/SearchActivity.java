@@ -60,6 +60,7 @@ public class SearchActivity extends BaseActivity {
                     break;
                 case SEARCH_FRAG:
                     searchFragment= (SearchFragment) getFragmentManager().findFragmentByTag(SEARCH_FRAG);
+                    searchFragment.launchSearchProperties();
                     break;
             }
 

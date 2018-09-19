@@ -137,39 +137,6 @@ public class Utils {
         return answer;
     }
 
-    public static Boolean isLocationInsideBounds(LatLng searchLoc, LatLng propertyLoc, Double radius){
-        return SphericalUtil.computeDistanceBetween(searchLoc, propertyLoc) <= radius;
-    }
-
-    public static List<String> getInterestPoints(List<String> listTypes, Context context) {
-
-        int index;
-        @StyleableRes int indexRes = 1;
-
-        List<String> listPointsInterestTemp = new ArrayList<>();
-
-        // Get list of interests points by type from xml file
-        List<String> listTypesRes = new ArrayList<>();
-        List<String> listInterestRes = new ArrayList<>();
-
-        List<TypedArray> listTypedArray = ResourceHelper.getMultiTypedArray(context);
-
-        for (TypedArray item : listTypedArray) {
-            listTypesRes.add(item.getString(indexRes));
-            listInterestRes.add(item.getString(0));
-        }
-
-        // For each types, get the point of interest (based on string array in the xml typesPointsInterest)
-        for (String type : listTypes) {
-            index = getIndexFromList(type, listTypesRes);
-            if (index != -1) {
-                listPointsInterestTemp.add(listInterestRes.get(index));
-            }
-        }
-
-        return listPointsInterestTemp;
-    }
-
     public static String removeHooksFromString(String text){
 
         String newText = null;

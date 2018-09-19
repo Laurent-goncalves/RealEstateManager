@@ -29,6 +29,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private CallbackListProperties callbackListProperties;
     private MapsActivity mapsActivity;
     private SearchActivity searchActivity;
+    private PropertiesRecyclerViewAdapter adapter;
     private Context context;
     private String modeDevice;
     private String fragmentDisplayed;
@@ -36,6 +37,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private final static String MODE_TABLET = "mode_tablet";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private static final String MODE_SEARCH = "mode_search";
+    private static final String MODE_DISPLAY = "mode_display";
     private String modeSelected;
     private int itemSelected;
     @BindView(R.id.list_properties_recycler_view) RecyclerView recyclerView;
@@ -92,6 +94,20 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         }
     }
 
+    public void removeSelectedItemInList(){
+
+        if(listProperties!=null && adapter!=null){
+            if(listProperties.size()>0){
+                for(Property property : listProperties){
+                    property.setSelected(false);
+                }
+            }
+            adapter.setListProperties(listProperties);
+            adapter.setPropertySelected(-1);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     public void configureListProperties(int position){
 
         // Set the adapter
@@ -101,7 +117,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                 if (context != null) {
 
                     // Create adapter passing in the sample user data
-                    PropertiesRecyclerViewAdapter adapter = new PropertiesRecyclerViewAdapter(this,listProperties, context, position, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
+                    adapter = new PropertiesRecyclerViewAdapter(this,listProperties, context, position, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
                     // Attach the adapter to the recyclerview to populate items
                     recyclerView.setAdapter(adapter);
                     // Set layout manager to position the items
@@ -155,7 +171,18 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, listProperties, modeSelected, fragmentDisplayed,modeDevice);
+        switch(modeSelected){
+            case MODE_DISPLAY_MAPS:
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice);
+                break;
+            case MODE_DISPLAY:
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice);
+                break;
+            case MODE_SEARCH:
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice);
+                break;
+        }
+
     }
 
     // --------------------------------------------------------------------------------------------------------

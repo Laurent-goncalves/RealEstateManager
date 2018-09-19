@@ -1,6 +1,10 @@
 package com.openclassrooms.realestatemanager.Utils;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.v7.widget.RecyclerView;
+
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -17,27 +21,32 @@ public class SaveAndRestoreDataEditFragment {
     private static final String MODE_DISPLAY = "mode_display";
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     private static final String MODE_UPDATE = "UPDATE";
+    private static final String RECYCLERVIEW_STATE_KEY = "recycler_view_state";
 
     // ----------------------------------- SAVE DATA
 
-    public static void saveDatas(Bundle outState, Property property, List<ImageProperty> listImages, String modeSelected, String typeEdit, int idProperty){
+    public static void saveDatas(Bundle outState, Property property, List<ImageProperty> listImages, String modeSelected, String typeEdit, int idProperty, ConfigureEditFragment config){
 
-        listImages.remove(listImages.size()-1);
         outState.putString(BUNDLE_PROPERTY, ConverterJSON.convertPropertyToJson(property));
         outState.putString(BUNDLE_LIST_IMAGES_PROPERTY, ConverterJSON.convertListImagesPropertyToJson(listImages));
         outState.putString(BUNDLE_TYPE_EDIT, typeEdit);
         outState.putString(MODE_SELECTED, modeSelected);
         outState.putInt(LAST_PROPERTY_SELECTED, idProperty);
+
+        if(config!=null) {
+            Parcelable recyclerViewState = config.getLayoutManager().onSaveInstanceState();
+            outState.putParcelable(RECYCLERVIEW_STATE_KEY, recyclerViewState);
+        }
     }
 
     // ----------------------------------- RESTORE DATA
 
-    public static void recoverDatas(Bundle arguments, Bundle savedInstanceState, EditFragment fragment){
+    public static void recoverDatas(Bundle arguments, Bundle savedInstanceState, EditFragment fragment, ConfigureEditFragment config){
 
         Bundle bundle = new Bundle();
         Property property = new Property(-1,null,0d,0d,0,null,null,
                 null,false,null,null,0d,0d,null,null,null);
-        List<ImageProperty> listImages = new ArrayList<>();
+        List<ImageProperty> listImages;
 
         if(savedInstanceState!=null){
             bundle = savedInstanceState;
@@ -56,8 +65,19 @@ public class SaveAndRestoreDataEditFragment {
             if(listImages==null)
                 listImages = new ArrayList<>();
 
-            listImages.add(new ImageProperty()); // Add item for "add a photo"
+            for(ImageProperty img : listImages){
+                if(img.getInEdition()==null)
+                    img.setInEdition(false);
+            }
+
+            //listImages.add(new ImageProperty()); // Add item for "add a photo"
             fragment.setListImages(listImages);
+
+            // Restore recyclerView
+            if(config!=null) {
+                Parcelable recyclerViewState = bundle.getParcelable(RECYCLERVIEW_STATE_KEY);
+                config.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+            }
 
         } else if (arguments!=null){
             bundle = arguments;
@@ -77,12 +97,9 @@ public class SaveAndRestoreDataEditFragment {
                     // Recover the property datas
                     fragment.recoverProperty(idProperty);
                     fragment.recoverImagesProperty(idProperty);
-                    fragment.getListImages().add(new ImageProperty()); // Add item for "add a photo"
                 } else {
                     // create empty property and empty list images
                     fragment.setProperty(property);
-                    listImages.add(new ImageProperty()); // Add item for "add a photo"
-                    fragment.setListImages(listImages);
                 }
             }
         }

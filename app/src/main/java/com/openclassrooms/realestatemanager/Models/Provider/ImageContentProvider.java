@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.Models.Provider;
 
+import android.arch.persistence.room.OnConflictStrategy;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;

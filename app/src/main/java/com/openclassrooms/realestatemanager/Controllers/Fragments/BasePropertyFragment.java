@@ -41,7 +41,6 @@ public class BasePropertyFragment extends Fragment {
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     protected static final String MODE_DISPLAY = "mode_display";
-    protected static final String MODE_SELECTED = "mode_selected";
     protected static final String MODE_SEARCH = "mode_search";
     protected String modeDevice;
     protected final static String MODE_TABLET = "mode_tablet";
@@ -146,6 +145,16 @@ public class BasePropertyFragment extends Fragment {
                     }
                 }
                 cursor.close();
+            }
+        }
+
+        // if an image has the variable "inEdition" as null, set it to "false"
+        if(listImages!=null){
+            if(listImages.size()>0){
+                for(ImageProperty img : listImages){
+                    if(img.getInEdition()==null)
+                        img.setInEdition(false);
+                }
             }
         }
     }

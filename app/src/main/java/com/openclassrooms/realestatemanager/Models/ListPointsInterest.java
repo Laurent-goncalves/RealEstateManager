@@ -11,6 +11,8 @@ import com.openclassrooms.realestatemanager.Models.PlaceNearby.Result;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ApiStream;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.UtilsGoogleMap;
+
 import java.util.ArrayList;
 import java.util.List;
 import io.reactivex.disposables.Disposable;
@@ -83,7 +85,7 @@ public class ListPointsInterest implements Disposable {
                 }
             }
         }
-        listPointsInterestTemp.addAll(Utils.getInterestPoints(listTypes, context));
+        listPointsInterestTemp.addAll(UtilsGoogleMap.getInterestPoints(listTypes, context));
     }
 
     @Override

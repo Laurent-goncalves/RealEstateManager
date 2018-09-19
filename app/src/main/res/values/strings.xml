@@ -37,7 +37,7 @@
     <!-- MENU NAVIGATION DRAWER -->
     <string name="menu_mapsactivity">Find property nearby</string>
     <string name="menu_search">Search properties</string>
-
+    <string name="change_activity_confirmation">Are you sure to select this menu ? All changes will be discarded</string>
 
     <!-- IMAGES VIEWHOLDER-->
     <string name="delete_image">Image deletion</string>

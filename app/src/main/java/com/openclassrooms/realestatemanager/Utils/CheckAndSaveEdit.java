@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Utils;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.media.Image;
 import android.net.Uri;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
@@ -36,7 +37,7 @@ public class CheckAndSaveEdit {
         this.baseActivityListener=baseActivityListener;
         this.typeEdit=typeEdit;
         idProp = editFragment.getProperty().getId();
-        newlistImages = editFragment.getListImages();
+        newlistImages = new ArrayList<>(editFragment.getListImages());
         oldlistImages = new ArrayList<>();
 
         // Create the property to save
@@ -193,7 +194,11 @@ public class CheckAndSaveEdit {
 
         if(newlistImages!=null){
 
-            newlistImages.remove(newlistImages.size()-1); // delete the last image
+            if(newlistImages.size()>0){
+                if(newlistImages.get(newlistImages.size()-1).getImagePath()==null){
+                    newlistImages.remove(newlistImages.size()-1); // delete the last image
+                }
+            }
 
             for(ImageProperty image : newlistImages) {
 
@@ -218,7 +223,11 @@ public class CheckAndSaveEdit {
 
         if(newlistImages!=null){
 
-            newlistImages.remove(newlistImages.size()-1); // delete the last image
+            if(newlistImages.size()>0){
+                if(newlistImages.get(newlistImages.size()-1).getImagePath()==null){
+                    newlistImages.remove(newlistImages.size()-1); // delete the last image
+                }
+            }
 
             // for each image in the new list, check if it's present in oldlist (yes => update the image, no => insert the image)
             for(ImageProperty image : newlistImages){

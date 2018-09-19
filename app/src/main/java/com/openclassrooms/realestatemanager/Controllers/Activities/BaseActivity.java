@@ -186,6 +186,10 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
 
         if(propertyId==-1){
             bundle.putString(BUNDLE_TYPE_EDIT, MODE_NEW);
+
+            if(listPropertiesFragment!=null && listProperties !=null)
+                listPropertiesFragment.removeSelectedItemInList();
+
         } else {
             bundle.putString(BUNDLE_TYPE_EDIT, MODE_UPDATE);
         }
@@ -299,7 +303,7 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,listProperties,idProperty,outState);
+        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,idProperty,outState);
     }
 
     @Override
@@ -323,7 +327,6 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
 
     @Override
     public void stopActivity() {
-        launchMainActivity();
         finish();
     }
 

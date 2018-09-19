@@ -170,7 +170,7 @@ public class LaunchSearchQuery {
 
                             LatLng propertyLoc = new LatLng(property.getLat(),property.getLng());
 
-                            if(Utils.isLocationInsideBounds(searchLoc,propertyLoc,radius))
+                            if(UtilsGoogleMap.isLocationInsideBounds(searchLoc,propertyLoc,radius))
                                 listProperties.add(property);
                         }
                     }

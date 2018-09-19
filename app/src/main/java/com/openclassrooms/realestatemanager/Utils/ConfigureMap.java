@@ -13,6 +13,7 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
+public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReadyCallback {
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private final static String MODE_TABLET = "mode_tablet";
@@ -43,18 +44,22 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
     private List<Property> fullListProperties;
     private String modeDevice;
     private List<Marker> listMarkers;
+    private LatLng cameraTarget;
+    private SupportMapFragment mapFragment;
+    private Boolean restore;
 
     public ConfigureMap(Context context, String modeDevice, MapsActivity mapsActivity) {
         this.context = context;
         this.modeDevice=modeDevice;
         this.mapsActivity=mapsActivity;
+        restore = false;
         initialization();
         getLocationPermission();
     }
 
     private void initialization(){
         sharedPreferences = mapsActivity.getSharedPreferences();
-        SupportMapFragment mapFragment = (SupportMapFragment) mapsActivity.getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) mapsActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
         try {
@@ -65,21 +70,32 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
             toast.show();
         }
 
-        mapFragment.getMapAsync(googleMap -> mMap = googleMap);
+        mapFragment.getMapAsync(this);
 
         // Construct a PlaceDetectionClient.
         mPlaceDetectionClient = Places.getPlaceDetectionClient(context);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        cameraTarget = mapsActivity.getCameraTarget();
+        mMap = googleMap;
+        mMap.setOnCameraIdleListener(this);
+        if(restore)
+            getPropertiesCloseToTarget(cameraTarget);
     }
 
     // --------------------------------------------------------------------------------------------------------
     // ---------------------------------------- RESTORE STATE -------------------------------------------------
     // --------------------------------------------------------------------------------------------------------
 
-    public void restoreData(List<Property> listPropertiesSaved, LatLng cameraPosition){
+    public void restoreData(LatLng cameraPosition){
+        restore =true;
+        initialization();
         fullListProperties = new ArrayList<>(UtilsGoogleMap.getAllProperties(mapsActivity.getApplicationContext()));
-        listProperties = new ArrayList<>(listPropertiesSaved);
+        listProperties = new ArrayList<>();
         currentLatLng = UtilsGoogleMap.findLastCurrentLocation(sharedPreferences);
-        getPropertiesCloseToTarget(cameraPosition);
+        new RestoreDataMapFragment(cameraPosition,this);
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -95,16 +111,24 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
         }
     }
 
-    private void getPropertiesCloseToTarget(LatLng cameraTarget) {
+    public void getPropertiesCloseToTarget(LatLng cameraTarget) {
+        if(cameraTarget!=null){
+            if(cameraTarget.latitude!=0 && cameraTarget.longitude!=0){
+                currentLatLng = cameraTarget;
+            }
+        }
+
         listProperties = new ArrayList<>(UtilsGoogleMap.filterListPropertiesByLocation(cameraTarget, fullListProperties));
-        configureMapWithMarkers();
+        configureMapWithMarkers(currentLatLng);
     }
 
-    private void configureMapWithMarkers(){
-        updateMarkers(listProperties);
+    private void configureMapWithMarkers(LatLng cameraTarget){
+
+        mapsActivity.setCameraTarget(cameraTarget);
+        updateMarkers(listProperties, cameraTarget);
         mapsActivity.setListProperties(listProperties);
         mapsActivity.getProgressBar().setVisibility(View.GONE);
-        mapsActivity.setCameraTarget(mMap.getCameraPosition().target);
+
         if(modeDevice.equals(MODE_TABLET)){
             mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS, listProperties);
         }
@@ -112,6 +136,8 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
 
     @Override
     public void onCameraIdle() {
+        cameraTarget = mMap.getCameraPosition().target;
+        mapsActivity.setCameraTarget(cameraTarget);
         getPropertiesCloseToTarget(mMap.getCameraPosition().target);
     }
 
@@ -161,7 +187,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
 
                     if(currentLatLng!=null) {
                         UtilsGoogleMap.saveLastCurrentLocation(sharedPreferences,currentLatLng);
-                        moveCameraToDefinedPosition();
+                        setCurrentLocationByDefault();
                     } else
                         setCurrentLocationByDefault();
                 });
@@ -181,30 +207,25 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
 
     private void setCurrentLocationByDefault(){
         currentLatLng = UtilsGoogleMap.findLastCurrentLocation(sharedPreferences);
-        moveCameraToDefinedPosition();
+        moveCameraToDefinedPosition(currentLatLng);
+        getPropertiesCloseToTarget(currentLatLng);
     }
 
-    private void moveCameraToDefinedPosition(){
+    private void moveCameraToDefinedPosition(LatLng currentLatLng){
         if(currentLatLng!=null) {
             // Show the initial position
             mMap.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(new LatLng(currentLatLng.latitude, currentLatLng.longitude), 15));
         }
-
-        getPropertiesCloseToTarget(currentLatLng);
     }
 
     // --------------------------------------------------------------------------------------------------------
     // --------------------------------------------- MARKERS --------------------------------------------------
     // --------------------------------------------------------------------------------------------------------
 
-    private void updateMarkers(List<Property> listProp){
+    private void updateMarkers(List<Property> listProp, LatLng cameraTarget){
         createMarkerForEachProperty(listProp);
         createMarkerListener();
-
-        if(listProp.size()>0){
-            centerToMarker(listProp.get(0).getId());
-        }
     }
 
     private void createMarkerListener(){
@@ -265,7 +286,11 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener {
         return mMap;
     }
 
-    public LatLng getCurrentLatLng() {
-        return currentLatLng;
+    public SupportMapFragment getMapFragment() {
+        return mapFragment;
+    }
+
+    public void setMap(GoogleMap map) {
+        mMap = map;
     }
 }

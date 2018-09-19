@@ -111,6 +111,9 @@ public class ConfigureSearchFragment {
 
         // configure radius
         configureSeekBarForRadius();
+
+        // Initialize searchQuery
+        searchFragment.getBaseActivityListener().setSearchQuery(null);
     }
 
     private void configureRoomNumberView(){
@@ -263,7 +266,6 @@ public class ConfigureSearchFragment {
     @OnClick(R.id.buttonSearchCancel)
     public void cancel(){
         searchFragment.stopActivity();
-        //searchFragment.getSearchActivity().launchMainActivity();
     }
 
     @OnClick(R.id.buttonSearch)

@@ -4,12 +4,14 @@ package com.openclassrooms.realestatemanager.Models;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.database.Cursor;
 
 
-@Entity(foreignKeys = @ForeignKey(entity = Property.class, parentColumns = "id", childColumns = "idProperty"))
+@Entity(foreignKeys = @ForeignKey(entity = Property.class, parentColumns = "id", childColumns = "idProperty"),
+        indices = {@Index("idProperty")})
 public class ImageProperty {
 
     @PrimaryKey(autoGenerate = true)
@@ -17,6 +19,7 @@ public class ImageProperty {
     private String imagePath;
     private String description;
     private int idProperty;
+    private Boolean inEdition;
 
     public ImageProperty(int id, String imagePath, String description, int idProperty) {
         this.id = id;
@@ -66,6 +69,14 @@ public class ImageProperty {
 
     public void setIdProperty(int idProperty) {
         this.idProperty = idProperty;
+    }
+
+    public Boolean getInEdition() {
+        return inEdition;
+    }
+
+    public void setInEdition(Boolean inEdition) {
+        this.inEdition = inEdition;
     }
 
     // --- UTILS ---

@@ -22,12 +22,12 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
     private CallbackImageChange callbackImageChange;
     private int positionSelected;
 
-    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, CallbackImageChange callbackImageChange, BaseActivityListener baseActivityListener) {
+    public ImagesDisplayAdapter(List<ImageProperty> listImages, Context context, int positionImageSelected, CallbackImageChange callbackImageChange, BaseActivityListener baseActivityListener) {
         this.listImages = listImages;
         this.callbackImageChange = callbackImageChange;
         this.context = context;
         this.baseActivityListener=baseActivityListener;
-        this.positionSelected = 0;
+        this.positionSelected = positionImageSelected;
     }
 
     @NonNull

@@ -58,6 +58,7 @@ public class ConfigureEditFragment {
     private EditFragment editFragment;
     private BaseActivityListener baseActivityListener;
     private List<ImageProperty> listImages;
+    private LinearLayoutManager layoutManager;
     private static final String PUBLISH_DATE = "publish_date";
     private static final String SOLD_DATE = "sold_date";
 
@@ -184,8 +185,14 @@ public class ConfigureEditFragment {
         if(context!=null){
 
             // Set the recyclerView in horizontal direction
-            LinearLayoutManager layoutManager
-                    = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+
+            if(listImages.size()>0) {
+                if (listImages.get(listImages.size() - 1).getImagePath() != null)
+                    listImages.add(new ImageProperty());
+            } else {
+                listImages.add(new ImageProperty());
+            }
 
             // Create adapter passing in the sample user data
             ImagesEditAdapter adapter = new ImagesEditAdapter(listImages, property, context, editFragment.getCallbackImageSelect(), baseActivityListener);
@@ -279,6 +286,10 @@ public class ConfigureEditFragment {
         buttonLess.setColorFilter(context.getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
         new Handler().postDelayed(() -> buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), 100);
+    }
+
+    public LinearLayoutManager getLayoutManager() {
+        return layoutManager;
     }
 }
 

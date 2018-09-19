@@ -11,11 +11,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
+
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -40,12 +42,9 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     protected View view;
     protected PropertyDatabase database;
     protected Context context;
-    protected String imagePath;
-    protected String description;
     protected ImageProperty imageProperty;
+    protected List<ImageProperty> listImages;
     protected ImagesEditAdapter adapter;
-    protected Boolean inEdition;
-    protected Boolean changesOngoing;
     protected BaseActivityListener baseActivityListener;
 
     public BaseImageViewHolder(View itemView) {
@@ -58,20 +57,61 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     // ------------------------------------- CONFIGURATION VIEW ------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
-    public void configureImagesViews(ImageProperty imageProperty, ImagesEditAdapter adapter, Boolean inEdition, Boolean changesOngoing, Context context, BaseActivityListener baseActivityListener) {
+    public void configureImagesViews(List<ImageProperty> listImages, int position, ImagesEditAdapter adapter, Context context, BaseActivityListener baseActivityListener) {
         // Initialize variables
+        this.listImages=listImages;
+        this.imageProperty = listImages.get(position);
         this.context=context;
         this.adapter=adapter;
-        this.inEdition = inEdition;
-        this.changesOngoing=changesOngoing;
         this.database = PropertyDatabase.getInstance(context);
         this.baseActivityListener = baseActivityListener;
+
+        // if the image has no Edition mode, set it to false
+        if(imageProperty.getInEdition()==null){
+            imageProperty.setInEdition(false);
+        }
+
+        // if the image is in Edition mode, open the extra panel
+        if (imageProperty.getInEdition()){
+            openExtraPanel();
+        } else {
+            closeExtraPanel();
+        }
+
+        // add icon add a photo if the imagePath is null
+        if(imageProperty.getImagePath()==null){
+            addPhotoButton.setVisibility(View.VISIBLE);
+            image.setVisibility(View.GONE);
+        } else {
+            image.setVisibility(View.VISIBLE);
+            addPhotoButton.setVisibility(View.GONE);
+        }
+
+        // insert title under the image
+        if(imageProperty.getInEdition()){
+            if(imageProperty.getDescription()!=null){
+                titleImage.setVisibility(View.VISIBLE);
+                titleImage.setText(imageProperty.getDescription());
+                descripEdit.setText(imageProperty.getDescription());
+            } else {
+                titleImage.setVisibility(View.GONE);
+                descripEdit.setText(null);
+            }
+        } else {
+            if(imageProperty.getDescription()==null)
+                titleImage.setVisibility(View.GONE);
+            else {
+                titleImage.setVisibility(View.VISIBLE);
+                titleImage.setText(imageProperty.getDescription());
+            }
+        }
     }
 
     public void setExtraImage(String imagePath){
-        this.imagePath=imagePath;
         baseActivityListener.setImage(imagePath, image);
+        image.setVisibility(View.VISIBLE);
         addPhotoButton.setVisibility(View.GONE);
+        imageProperty.setImagePath(imagePath);
     }
 
     // ---------------------------------------------------------------------------------------------------
@@ -81,21 +121,24 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     @OnClick(R.id.edit_icon_symbol)
     public void configureEditButton() {
         openExtraPanel();
+        adapter.notifyDataSetChanged();
     }
 
     @OnTextChanged(value=R.id.description_image_edit_text, callback = AFTER_TEXT_CHANGED)
     public void changeTitleImage(Editable s) {
         if (s.length() == 0){
             titleImage.setVisibility(View.GONE);
-            description = null;
+            imageProperty.setDescription(null);
         } else {
             titleImage.setVisibility(View.VISIBLE);
             titleImage.setText(s.toString());
-            description = s.toString();
+            imageProperty.setDescription(s.toString());
         }
     }
 
     protected void openExtraPanel(){
+
+        imageProperty.setInEdition(true);
 
         // hide the edit icon
         editIcon.setVisibility(View.INVISIBLE);
@@ -106,24 +149,49 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
         // open the panel
         view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_expanded);
         extraPanel.setVisibility(View.VISIBLE);
-
-        adapter.setPositionEdited(getAdapterPosition());
     }
 
     protected void closeExtraPanel(){
 
-        // hide the edit icon
+        imageProperty.setInEdition(false);
 
-        editIcon.setVisibility(View.VISIBLE);
-        editIcon.setEnabled(true);
-        deleteIcon.setVisibility(View.VISIBLE);
-        deleteIcon.setEnabled(true);
+        // hide the edit icon
+        if(imageProperty.getImagePath()!=null){
+            editIcon.setVisibility(View.VISIBLE);
+            editIcon.setEnabled(true);
+            deleteIcon.setVisibility(View.VISIBLE);
+            deleteIcon.setEnabled(true);
+        } else {
+            editIcon.setVisibility(View.INVISIBLE);
+            editIcon.setEnabled(false);
+            deleteIcon.setVisibility(View.INVISIBLE);
+            deleteIcon.setEnabled(false);
+            addPhotoButton.setVisibility(View.VISIBLE);
+            addPhotoButton.setEnabled(true);
+        }
 
         // close the extra panel
         view.getLayoutParams().width = context.getResources().getDimensionPixelSize(R.dimen.extra_panel_width_reduced);
         extraPanel.setVisibility(View.GONE);
+    }
 
-        adapter.setPositionEdited(-1);
+    protected Boolean isAnImageInEdition(List<ImageProperty> listImages){
+
+        Boolean answer = false;
+
+        if(listImages!=null){
+            if(listImages.size()>0){
+                for(ImageProperty img : listImages){
+                    if(img.getInEdition()!=null){
+                        if(img.getInEdition()) {
+                            answer = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return answer;
     }
 
     public ImageProperty getImageProperty() {
