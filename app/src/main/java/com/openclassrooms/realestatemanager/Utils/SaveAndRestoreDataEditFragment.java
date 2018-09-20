@@ -1,10 +1,7 @@
 package com.openclassrooms.realestatemanager.Utils;
 
 import android.os.Bundle;
-import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v7.widget.RecyclerView;
-
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -14,6 +11,7 @@ import java.util.List;
 
 public class SaveAndRestoreDataEditFragment {
 
+    private final static String BUNDLE_DEVICE = "bundle_device";
     private static final String BUNDLE_TYPE_EDIT = "type_edit";
     private static final String BUNDLE_PROPERTY = "bundle_property";
     private static final String BUNDLE_LIST_IMAGES_PROPERTY = "bundle_list_images_property";
@@ -25,12 +23,13 @@ public class SaveAndRestoreDataEditFragment {
 
     // ----------------------------------- SAVE DATA
 
-    public static void saveDatas(Bundle outState, Property property, List<ImageProperty> listImages, String modeSelected, String typeEdit, int idProperty, ConfigureEditFragment config){
+    public static void saveDatas(Bundle outState, Property property, List<ImageProperty> listImages, String modeSelected, String modeDevice, String typeEdit, int idProperty, ConfigureEditFragment config){
 
         outState.putString(BUNDLE_PROPERTY, ConverterJSON.convertPropertyToJson(property));
         outState.putString(BUNDLE_LIST_IMAGES_PROPERTY, ConverterJSON.convertListImagesPropertyToJson(listImages));
         outState.putString(BUNDLE_TYPE_EDIT, typeEdit);
         outState.putString(MODE_SELECTED, modeSelected);
+        outState.putString(BUNDLE_DEVICE, modeDevice);
         outState.putInt(LAST_PROPERTY_SELECTED, idProperty);
 
         if(config!=null) {
@@ -104,8 +103,10 @@ public class SaveAndRestoreDataEditFragment {
             }
         }
 
+        String modeDevice = bundle.getString(BUNDLE_DEVICE);
+        fragment.setModeDevice(modeDevice);
+
         String modeSelected = bundle.getString(MODE_SELECTED,MODE_DISPLAY);
         fragment.setModeSelected(modeSelected);
     }
-
 }

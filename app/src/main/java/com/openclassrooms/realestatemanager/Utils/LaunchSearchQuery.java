@@ -3,19 +3,13 @@ package com.openclassrooms.realestatemanager.Utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.SearchContentProvider;
 import com.openclassrooms.realestatemanager.Models.SearchQuery;
-import com.openclassrooms.realestatemanager.R;
 import java.util.ArrayList;
 import java.util.List;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 

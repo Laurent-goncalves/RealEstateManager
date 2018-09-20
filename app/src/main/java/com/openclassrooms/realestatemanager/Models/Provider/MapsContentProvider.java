@@ -28,7 +28,6 @@ public class MapsContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         if (context != null){
             return PropertyDatabase.getInstance(context).propertyDao().getPropertiesNotSold();
-            //cursor.setNotificationUri(context.getContentResolver(), uri);
         }
 
         throw new IllegalArgumentException("Failed to query row for uri " + uri);

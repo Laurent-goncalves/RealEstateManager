@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.Utils;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.support.v7.widget.SearchView;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -21,9 +23,7 @@ import com.openclassrooms.realestatemanager.Models.CalendarDialog;
 import com.openclassrooms.realestatemanager.Models.SearchAddress;
 import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.R;
-
 import java.util.Arrays;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -47,6 +47,8 @@ public class ConfigureSearchFragment {
     @BindView(R.id.start_icon_expand_search) ImageButton iconExpandStart;
     @BindView(R.id.end_icon_expand_search) ImageButton iconExpandEnd;
     @BindView(R.id.relativelayout_rooms) RelativeLayout layoutRooms;
+    @BindView(R.id.buttonSearch) Button buttonSearch;
+    @BindView(R.id.buttonSearchCancel) Button buttonCancel;
     private Context context;
     private SearchFragment searchFragment;
     private static final String PUBLISH_DATE_START = "publish_date_start";
@@ -111,6 +113,9 @@ public class ConfigureSearchFragment {
 
         // configure radius
         configureSeekBarForRadius();
+
+        // Configure edittext and button to hide keyboard when clicking outside view
+        configureViewsToHideKeyboard();
 
         // Initialize searchQuery
         searchFragment.getBaseActivityListener().setSearchQuery(null);
@@ -187,6 +192,45 @@ public class ConfigureSearchFragment {
             nbRoomsView.setText(text);
         }
         searchFragment.getSearchQuery().setRoomNbMin(query.getRoomNbMin());
+    }
+
+    private void configureViewsToHideKeyboard(){
+
+        locationView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        priceInfView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        priceSupView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        surfaceInfView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        surfaceSupView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        buttonSearch.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        buttonCancel.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     // ----------------------------------------------------------------------------------------------------------
@@ -267,6 +311,8 @@ public class ConfigureSearchFragment {
     public void cancel(){
         searchFragment.stopActivity();
     }
+
+
 
     @OnClick(R.id.buttonSearch)
     public void search(){

@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.google.gson.Gson;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
@@ -44,15 +43,16 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
     protected static int RESULT_LOAD_MAIN_IMAGE_ = 3;
     protected static final String MODE_NEW = "NEW";
     protected static final String MODE_UPDATE = "UPDATE";
+    protected static final String BUNDLE_FRAG_DISPLAYED = "bundle_frag_displayed";
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     protected static final String BUNDLE_TYPE_EDIT = "type_edit";
     protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
     protected static final String BUNDLE_SEARCH_QUERY = "bundle_search_query";
-    protected static final String BUNDLE_ITEM_LIST_SELECTED = "bundle_item_selected_in_the_list";
     protected static final String MODE_SEARCH = "mode_search";
     protected static final String MODE_DISPLAY = "mode_display";
     protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     protected static final String BUNDLE_LIST_PROPERTIES = "bundle_list_properties";
+    protected static final String BUNDLE_ITEM_LIST_SELECTED = "bundle_item_selected_in_the_list";
     protected final static String LIST_FRAG = "fragment_list";
     protected final static String SEARCH_FRAG = "fragment_search";
     protected final static String DISPLAY_FRAG = "fragment_display";
@@ -183,6 +183,7 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
         Bundle bundle = new Bundle();
         bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
         bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
 
         if(propertyId==-1){
             bundle.putString(BUNDLE_TYPE_EDIT, MODE_NEW);
@@ -208,13 +209,16 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
             toolbarManager.setIconsToolbarListPropertiesMode(modeSelected);
 
         listPropertiesFragment = new ListPropertiesFragment();
-        fragmentDisplayed = LIST_FRAG;
-        listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
 
         // Create a bundle
         Bundle bundle = new Bundle();
 
         bundle.putString(BUNDLE_DEVICE, modeDevice);
+
+        /*if(fragmentDisplayed==null)
+            fragmentDisplayed = LIST_FRAG;*/
+
+        bundle.putString(BUNDLE_FRAG_DISPLAYED, LIST_FRAG);
 
         switch (modeSelected) {
             case MODE_DISPLAY:
@@ -243,6 +247,12 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.fragment_position, listPropertiesFragment,LIST_FRAG);
             fragmentTransaction.commit();
+        }
+    }
+
+    public void changePropertySelectedInList(int idProperty){
+        if(listPropertiesFragment!=null){
+            listPropertiesFragment.changeSelectedItemInList(idProperty, fragmentDisplayed);
         }
     }
 
@@ -312,9 +322,7 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
         builder.setCancelable(true);
         builder.setTitle(getResources().getString(R.string.warning_title));
         builder.setMessage(getResources().getString(R.string.change_item_list));
-        builder.setPositiveButton(getResources().getString(R.string.confirm), (dialog, id) -> {
-            callbackPropertyAdapter.proceedToChangeOfPropertySelection(holder,position);
-                    })
+        builder.setPositiveButton(getResources().getString(R.string.confirm), (dialog, id) -> callbackPropertyAdapter.proceedToChangeOfPropertySelection(holder,position))
                 .setNegativeButton(R.string.cancel, (dialog, id) -> { });
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -514,6 +522,10 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
 
     public void setModeSelected(String modeSelected) {
         this.modeSelected = modeSelected;
+    }
+
+    public ToolbarManager getToolbarManager() {
+        return toolbarManager;
     }
 }
 

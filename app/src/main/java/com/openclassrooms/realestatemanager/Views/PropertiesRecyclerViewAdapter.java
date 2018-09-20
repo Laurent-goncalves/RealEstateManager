@@ -55,7 +55,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     public void onBindViewHolder(@NonNull PropertyViewHolder holder, int position) {
 
         if(listProperties!=null && baseActivityListener!=null)
-            holder.configurePropertiesViews(listProperties.get(position), baseActivityListener);
+            holder.configurePropertiesViews(listProperties.get(position), context, baseActivityListener);
 
         holder.propertyLayout.setOnClickListener(v -> {
 
@@ -81,12 +81,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
         // change selected position
         propertySelected = position;
-        listPropertiesFragment.setItemSelected(position);
-
-        // set the property selected to "true" in the list
-        listProperties.get(propertySelected).setSelected(true);
-
-        notifyDataSetChanged();
+        listPropertiesFragment.changeSelectedItemInList(listProperties.get(position).getId(),baseActivityListener.getFragmentDisplayed());
     }
 
     private void setColorItem(@NonNull PropertyViewHolder holder){
@@ -141,6 +136,8 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
         else
             return 0;
     }
+
+    // ----------------------------------------------- GETTER and SETTER ------------------------------------
 
     public void setPropertySelected(int propertySelected) {
         this.propertySelected = propertySelected;

@@ -1,6 +1,5 @@
 package com.openclassrooms.realestatemanager.Models.Provider;
 
-import android.arch.persistence.room.OnConflictStrategy;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -35,9 +34,7 @@ public class ImageContentProvider extends ContentProvider {
 
         if (context != null){
             long imageId = ContentUris.parseId(uri);
-            final Cursor cursor = PropertyDatabase.getInstance(context).imageDao().getImagesPropertyWithCursor(imageId);
-            //cursor.setNotificationUri(context.getContentResolver(), uri);
-            return cursor;
+            return PropertyDatabase.getInstance(context).imageDao().getImagesPropertyWithCursor(imageId);
         }
 
         throw new IllegalArgumentException("Failed to query row for uri " + uri);
@@ -55,7 +52,6 @@ public class ImageContentProvider extends ContentProvider {
         if (context != null && values !=null){
             final long id = PropertyDatabase.getInstance(context).imageDao().insertImage(ImageProperty.fromContentValues(values));
             if (id != 0){
-                //context.getContentResolver().notifyChange(uri, null);
                 return ContentUris.withAppendedId(uri, id);
             }
         }
@@ -66,9 +62,7 @@ public class ImageContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
             long imageId = ContentUris.parseId(uri);
-            final int count = PropertyDatabase.getInstance(context).imageDao().deleteImage(imageId);
-            //context.getContentResolver().notifyChange(uri, null);
-            return count;
+            return PropertyDatabase.getInstance(context).imageDao().deleteImage(imageId);
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);
     }
@@ -77,9 +71,7 @@ public class ImageContentProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
 
         if (context!= null && values!=null){
-            final int count = PropertyDatabase.getInstance(context).imageDao().updateImage(ImageProperty.fromContentValues(values));
-            //context.getContentResolver().notifyChange(uri, null);
-            return count;
+            return PropertyDatabase.getInstance(context).imageDao().updateImage(ImageProperty.fromContentValues(values));
         }
         throw new IllegalArgumentException("Failed to update row into " + uri);
     }

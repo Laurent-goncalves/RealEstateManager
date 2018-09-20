@@ -54,6 +54,10 @@
             android:name=".Models.Provider.SearchContentProvider"
             android:authorities="com.openclassrooms.realestatemanager.provider"
             android:exported="true" />
+        <provider
+            android:name=".Models.Provider.MapsContentProvider"
+            android:authorities="com.openclassrooms.realestatemanager.provider"
+            android:exported="true" />
 
         <!-- META DATA -->
         <meta-data

@@ -1,8 +1,6 @@
 package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.os.Bundle;
-import android.os.Parcelable;
-
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
@@ -54,7 +52,7 @@ public class MainActivity extends BaseActivity  {
         } else { // display init configuration
             modeSelected = MODE_DISPLAY;
             idProperty=-1;
-            configureAndShowListPropertiesFragment(modeSelected, null);
+            configureAndShowListPropertiesFragment(modeSelected,null);
         }
     }
 
@@ -63,7 +61,7 @@ public class MainActivity extends BaseActivity  {
         if(fragmentDisplayed.equals(EDIT_FRAG))
             configureAndShowDisplayFragment(modeSelected, idProperty);
         else if(modeDevice.equals(MODE_PHONE))
-            configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+            configureAndShowListPropertiesFragment(MODE_DISPLAY,null);
     }
 }
 

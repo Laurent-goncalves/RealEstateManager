@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.Utils;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -9,9 +8,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.provider.MediaStore;
-import android.support.annotation.StyleableRes;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.SphericalUtil;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -125,10 +121,7 @@ public class Utils {
             Date dateinf = dateFormat.parse(dateInf);
             Date datesup = dateFormat.parse(dateSup);
 
-            if(datetest.compareTo(datesup) <= 0 && datetest.compareTo(dateinf) >= 0)
-                answer = true;
-            else
-                answer = false;
+            answer = datetest.compareTo(datesup) <= 0 && datetest.compareTo(dateinf) >= 0;
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -188,20 +181,6 @@ public class Utils {
                 else
                     index++;
             }
-        }
-
-        return -1; // no value found
-    }
-
-    public static int getIdPositionFromList(int id, List<Property> list){
-
-        int index = 0;
-
-        for(Property property : list){
-            if(id == property.getId())
-                return index;
-            else
-                index++;
         }
 
         return -1; // no value found

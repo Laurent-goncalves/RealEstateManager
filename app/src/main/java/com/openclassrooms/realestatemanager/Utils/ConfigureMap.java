@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -47,12 +48,14 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
     private LatLng cameraTarget;
     private SupportMapFragment mapFragment;
     private Boolean restore;
+    private boolean CameraMove;
 
     public ConfigureMap(Context context, String modeDevice, MapsActivity mapsActivity) {
         this.context = context;
         this.modeDevice=modeDevice;
         this.mapsActivity=mapsActivity;
         restore = false;
+        CameraMove = true;
         initialization();
         getLocationPermission();
     }
@@ -81,6 +84,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
         cameraTarget = mapsActivity.getCameraTarget();
         mMap = googleMap;
         mMap.setOnCameraIdleListener(this);
+
         if(restore)
             getPropertiesCloseToTarget(cameraTarget);
     }
@@ -91,6 +95,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
     public void restoreData(LatLng cameraPosition){
         restore =true;
+        CameraMove = true;
         initialization();
         fullListProperties = new ArrayList<>(UtilsGoogleMap.getAllProperties(mapsActivity.getApplicationContext()));
         listProperties = new ArrayList<>();
@@ -119,26 +124,26 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
         }
 
         listProperties = new ArrayList<>(UtilsGoogleMap.filterListPropertiesByLocation(cameraTarget, fullListProperties));
-        configureMapWithMarkers(currentLatLng);
-    }
-
-    private void configureMapWithMarkers(LatLng cameraTarget){
-
-        mapsActivity.setCameraTarget(cameraTarget);
-        updateMarkers(listProperties, cameraTarget);
-        mapsActivity.setListProperties(listProperties);
-        mapsActivity.getProgressBar().setVisibility(View.GONE);
-
-        if(modeDevice.equals(MODE_TABLET)){
-            mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS, listProperties);
-        }
     }
 
     @Override
     public void onCameraIdle() {
-        cameraTarget = mMap.getCameraPosition().target;
-        mapsActivity.setCameraTarget(cameraTarget);
-        getPropertiesCloseToTarget(mMap.getCameraPosition().target);
+        if(CameraMove) {
+            cameraTarget = mMap.getCameraPosition().target;
+            mapsActivity.setCameraTarget(cameraTarget);
+
+            // get properties close to cameraTarget
+            getPropertiesCloseToTarget(cameraTarget);
+
+            // configure markers on each property
+            configureMapWithMarkers(currentLatLng);
+
+            // If tablet mode, display list of properties
+            if (modeDevice.equals(MODE_TABLET)) {
+                mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS, listProperties);
+            }
+        }
+        CameraMove = true;
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -177,7 +182,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
                         if(currentLatLng.longitude>=-123 && currentLatLng.longitude<=-122
                                 && currentLatLng.latitude>=37 && currentLatLng.latitude<=38) // for Travis integration tests
-                            currentLatLng=new LatLng(48.866667, 2.333333); // for Travis integration tests
+                            currentLatLng=new LatLng(48.866298, 2.383746); // for Travis integration tests
 
                     } else {
                         currentLatLng =null;
@@ -187,33 +192,47 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
                     if(currentLatLng!=null) {
                         UtilsGoogleMap.saveLastCurrentLocation(sharedPreferences,currentLatLng);
-                        setCurrentLocationByDefault();
+                        finalizeMapConfiguration();
                     } else
-                        setCurrentLocationByDefault();
+                        finalizeMapConfiguration();
                 });
 
             } catch (SecurityException e) {
 
-                setCurrentLocationByDefault();
+                finalizeMapConfiguration();
 
                 Toast toast = Toast.makeText(context,context.getResources().getString(R.string.error_current_location)
                         + "\n" + e.toString() ,Toast.LENGTH_LONG);
                 toast.show();
             }
         } else
-            setCurrentLocationByDefault();
+            finalizeMapConfiguration();
 
     }
 
-    private void setCurrentLocationByDefault(){
+    private void finalizeMapConfiguration(){
+        // recover current location
         currentLatLng = UtilsGoogleMap.findLastCurrentLocation(sharedPreferences);
+
+        // move camera to current location
         moveCameraToDefinedPosition(currentLatLng);
+
+        // get properties close to current location
         getPropertiesCloseToTarget(currentLatLng);
+
+        // configure markers on each property
+        configureMapWithMarkers(currentLatLng);
+
+        // If tablet mode, display list of properties
+        if(modeDevice.equals(MODE_TABLET)){
+            mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS, listProperties);
+        }
     }
 
-    private void moveCameraToDefinedPosition(LatLng currentLatLng){
+    public void moveCameraToDefinedPosition(LatLng currentLatLng){
         if(currentLatLng!=null) {
             // Show the initial position
+            CameraMove = false;
             mMap.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(new LatLng(currentLatLng.latitude, currentLatLng.longitude), 15));
         }
@@ -223,7 +242,15 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
     // --------------------------------------------- MARKERS --------------------------------------------------
     // --------------------------------------------------------------------------------------------------------
 
-    private void updateMarkers(List<Property> listProp, LatLng cameraTarget){
+    private void configureMapWithMarkers(LatLng cameraTarget){
+
+        updateMarkers(listProperties);
+        mapsActivity.setCameraTarget(cameraTarget);
+        mapsActivity.setListProperties(listProperties);
+        mapsActivity.getProgressBar().setVisibility(View.GONE);
+    }
+
+    private void updateMarkers(List<Property> listProp){
         createMarkerForEachProperty(listProp);
         createMarkerListener();
     }
@@ -262,19 +289,20 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
     public void centerToMarker(int idProp){
 
-        for(Marker marker : listMarkers){
-            if(Objects.requireNonNull(marker.getTag()).toString().equals(String.valueOf(idProp)))
-                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            else
-                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        if(listMarkers!=null) {
+            for (Marker marker : listMarkers) {
+                if (Objects.requireNonNull(marker.getTag()).toString().equals(String.valueOf(idProp)))
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                else
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            }
         }
 
         Property property = Utils.getPropertyFromList(idProp,listProperties);
 
         if(property!=null){
             LatLng position = new LatLng(property.getLat(),property.getLng());
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+            moveCameraToDefinedPosition(position);
         }
     }
 

@@ -44,4 +44,8 @@ public interface BaseActivityListener {
     void stopActivity();
 
     void launchMainActivity();
+
+    void changePropertySelectedInList(int idProperty);
+
+    ToolbarManager getToolbarManager();
 }

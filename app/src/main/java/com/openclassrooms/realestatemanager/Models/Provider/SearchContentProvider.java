@@ -1,18 +1,17 @@
 package com.openclassrooms.realestatemanager.Models.Provider;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 
-public class SearchContentProvider extends ContentProvider {
 
+
+public class SearchContentProvider extends ContentProvider {
 
     private Context context;
     private int sold;
@@ -41,7 +40,6 @@ public class SearchContentProvider extends ContentProvider {
 
         if (context != null){
             return PropertyDatabase.getInstance(context).propertyDao().getSearchProperties(sold, surfaceInf, surfaceSup, priceInf, priceSup,nbRoomsMin, typeProp);
-            //cursor.setNotificationUri(context.getContentResolver(), uri);
         }
 
         throw new IllegalArgumentException("Failed to query row for uri " + uri);

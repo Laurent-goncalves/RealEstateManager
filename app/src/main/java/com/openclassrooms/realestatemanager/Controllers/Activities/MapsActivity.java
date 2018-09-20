@@ -13,7 +13,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
@@ -26,6 +25,7 @@ import butterknife.ButterKnife;
 
 public class MapsActivity extends BaseActivity {
 
+    private final static String MAPS_FRAG = "fragment_maps";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private static final String SHAREDPREFERENCES = "MAPSPREFERRENCES";
     private SharedPreferences sharedPreferences;
@@ -156,13 +156,16 @@ public class MapsActivity extends BaseActivity {
 
         // in Tablet mode, update the list of properties
         Property property = Utils.getPropertyFromList(idProperty,listProperties);
-        if(modeDevice.equals(MODE_TABLET))
-            getListPropertiesFragment().configureListProperties(Utils.getIndexPropertyFromList(property,listProperties));
+
+        if(modeDevice.equals(MODE_TABLET)) {
+            getListPropertiesFragment().setFragmentDisplayed(fragmentDisplayed);
+            getListPropertiesFragment().changeSelectedItemInList(property.getId(), MAPS_FRAG);
+        }
 
         // move camera to property location
         if(property!=null){
             LatLng position = new LatLng(property.getLat(),property.getLng());
-            mConfigureMap.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+            mConfigureMap.moveCameraToDefinedPosition(position);
         }
 
         displayMap();
@@ -177,8 +180,10 @@ public class MapsActivity extends BaseActivity {
 
         // in Tablet mode, update the list of properties
         Property property = Utils.getPropertyFromList(idProperty,listProperties);
+        int position = Utils.getIndexPropertyFromList(property,listProperties);
+
         if(modeDevice.equals(MODE_TABLET))
-            getListPropertiesFragment().configureListProperties(Utils.getIndexPropertyFromList(property,listProperties));
+            getListPropertiesFragment().configureListProperties(position);
 
         // show the property details
         configureAndShowDisplayFragment(MODE_DISPLAY_MAPS, idProperty);

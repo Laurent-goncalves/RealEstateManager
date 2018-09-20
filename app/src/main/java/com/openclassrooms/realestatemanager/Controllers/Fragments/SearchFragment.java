@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
-import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -22,7 +21,6 @@ import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ConfigureSearchFragment;
 import com.openclassrooms.realestatemanager.Utils.LaunchSearchQuery;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataSearchFragment;
-
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,7 +77,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
         if(context instanceof BaseActivityListener){
             baseActivityListener = (BaseActivityListener) context;
         }
@@ -89,6 +86,11 @@ public class SearchFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         SaveAndRestoreDataSearchFragment.saveDatas(outState,searchQuery);
+    }
+
+    public void stopActivity() {
+        baseActivityListener.launchMainActivity();
+        baseActivityListener.stopActivity();
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -107,9 +109,15 @@ public class SearchFragment extends Fragment {
             baseActivityListener.displayError(context.getResources().getString(R.string.no_result_found));
     }
 
+
     // ----------------------------------------------------------------------------------------------------
     // -------------------------------------- GETTERS & SETTERS -------------------------------------------
     // ----------------------------------------------------------------------------------------------------
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
 
     public void setLatLngAddress(LatLng latLng) {
         searchQuery.setSearchLocLat(latLng.latitude);
@@ -172,15 +180,5 @@ public class SearchFragment extends Fragment {
 
     public BaseActivityListener getBaseActivityListener() {
         return baseActivityListener;
-    }
-
-    @Override
-    public Context getContext() {
-        return context;
-    }
-
-    public void stopActivity() {
-        baseActivityListener.launchMainActivity();
-        baseActivityListener.stopActivity();
     }
 }

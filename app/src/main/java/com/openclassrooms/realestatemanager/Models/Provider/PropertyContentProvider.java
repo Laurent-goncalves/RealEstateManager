@@ -36,12 +36,10 @@ public class PropertyContentProvider extends ContentProvider {
 
         if (context != null){
             if(allProperties)
-                return PropertyDatabase.getInstance(context).propertyDao().getAllPropertiesWithCursor();
+                return PropertyDatabase.getInstance(context).propertyDao().getPropertiesNotSold();
             else {
                 long idProperty = ContentUris.parseId(uri);
-                final Cursor cursor = PropertyDatabase.getInstance(context).propertyDao().getProperty(idProperty);
-                //cursor.setNotificationUri(context.getContentResolver(), uri);
-                return cursor;
+                return PropertyDatabase.getInstance(context).propertyDao().getProperty(idProperty);
             }
         }
         throw new IllegalArgumentException("Failed to query row for uri " + uri);
@@ -60,7 +58,6 @@ public class PropertyContentProvider extends ContentProvider {
         if (context != null && values !=null){
             final long id = PropertyDatabase.getInstance(context).propertyDao().insertProperty(Property.fromContentValues(values));
             if (id != 0){
-                //context.getContentResolver().notifyChange(uri, null);
                 return ContentUris.withAppendedId(uri, id);
             }
         }
@@ -71,9 +68,7 @@ public class PropertyContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (context!= null){
             long idProperty = ContentUris.parseId(uri);
-            final int count = PropertyDatabase.getInstance(context).propertyDao().deletProperty(idProperty);
-            //context.getContentResolver().notifyChange(uri, null);
-            return count;
+            return PropertyDatabase.getInstance(context).propertyDao().deletProperty(idProperty);
         }
         throw new IllegalArgumentException("Failed to delete row into " + uri);
     }
@@ -82,9 +77,7 @@ public class PropertyContentProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
 
         if (context!= null && values!=null){
-            final int count = PropertyDatabase.getInstance(context).propertyDao().updateProperty(Property.fromContentValues(values));
-            //context.getContentResolver().notifyChange(uri, null);
-            return count;
+            return PropertyDatabase.getInstance(context).propertyDao().updateProperty(Property.fromContentValues(values));
         }
         throw new IllegalArgumentException("Failed to update row into " + uri);
     }

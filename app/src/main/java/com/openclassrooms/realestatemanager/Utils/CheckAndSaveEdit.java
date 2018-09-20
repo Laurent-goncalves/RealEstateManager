@@ -3,10 +3,8 @@ package com.openclassrooms.realestatemanager.Utils;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.Image;
 import android.net.Uri;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -23,6 +21,8 @@ public class CheckAndSaveEdit {
     private List<ImageProperty> newlistImages;
     private List<ImageProperty> oldlistImages;
     private static final String MODE_UPDATE = "UPDATE";
+    private static final String MODE_DISPLAY = "mode_display";
+    private final static String MODE_TABLET = "mode_tablet";
     private Context context;
     private Property propertyToSave;
     private int idProp;
@@ -122,6 +122,10 @@ public class CheckAndSaveEdit {
             // display property and refresh the list of properties
             baseActivityListener.changeToDisplayMode(idProp);
 
+            // In tablet mode, change property selected in the list
+            if(editFragment.getModeSelected().equals(MODE_DISPLAY) && editFragment.getModeDevice().equals(MODE_TABLET))
+                baseActivityListener.changePropertySelectedInList(idProp);
+
             // Message to the user
             baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_update));
 
@@ -135,6 +139,13 @@ public class CheckAndSaveEdit {
 
             // display property and refresh the list of properties
             baseActivityListener.changeToDisplayMode((int) ContentUris.parseId(uri));
+
+            // In tablet mode, change property selected in the list
+            if(editFragment.getModeSelected().equals(MODE_DISPLAY) && editFragment.getModeDevice().equals(MODE_TABLET))
+                baseActivityListener.changePropertySelectedInList((int) ContentUris.parseId(uri));
+
+            /*if(editFragment.getModeDevice().equals(MODE_TABLET))
+                baseActivityListener.getListPropertiesFragment().;*/
 
             // Message to the user
             baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_add));

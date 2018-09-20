@@ -2,7 +2,6 @@ package com.openclassrooms.realestatemanager.Models;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
@@ -319,11 +317,7 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         builder.setCancelable(true);
         builder.setTitle(baseActivity.getApplicationContext().getResources().getString(R.string.warning_title));
         builder.setMessage(baseActivity.getApplicationContext().getResources().getString(R.string.change_activity_confirmation));
-        builder.setPositiveButton(baseActivity.getApplicationContext().getResources().getString(R.string.confirm),new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
-                            proceedToChangeOfActivity(baseActivity,activityToLaunch);
-                        }
-                    })
+        builder.setPositiveButton(baseActivity.getApplicationContext().getResources().getString(R.string.confirm), (dialog, id) -> proceedToChangeOfActivity(baseActivity,activityToLaunch))
                 .setNegativeButton(R.string.cancel, (dialog, id) -> { });
 
         AlertDialog dialog = builder.create();

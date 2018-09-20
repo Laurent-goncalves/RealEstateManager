@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.Utils;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -9,6 +10,8 @@ import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,6 +52,9 @@ public class ConfigureEditFragment {
     @BindView(R.id.plus_button) ImageButton buttonPlus;
     @BindView(R.id.less_button) ImageButton buttonLess;
     @BindView(R.id.interest_points_editview) EditText interestView;
+    @BindView(R.id.buttonCancel) Button buttonCancel;
+    @BindView(R.id.buttonSave) Button buttonSave;
+
     private TextView dateSold;
     private View view;
     private int roomNb;
@@ -126,6 +132,9 @@ public class ConfigureEditFragment {
             editFragment.setLatLngAddress(new LatLng(property.getLat(),property.getLng()));
         }
 
+        // Configure edittext and button to hide keyboard when clicking outside view
+        configureViewsToHideKeyboard();
+
         buttonPlus.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
         buttonLess.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
     }
@@ -138,19 +147,19 @@ public class ConfigureEditFragment {
     private void configureDateSelector(){
 
         // configure date publication
-        TextView datePublish = linearLayoutDates.findViewById(R.id.publishing_date_selector).findViewById(R.id.date_publish_selected);
+        View viewPublish = linearLayoutDates.findViewById(R.id.publishing_date_selector);
+        TextView datePublish = viewPublish.findViewById(R.id.date_publish_selected);
         datePublish.setText(property.getDateStart());
 
         // configure date sold
-        dateSold = linearLayoutDates.findViewById(R.id.selling_date_selector).findViewById(R.id.date_sale_selected);
+
+        View viewSold = linearLayoutDates.findViewById(R.id.selling_date_selector);
+        dateSold = viewSold.findViewById(R.id.date_sale_selected);
         dateSold.setText(property.getDateSold());
 
+        RelativeLayout relativeLayoutPublish = viewPublish.findViewById(R.id.relativelayout_publish);
 
-        RelativeLayout relativeLayoutPublish = linearLayoutDates.findViewById(R.id.publishing_date_selector)
-                .findViewById(R.id.relativelayout_publish);
-
-        RelativeLayout relativeLayoutSold = linearLayoutDates.findViewById(R.id.selling_date_selector)
-                .findViewById(R.id.relativelayout_sold);
+        RelativeLayout relativeLayoutSold =viewSold.findViewById(R.id.relativelayout_sold);
 
         linearLayoutDates.findViewById(R.id.publishing_date_selector)
                 .setOnClickListener(v -> showCalendarView(PUBLISH_DATE));
@@ -212,6 +221,49 @@ public class ConfigureEditFragment {
             switchSold.setChecked(true);
         } else {
             switchSold.setChecked(false);
+        }
+    }
+
+    private void configureViewsToHideKeyboard(){
+
+        priceEdit.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        surfaceEdit.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        descriptionEdit.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        estateAgentEdit.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        interestView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        searchView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        buttonCancel.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+        buttonSave.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                hideKeyboard(v);
+        });
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 

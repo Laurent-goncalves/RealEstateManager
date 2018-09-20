@@ -194,10 +194,6 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
         return answer;
     }
 
-    public ImageProperty getImageProperty() {
-        return imageProperty;
-    }
-
     public View getView() {
         return view;
     }

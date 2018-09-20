@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -22,7 +21,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageSelect;
-import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.CheckAndSaveEdit;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
 
 public class EditFragment extends BasePropertyFragment implements CallbackImageSelect {
 
@@ -57,7 +54,6 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     private int viewHolderPosition;
     private BaseActivity baseActivity;
     private ConfigureEditFragment configFragment;
-    private Parcelable mListState;
 
     public EditFragment() {
         // Required empty public constructor
@@ -85,8 +81,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SaveAndRestoreDataEditFragment.saveDatas(outState,property,listImages,modeSelected,typeEdit,idProperty,configFragment);
-
+        SaveAndRestoreDataEditFragment.saveDatas(outState,property,listImages,modeSelected, modeDevice, typeEdit,idProperty,configFragment);
     }
 
     @Override
@@ -185,9 +180,6 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     }
 
     public void proceedToDeletion(int viewHolderPosition){
-        //ImageUpdateViewHolder holder = (ImageUpdateViewHolder) recyclerView.findViewHolderForLayoutPosition(viewHolderPosition);
-        // destroy item from the list
-        //ImageProperty imageProperty = holder.getImageProperty();
         adapter.deleteImageToList(viewHolderPosition);
     }
 

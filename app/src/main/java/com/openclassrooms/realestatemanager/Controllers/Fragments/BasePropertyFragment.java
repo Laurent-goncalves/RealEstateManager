@@ -171,6 +171,14 @@ public class BasePropertyFragment extends Fragment {
         this.modeSelected = modeSelected;
     }
 
+    public String getModeSelected() {
+        return modeSelected;
+    }
+
+    public String getModeDevice() {
+        return modeDevice;
+    }
+
     public void setModeDevice(String modeDevice) {
         this.modeDevice = modeDevice;
     }

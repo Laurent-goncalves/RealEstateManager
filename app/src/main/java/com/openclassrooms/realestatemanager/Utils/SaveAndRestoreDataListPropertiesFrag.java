@@ -3,15 +3,10 @@ package com.openclassrooms.realestatemanager.Utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
-import com.openclassrooms.realestatemanager.Models.SearchQuery;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +44,7 @@ public class SaveAndRestoreDataListPropertiesFrag {
 
         if(savedInstanceState!=null){
             bundle = savedInstanceState;
-            fragment.setItemSelected(bundle.getInt(BUNDLE_ITEM_LIST_SELECTED));
+            fragment.setItemSelected(bundle.getInt(BUNDLE_ITEM_LIST_SELECTED,0));
         } else if (arguments!=null){
             bundle = arguments;
         }
@@ -58,30 +53,45 @@ public class SaveAndRestoreDataListPropertiesFrag {
         recoverModeSelected(bundle, fragment);
         recoverDeviceMode(bundle, fragment);
         recoverFragmentDisplayed(bundle,fragment);
-        recoverPositionItemSelected(bundle, fragment);
     }
 
-    private static void recoverListProperties(Bundle bundle, ListPropertiesFragment fragment, Context context, BaseActivityListener baseActivityListener){
+    public static void recoverListProperties(Bundle bundle, ListPropertiesFragment fragment, Context context, BaseActivityListener baseActivityListener){
 
         List<Property> listProperties = new ArrayList<>();
 
-        if(bundle.getString(BUNDLE_LIST_PROPERTIES,null)==null){
+        if(bundle!=null) {
+            if (bundle.getString(BUNDLE_LIST_PROPERTIES, null) == null) {
 
+                PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
+                propertyContentProvider.setUtils(context, true);
+
+                final Cursor cursor = propertyContentProvider.query(null, null, null, null, null);
+
+                if (cursor != null) {
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
+                            listProperties.add(Property.getPropertyFromCursor(cursor));
+                        }
+                    }
+                    cursor.close();
+                }
+            } else {
+                listProperties = ConverterJSON.convertJsonToListProperty(bundle.getString(BUNDLE_LIST_PROPERTIES, null));
+            }
+        } else {
             PropertyContentProvider propertyContentProvider = new PropertyContentProvider();
-            propertyContentProvider.setUtils(context,true);
+            propertyContentProvider.setUtils(context, true);
 
             final Cursor cursor = propertyContentProvider.query(null, null, null, null, null);
 
-            if (cursor != null){
-                if(cursor.getCount() >0){
+            if (cursor != null) {
+                if (cursor.getCount() > 0) {
                     while (cursor.moveToNext()) {
                         listProperties.add(Property.getPropertyFromCursor(cursor));
                     }
                 }
                 cursor.close();
             }
-        } else {
-            listProperties = ConverterJSON.convertJsonToListProperty(bundle.getString(BUNDLE_LIST_PROPERTIES,null));
         }
 
         baseActivityListener.setListProperties(listProperties);
@@ -130,15 +140,4 @@ public class SaveAndRestoreDataListPropertiesFrag {
             fragment.setFragmentDisplayed(DISPLAY_FRAG);
         }
     }
-
-    private static void recoverPositionItemSelected(Bundle bundle, ListPropertiesFragment fragment){
-
-        if(bundle!=null) {
-            fragment.setItemSelected(bundle.getInt(BUNDLE_ITEM_LIST_SELECTED, -1));
-        } else {
-            fragment.setItemSelected(-1);
-        }
-    }
-
-
 }

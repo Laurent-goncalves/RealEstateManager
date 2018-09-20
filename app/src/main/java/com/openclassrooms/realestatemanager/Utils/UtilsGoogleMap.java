@@ -121,7 +121,7 @@ public class UtilsGoogleMap {
 
     public static LatLng findLastCurrentLocation(SharedPreferences sharedPreferences){
 
-        saveLastCurrentLocation(sharedPreferences, new LatLng(48.866667, 2.333333)); // for Travis integration tests
+        saveLastCurrentLocation(sharedPreferences, new LatLng(48.866298, 2.383746)); // for Travis integration tests
 
         Float latitude = sharedPreferences.getFloat(EXTRA_LAT_CURRENT,0);
         Float longitude = sharedPreferences.getFloat(EXTRA_LONG_CURRENT,0);
@@ -129,7 +129,7 @@ public class UtilsGoogleMap {
         LatLng last_location;
 
         if(latitude == 0 && longitude == 0)
-            last_location=new LatLng(48.866667, 2.333333);
+            last_location=new LatLng(48.866298, 2.383746);
         else
             last_location = new LatLng(latitude,longitude);
 

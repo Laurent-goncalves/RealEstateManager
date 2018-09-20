@@ -34,10 +34,12 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private String modeDevice;
     private String fragmentDisplayed;
     private BaseActivityListener baseActivityListener;
+    private final static String LIST_FRAG = "fragment_list";
     private final static String MODE_TABLET = "mode_tablet";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private static final String MODE_SEARCH = "mode_search";
     private static final String MODE_DISPLAY = "mode_display";
+    private final static String DISPLAY_FRAG = "fragment_display";
     private String modeSelected;
     private int itemSelected;
     @BindView(R.id.list_properties_recycler_view) RecyclerView recyclerView;
@@ -68,7 +70,10 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         ButterKnife.bind(this, view);
 
         // Configure fragment
-        configureFragment();
+        if(listProperties.size()>0)
+            configureFragment();
+        else
+            fragmentView.setBackgroundColor(Color.GRAY);
 
         return view;
     }
@@ -83,7 +88,9 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
             if(itemSelected!=-1){ // if one item is selected in the list
                 listProperties.get(itemSelected).setSelected(true);
-            } else if(!modeSelected.equals(MODE_DISPLAY_MAPS)){ // if no item is selected, select the first one of the list
+            }
+
+            if(!modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(LIST_FRAG)){ // if no item is selected, select the first one of the list
                 showDisplayFragment(0);
             }
 
@@ -108,6 +115,30 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         }
     }
 
+    public void changeSelectedItemInList(int idProperty, String fragmentDisplayed){
+
+        this.fragmentDisplayed=fragmentDisplayed;
+
+        int counter = 0;
+
+        if(listProperties!=null && adapter!=null){
+            if(listProperties.size()>0){
+                for(Property property : listProperties){
+                    if(property.getId()==idProperty) {
+                        property.setSelected(true);
+                        itemSelected = counter;
+                        break;
+                    } else
+                        property.setSelected(false);
+
+                    counter++;
+                }
+            }
+
+            configureListProperties(itemSelected);
+        }
+    }
+
     public void configureListProperties(int position){
 
         // Set the adapter
@@ -122,6 +153,11 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                     recyclerView.setAdapter(adapter);
                     // Set layout manager to position the items
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                }
+
+                // show display fragment if mode tablet
+                if(modeDevice.equals(MODE_TABLET) && fragmentDisplayed.equals(DISPLAY_FRAG)){
+                    showDisplayFragment(itemSelected);
                 }
 
             } else {
