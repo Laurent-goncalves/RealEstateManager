@@ -17,7 +17,9 @@ import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.MapsContentProvider;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class UtilsGoogleMap {
 
@@ -136,9 +138,20 @@ public class UtilsGoogleMap {
         return last_location;
     }
 
-
     public static void saveLastCurrentLocation(SharedPreferences sharedPreferences, LatLng current_loc){
         sharedPreferences.edit().putFloat(EXTRA_LAT_CURRENT,(float) current_loc.latitude).apply();
         sharedPreferences.edit().putFloat(EXTRA_LONG_CURRENT,(float) current_loc.longitude).apply();
+    }
+
+    public static List<String> removeDuplicates(List<String> listInterestPts){
+
+        List<String> listInterestPtsFinal = new ArrayList<>();
+
+        // create a new collection and add all datas from listInterestPts inside (collection don't allow duplicates)
+        Set<String> hs = new HashSet<>(listInterestPts);
+        listInterestPtsFinal.clear();
+        listInterestPtsFinal.addAll(hs);
+
+        return listInterestPtsFinal;
     }
 }

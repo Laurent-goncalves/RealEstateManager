@@ -3,14 +3,19 @@ package com.openclassrooms.realestatemanager.Utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.provider.MediaStore;
+import android.widget.ScrollView;
+
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
+import com.openclassrooms.realestatemanager.R;
+
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,6 +32,12 @@ import java.util.Set;
  */
 
 public class Utils {
+
+    private final static String MODE_TABLET = "mode_tablet";
+
+    // -------------------------------------------------------------------------------------------------
+    // --------------------------------------- CURRENCY ------------------------------------------------
+    // -------------------------------------------------------------------------------------------------
 
     /**
      * Conversion d'un prix d'un bien immobilier (Dollars vers Euros)
@@ -48,15 +59,13 @@ public class Utils {
         return (int) Math.round(euros * 1.17);
     }
 
-    /**
-     * Conversion de la date d'aujourd'hui en un format plus approprié
-     * NOTE : NE PAS SUPPRIMER, A MONTRER DURANT LA SOUTENANCE
-     * @return
-     */
-    public static String getTodayDate(){
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("fr"));
-        return dateFormat.format(new Date());
+    public static Double calculateMonthlyPayment(Double propertyPrice, Double duration, Double interestRate, Double contribution){
+        return (propertyPrice-contribution)*(interestRate/1200)/(1 - Math.pow(1+interestRate/1200, -12*duration));
     }
+
+    // -------------------------------------------------------------------------------------------------
+    // --------------------------------------- INTERNET ------------------------------------------------
+    // -------------------------------------------------------------------------------------------------
 
     /**
      * Vérification de la connexion réseau
@@ -86,10 +95,18 @@ public class Utils {
         return isNetworkEnabled(context) || isWifiEnabled(context);
     }
 
-    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
-        return outputStream.toByteArray();
+    // -------------------------------------------------------------------------------------------------
+    // --------------------------------------- DATES ---------------------------------------------------
+    // -------------------------------------------------------------------------------------------------
+
+    /**
+     * Conversion de la date d'aujourd'hui en un format plus approprié
+     * NOTE : NE PAS SUPPRIMER, A MONTRER DURANT LA SOUTENANCE
+     * @return
+     */
+    public static String getTodayDate(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("fr"));
+        return dateFormat.format(new Date());
     }
 
     public static String create_string_date(int year, int month, int dayOfMonth){
@@ -130,17 +147,9 @@ public class Utils {
         return answer;
     }
 
-    public static String removeHooksFromString(String text){
-
-        String newText = null;
-
-        if(text!=null) {
-            newText = text.replace("[", "");
-            newText = newText.replace("]", "");
-        }
-
-        return newText;
-    }
+    // -------------------------------------------------------------------------------------------------
+    // ---------------------------- GET ITEM OR INDEX FROM LIST ----------------------------------------
+    // -------------------------------------------------------------------------------------------------
 
     public static int getIndexFromList(String type, List<String> list){
 
@@ -186,6 +195,42 @@ public class Utils {
         return -1; // no value found
     }
 
+    public static int getIndexPropertyFromList(int idProperty, List<Property> list){
+
+        int index = 0;
+
+        if(list!=null && idProperty!=-1){
+            for(Property prop : list){
+                if(prop.getId() == idProperty)
+                    return index;
+                else
+                    index++;
+            }
+        }
+
+        return -1; // no value found
+    }
+
+    public static Boolean isInTheList(ImageProperty image, List<ImageProperty> list){
+
+        if(image != null){
+            for(ImageProperty img : list){
+                if(img!=null){
+                    if(img.getId()==image.getId()){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    // -------------------------------------------------------------------------------------------------
+    // -------------------------------------- IMAGES ---------------------------------------------------
+    // -------------------------------------------------------------------------------------------------
+
     public static String getRealPathFromURI(BaseActivity baseActivity, Uri uri) {
 
         String realPath=null;
@@ -205,35 +250,43 @@ public class Utils {
         return realPath;
     }
 
-    public static List<String> removeDuplicates(List<String> listInterestPts){
-
-        List<String> listInterestPtsFinal = new ArrayList<>();
-
-        // create a new collection and add all datas from listInterestPts inside (collection don't allow duplicates)
-        Set<String> hs = new HashSet<>(listInterestPts);
-        listInterestPtsFinal.clear();
-        listInterestPtsFinal.addAll(hs);
-
-        return listInterestPtsFinal;
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return outputStream.toByteArray();
     }
 
-    public static Double calculateMonthlyPayment(Double propertyPrice, Double duration, Double interestRate, Double contribution){
-        return (propertyPrice-contribution)*(interestRate/1200)/(1 - Math.pow(1+interestRate/1200, -12*duration));
+    // -------------------------------------------------------------------------------------------------
+    // -------------------------------------- OTHERS ---------------------------------------------------
+    // -------------------------------------------------------------------------------------------------
+
+    public static String removeHooksFromString(String text){
+
+        String newText = null;
+
+        if(text!=null) {
+            newText = text.replace("[", "");
+            newText = newText.replace("]", "");
+        }
+
+        return newText;
     }
 
-    public static Boolean isInTheList(ImageProperty image, List<ImageProperty> list){
+    public static void colorFragmentList(String color, String modeDevice, BaseActivity baseActivity){
 
-        if(image != null){
-            for(ImageProperty img : list){
-                if(img!=null){
-                    if(img.getId()==image.getId()){
-                        return true;
-                    }
-                }
-            }
-            return false;
+        ScrollView viewToColor;
+
+        // Find fragment to color
+        if(modeDevice.equals(MODE_TABLET))
+            viewToColor = baseActivity.findViewById(R.id.fragment_list_layout);
+        else
+            viewToColor = baseActivity.findViewById(R.id.fragment_layout);
+
+        // Color the fragment
+        if(color.equals("GRAY")){
+            viewToColor.setBackgroundColor(baseActivity.getApplicationContext().getResources().getColor(R.color.colorPrimaryDark));
         } else {
-            return false;
+            viewToColor.setBackgroundColor(Color.WHITE);
         }
     }
 }

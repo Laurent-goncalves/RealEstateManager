@@ -1,12 +1,17 @@
 package com.openclassrooms.realestatemanager.Models;
 
+import android.view.View;
 import android.widget.ImageView;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Views.PropertyViewHolder;
 import java.util.List;
 
 
 public interface BaseActivityListener {
+
     void configureAndShowDisplayFragment(String modeSelected, int idProp);
 
     void setListProperties(List<Property> listProperties);
@@ -15,7 +20,7 @@ public interface BaseActivityListener {
 
     void returnToSearchCriteria();
 
-    void configureAndShowListPropertiesFragment(String modeSelected, List<Property> listProperties);
+    void configureAndShowListPropertiesFragment(String modeSelected);
 
     void changeToDisplayMode(int idProp);
 
@@ -35,7 +40,7 @@ public interface BaseActivityListener {
 
     void setCurrentPositionDisplayed(int idProperty);
 
-    void configureAndShowEditFragment(int propertyId);
+    void configureAndShowEditFragment(String modeSelected, int propertyId);
 
     void changeOfPropertySelected(PropertyViewHolder holder, int position, CallbackPropertyAdapter callbackPropertyAdapter);
 
@@ -48,4 +53,12 @@ public interface BaseActivityListener {
     void changePropertySelectedInList(int idProperty);
 
     ToolbarManager getToolbarManager();
+
+    SearchQuery getSearchQuery();
+
+    LatLng getCameraTarget();
+
+    BaseActivity getBaseActivity();
+
+    void askForConfirmationToLeaveEditMode(String modeSelected, int idProp);
 }

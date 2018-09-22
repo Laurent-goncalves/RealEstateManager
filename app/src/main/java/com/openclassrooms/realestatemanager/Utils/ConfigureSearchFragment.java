@@ -312,8 +312,6 @@ public class ConfigureSearchFragment {
         searchFragment.stopActivity();
     }
 
-
-
     @OnClick(R.id.buttonSearch)
     public void search(){
         searchFragment.getBaseActivityListener().setSearchQuery(searchFragment.getSearchQuery());

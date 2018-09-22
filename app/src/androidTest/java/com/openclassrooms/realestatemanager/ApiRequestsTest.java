@@ -138,7 +138,7 @@ public class ApiRequestsTest {
             @Override
             public void run() {
 
-                mActivityTestRule.getActivity().configureAndShowListPropertiesFragment("mode_display",null);
+                mActivityTestRule.getActivity().configureAndShowListPropertiesFragment("mode_display");
 
                 waiting_time(3000);
 

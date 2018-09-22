@@ -61,16 +61,16 @@
             android:id="@+id/text_type_properties_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/framelayout_typeproperty_search"
             android:gravity="center_vertical"
+            android:layout_marginTop="5dp"
             android:textSize="15sp"
             android:text="@string/type_of_property"/>
 
         <FrameLayout
             android:layout_width="160dp"
             android:layout_height="30dp"
+            android:layout_centerHorizontal="true"
             android:id="@+id/framelayout_typeproperty_search"
-            android:layout_alignParentEnd="true"
             android:background="@drawable/background_edittext"
             android:gravity="center">
 
@@ -100,14 +100,14 @@
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginTop="5dp"
+        android:gravity="center"
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <RelativeLayout
             android:id="@+id/start_relativelayout_publish_search"
-            android:layout_width="0dp"
+            android:layout_width="160dp"
             android:layout_height="30dp"
-            android:layout_weight="1"
             android:background="@drawable/background_edittext">
 
             <TextView
@@ -142,10 +142,9 @@
 
         <RelativeLayout
             android:id="@+id/end_relativelayout_publish_search"
-            android:layout_width="0dp"
+            android:layout_width="160dp"
             android:layout_height="30dp"
-            android:background="@drawable/background_edittext"
-            android:layout_weight="1">
+            android:background="@drawable/background_edittext">
 
             <TextView
                 android:id="@+id/end_date_publish_selected_search"

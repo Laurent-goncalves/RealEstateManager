@@ -104,10 +104,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @OnClick(R.id.buttonCancel)
     public void onClickListenerButtonCancel() {
-        if(property.getId()==-1)
-            baseActivityListener.configureAndShowListPropertiesFragment(MODE_DISPLAY,null);
-        else
-            baseActivityListener.changeToDisplayMode(idProperty);
+        baseActivityListener.askForConfirmationToLeaveEditMode(modeSelected,idProperty);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -125,9 +122,14 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         context = getActivity().getApplicationContext();
         mCallbackImageSelect = this;
         listImages = new ArrayList<>();
+
+        // configure buttons add and edit in toolbar
+        baseActivityListener.setCurrentPositionDisplayed(idProperty);
+        baseActivityListener.getToolbarManager().setIconsToolbarEditMode();
     }
 
     private void configureViews(){
+
         configFragment = new ConfigureEditFragment(view,this,context,property,listImages,baseActivityListener);
     }
 

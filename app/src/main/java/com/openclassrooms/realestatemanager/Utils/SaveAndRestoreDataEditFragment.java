@@ -2,24 +2,48 @@ package com.openclassrooms.realestatemanager.Utils;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
+import com.openclassrooms.realestatemanager.Models.SearchQuery;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class SaveAndRestoreDataEditFragment {
 
+    private static final String MODE_NEW = "NEW";
     private final static String BUNDLE_DEVICE = "bundle_device";
     private static final String BUNDLE_TYPE_EDIT = "type_edit";
     private static final String BUNDLE_PROPERTY = "bundle_property";
     private static final String BUNDLE_LIST_IMAGES_PROPERTY = "bundle_list_images_property";
-    private static final String MODE_SELECTED = "mode_selected";
+    private static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
     private static final String MODE_DISPLAY = "mode_display";
     private static final String LAST_PROPERTY_SELECTED = "last_property_selected";
     private static final String MODE_UPDATE = "UPDATE";
     private static final String RECYCLERVIEW_STATE_KEY = "recycler_view_state";
+
+    // ----------------------------------- CREATE BUNDLE
+
+    public static Bundle createBundleForEditFragment(int idProperty, String modeDevice, String modeSelected){
+
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(LAST_PROPERTY_SELECTED, idProperty);
+        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
+
+        if(idProperty==-1){
+            bundle.putString(BUNDLE_TYPE_EDIT, MODE_NEW);
+        } else {
+            bundle.putString(BUNDLE_TYPE_EDIT, MODE_UPDATE);
+        }
+
+        return bundle;
+    }
 
     // ----------------------------------- SAVE DATA
 
@@ -28,7 +52,7 @@ public class SaveAndRestoreDataEditFragment {
         outState.putString(BUNDLE_PROPERTY, ConverterJSON.convertPropertyToJson(property));
         outState.putString(BUNDLE_LIST_IMAGES_PROPERTY, ConverterJSON.convertListImagesPropertyToJson(listImages));
         outState.putString(BUNDLE_TYPE_EDIT, typeEdit);
-        outState.putString(MODE_SELECTED, modeSelected);
+        outState.putString(BUNDLE_MODE_SELECTED, modeSelected);
         outState.putString(BUNDLE_DEVICE, modeDevice);
         outState.putInt(LAST_PROPERTY_SELECTED, idProperty);
 
@@ -49,6 +73,10 @@ public class SaveAndRestoreDataEditFragment {
 
         if(savedInstanceState!=null){
             bundle = savedInstanceState;
+
+            // Recover id property
+            int idProperty=bundle.getInt(LAST_PROPERTY_SELECTED,-1);
+            fragment.setIdProperty(idProperty);
 
             // Recover type edit
             String typeEdit = bundle.getString(BUNDLE_TYPE_EDIT, MODE_UPDATE);
@@ -106,7 +134,7 @@ public class SaveAndRestoreDataEditFragment {
         String modeDevice = bundle.getString(BUNDLE_DEVICE);
         fragment.setModeDevice(modeDevice);
 
-        String modeSelected = bundle.getString(MODE_SELECTED,MODE_DISPLAY);
+        String modeSelected = bundle.getString(BUNDLE_MODE_SELECTED,MODE_DISPLAY);
         fragment.setModeSelected(modeSelected);
     }
 }

@@ -10,11 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
+import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataListPropertiesFrag;
+import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
@@ -43,7 +48,9 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     private String modeSelected;
     private int itemSelected;
     @BindView(R.id.list_properties_recycler_view) RecyclerView recyclerView;
-    @BindView(R.id.fragment_list_properties) FrameLayout fragmentView;
+    private SearchQuery searchQuery;
+    private LatLng cameraTarget;
+
 
     public ListPropertiesFragment() {
     }
@@ -57,7 +64,20 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         context = getActivity().getApplicationContext();
 
         // Restore datas
-        SaveAndRestoreDataListPropertiesFrag.recoverDatas(getArguments(),savedInstanceState,this,context,baseActivityListener);
+        SaveAndRestoreDataListPropertiesFrag.recoverModeSelected(getArguments(),savedInstanceState,this);
+
+        switch(modeSelected){
+            case MODE_DISPLAY:
+                SaveAndRestoreDataListPropertiesFrag.recoverDatasMainActivity(getArguments(),savedInstanceState,this,context,baseActivityListener);
+                break;
+            case MODE_DISPLAY_MAPS:
+                SaveAndRestoreDataListPropertiesFrag.recoverDatasMapsActivity(getArguments(),savedInstanceState,this,context,baseActivityListener);
+                break;
+            case MODE_SEARCH:
+                SaveAndRestoreDataListPropertiesFrag.recoverDatasSearchActivity(getArguments(),savedInstanceState,this,context,baseActivityListener);
+                break;
+        }
+
         recoverActivities();
     }
 
@@ -70,10 +90,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         ButterKnife.bind(this, view);
 
         // Configure fragment
-        if(listProperties.size()>0)
-            configureFragment();
-        else
-            fragmentView.setBackgroundColor(Color.GRAY);
+        if(listProperties!=null){
+            if(listProperties.size()>0)
+                configureFragment();
+            else
+                Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
+        } else
+            Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
 
         return view;
     }
@@ -99,6 +122,10 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         } else { // --------------------------------------------- PHONE
             configureListProperties(-1);
         }
+
+        // configure buttons add and edit
+        //if(!modeDevice.equals(MODE_TABLET))
+        baseActivityListener.getToolbarManager().setIconsToolbarListPropertiesMode(modeSelected);
     }
 
     public void removeSelectedItemInList(){
@@ -145,6 +172,8 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(listProperties!=null){
             if (listProperties.size() > 0) {
 
+                Utils.colorFragmentList("WHITE",modeDevice,baseActivityListener.getBaseActivity());
+
                 if (context != null) {
 
                     // Create adapter passing in the sample user data
@@ -155,16 +184,11 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                 }
 
-                // show display fragment if mode tablet
-                if(modeDevice.equals(MODE_TABLET) && fragmentDisplayed.equals(DISPLAY_FRAG)){
-                    showDisplayFragment(itemSelected);
-                }
-
             } else {
-                fragmentView.setBackgroundColor(Color.GRAY);
+                Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
             }
         } else {
-            fragmentView.setBackgroundColor(Color.GRAY);
+            Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
         }
     }
 
@@ -178,9 +202,17 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
     @Override
     public void changeMarkerMap(int idProp) {
+
+        itemSelected = Utils.getIndexPropertyFromList(idProp,listProperties);
+        baseActivityListener.setCurrentPositionDisplayed(idProp);
+
         if(modeSelected.equals(MODE_DISPLAY_MAPS)){
             mapsActivity.getConfigureMap().centerToMarker(idProp);
+            mapsActivity.getConfigureMap().setIdProperty(idProp);
         }
+
+        if(fragmentDisplayed.equals(DISPLAY_FRAG))
+            showDisplayFragment(Utils.getIndexPropertyFromList(idProp,listProperties));
     }
 
     @Override
@@ -209,13 +241,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         super.onSaveInstanceState(outState);
         switch(modeSelected){
             case MODE_DISPLAY_MAPS:
-                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice);
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice, cameraTarget);
                 break;
             case MODE_DISPLAY:
                 SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice);
                 break;
             case MODE_SEARCH:
-                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice);
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice,searchQuery);
                 break;
         }
 
@@ -259,5 +291,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
     public void setFragmentDisplayed(String fragmentDisplayed) {
         this.fragmentDisplayed = fragmentDisplayed;
+    }
+
+    public void setSearchQuery(SearchQuery searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+
+    public void setCameraTarget(LatLng cameraTarget) {
+        this.cameraTarget = cameraTarget;
     }
 }

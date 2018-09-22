@@ -54,7 +54,7 @@ public class BasePropertyFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        //setRetainInstance(true);
     }
 
     @Override
@@ -75,17 +75,13 @@ public class BasePropertyFragment extends Fragment {
             // if the mode of display is for mapsActivity, remove button return and icons in toolbar
             if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY_MAPS)) {
                 mapsActivity = (MapsActivity) getActivity();
-                //this.context = mapsActivity.getApplicationContext();
                 modeSelected = MODE_DISPLAY_MAPS;
                 buttonReturnText = context.getResources().getString(R.string.return_to_the_map);
             } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY)) {
-                //baseActivity = (BaseActivity) getActivity();
-                //this.context = baseActivity.getApplicationContext();
                 modeSelected = MODE_DISPLAY;
                 buttonReturnText = context.getResources().getString(R.string.return_to_the_list);
             } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_SEARCH)) {
                 searchActivity = (SearchActivity) getActivity();
-                //this.context = baseActivity.getApplicationContext();
                 modeSelected = MODE_SEARCH;
                 buttonReturnText = context.getResources().getString(R.string.return_to_search_criteria);
             }
@@ -193,6 +189,15 @@ public class BasePropertyFragment extends Fragment {
 
     public void setIdProperty(int idProperty) {
         this.idProperty = idProperty;
+        baseActivityListener.setCurrentPositionDisplayed(idProperty);
+    }
+
+    public Property getProperty() {
+        return property;
+    }
+
+    public void setButtonReturnText(String buttonReturnText) {
+        this.buttonReturnText = buttonReturnText;
     }
 
     public void setTypeEdit(String typeEdit) {

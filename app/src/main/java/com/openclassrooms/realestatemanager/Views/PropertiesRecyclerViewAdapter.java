@@ -55,7 +55,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     public void onBindViewHolder(@NonNull PropertyViewHolder holder, int position) {
 
         if(listProperties!=null && baseActivityListener!=null)
-            holder.configurePropertiesViews(listProperties.get(position), context, baseActivityListener);
+            holder.configurePropertiesViews(listProperties.get(position), context, modeDevice, baseActivityListener);
 
         holder.propertyLayout.setOnClickListener(v -> {
 
@@ -73,9 +73,9 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     public void proceedToChangeOfPropertySelection(PropertyViewHolder holder, int position){
 
         // if maps mode, change marker. If not, show displayFragment
-        if(modeSelected.equals(MODE_DISPLAY_MAPS))
+        if(modeSelected.equals(MODE_DISPLAY_MAPS)) {
             callbackListProperties.changeMarkerMap(Objects.requireNonNull(listProperties).get(position).getId());
-        else {
+        } else {
             callbackListProperties.showDisplayFragment(position);
         }
 

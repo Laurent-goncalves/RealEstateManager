@@ -2,29 +2,24 @@ package com.openclassrooms.realestatemanager.Utils;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.view.View;
 import com.google.android.gms.maps.model.LatLng;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.SearchContentProvider;
 import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import java.util.ArrayList;
 import java.util.List;
-import butterknife.ButterKnife;
-
 
 
 public class LaunchSearchQuery {
 
     private Context context;
     private SearchQuery searchQuery;
-    private SearchFragment searchFragment;
+    private List<Property> listProperties;
 
-    public LaunchSearchQuery(View view, Context context, SearchFragment searchFragment, SearchQuery searchQuery) {
-        ButterKnife.bind(this,view);
+    public LaunchSearchQuery(Context context, SearchQuery searchQuery) {
         this.context = context;
         this.searchQuery = searchQuery;
-        this.searchFragment=searchFragment;
+        this.listProperties = new ArrayList<>();
         launchSearchProperties();
     }
 
@@ -96,7 +91,7 @@ public class LaunchSearchQuery {
     }
 
     private int getRoomNbMin(){
-        return searchFragment.getSearchQuery().getRoomNbMin();
+        return searchQuery.getRoomNbMin();
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -151,7 +146,6 @@ public class LaunchSearchQuery {
     private void filterResultsByLocation(List<Property> listPropertyTemp){
 
         Double radius = Double.parseDouble(String.valueOf(searchQuery.getRadius()));
-        List<Property> listProperties = new ArrayList<>();
         LatLng searchLoc = new LatLng(searchQuery.getSearchLocLat(),searchQuery.getSearchLocLng());
 
         if(searchLoc.latitude!=0 && searchLoc.longitude!=0){
@@ -174,11 +168,13 @@ public class LaunchSearchQuery {
         } else { // if the user has not chosen any specific location
             listProperties.addAll(listPropertyTemp);
         }
-
-        displayResults(listProperties);
     }
 
-    private void displayResults(List<Property> listProperties){
-        searchFragment.displayResults(listProperties);
+    public List<Property> getListProperties() {
+        return listProperties;
+    }
+
+    public void setListProperties(List<Property> listProperties) {
+        this.listProperties = listProperties;
     }
 }

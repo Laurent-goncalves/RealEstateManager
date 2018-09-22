@@ -20,6 +20,8 @@ import com.openclassrooms.realestatemanager.Models.SuggestionsLatLng.Prediction;
 import com.openclassrooms.realestatemanager.Models.SuggestionsLatLng.Suggestions;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ApiStream;
+import com.openclassrooms.realestatemanager.Utils.Utils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -157,26 +159,30 @@ public class SearchAddress implements Disposable{
         dispose();
         listSuggestions = new ArrayList<>();
 
-        this.disposable = ApiStream.streamFetchgetSuggestions(api_key,address).subscribeWith(new DisposableObserver<Suggestions>() {
+        if(Utils.isInternetAvailable(context)){
+            this.disposable = ApiStream.streamFetchgetSuggestions(api_key,address).subscribeWith(new DisposableObserver<Suggestions>() {
 
-            @Override
-            public void onNext(Suggestions suggestions) {
-                buildListSuggestions(suggestions);
-            }
+                @Override
+                public void onNext(Suggestions suggestions) {
+                    buildListSuggestions(suggestions);
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                String text = context.getResources().getString(R.string.error_list_addresses) + "\n" + e.toString();
-                Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
-                toast.show();
-            }
+                @Override
+                public void onError(Throwable e) {
+                    String text = context.getResources().getString(R.string.error_list_addresses) + "\n" + e.toString();
+                    Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+                    toast.show();
+                }
 
-            @Override
-            public void onComplete() {
-                displayListPredictions(submit);
-                dispose();
-            }
-        });
+                @Override
+                public void onComplete() {
+                    displayListPredictions(submit);
+                    dispose();
+                }
+            });
+        } else
+            Toast.makeText(context,context.getResources().getString(R.string.error_internet),Toast.LENGTH_LONG).show();
+
     }
 
     public void displayListPredictions(Boolean submit) {
@@ -239,49 +245,52 @@ public class SearchAddress implements Disposable{
 
         dispose();
 
-        this.disposable = ApiStream.streamFetchgetLatLngAddress(api_key,address).subscribeWith(new DisposableObserver<LatLngAddress>() {
+        if(Utils.isInternetAvailable(context)) {
+            this.disposable = ApiStream.streamFetchgetLatLngAddress(api_key, address).subscribeWith(new DisposableObserver<LatLngAddress>() {
 
-            @Override
-            public void onNext(LatLngAddress latLngAddress) {
-                latLngAddressResult = latLngAddress;
-            }
+                @Override
+                public void onNext(LatLngAddress latLngAddress) {
+                    latLngAddressResult = latLngAddress;
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                String text = context.getResources().getString(R.string.error_latlng_address) + "\n" + e.toString();
-                Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
-                toast.show();
-            }
+                @Override
+                public void onError(Throwable e) {
+                    String text = context.getResources().getString(R.string.error_latlng_address) + "\n" + e.toString();
+                    Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
+                    toast.show();
+                }
 
-            @Override
-            public void onComplete() {
+                @Override
+                public void onComplete() {
 
-                if(latLngAddressResult!=null){
-                    if(latLngAddressResult.getResults()!=null){
-                        if(latLngAddressResult.getResults().size()>0) {
-                            if (latLngAddressResult.getResults().get(0) != null) {
-                                if (latLngAddressResult.getResults().get(0).getGeometry() != null) {
-                                    if (latLngAddressResult.getResults().get(0).getGeometry().getLocation() != null) {
+                    if (latLngAddressResult != null) {
+                        if (latLngAddressResult.getResults() != null) {
+                            if (latLngAddressResult.getResults().size() > 0) {
+                                if (latLngAddressResult.getResults().get(0) != null) {
+                                    if (latLngAddressResult.getResults().get(0).getGeometry() != null) {
+                                        if (latLngAddressResult.getResults().get(0).getGeometry().getLocation() != null) {
 
-                                        latLng = new LatLng(latLngAddressResult.getResults().get(0).getGeometry().getLocation().getLat(),
-                                                latLngAddressResult.getResults().get(0).getGeometry().getLocation().getLng());
+                                            latLng = new LatLng(latLngAddressResult.getResults().get(0).getGeometry().getLocation().getLat(),
+                                                    latLngAddressResult.getResults().get(0).getGeometry().getLocation().getLng());
 
-                                        if(editFragment!=null)
-                                            editFragment.setLatLngAddress(latLng);
-                                        else
-                                            searchFragment.setLatLngAddress(latLng);
+                                            if (editFragment != null)
+                                                editFragment.setLatLngAddress(latLng);
+                                            else
+                                                searchFragment.setLatLngAddress(latLng);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                if(editFragment!=null)
-                    getStaticMapFromAddress(latLng);
+                    if (editFragment != null)
+                        getStaticMapFromAddress(latLng);
 
-                dispose();
-            }
-        });
+                    dispose();
+                }
+            });
+        } else
+            Toast.makeText(context,context.getResources().getString(R.string.error_internet),Toast.LENGTH_LONG).show();
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -289,27 +298,30 @@ public class SearchAddress implements Disposable{
     // --------------------------------------------------------------------------------------------------------
 
     @SuppressLint("StaticFieldLeak")
-    private void getStaticMapFromAddress(LatLng latLng){
+    private void getStaticMapFromAddress(LatLng latLng) {
 
-        if(latLng!=null){
+        if(Utils.isInternetAvailable(context)) {
+            if (latLng != null) {
 
-            String urlImage = "https://maps.googleapis.com/maps/api/staticmap?center=" + latLng.latitude + "," + latLng.longitude +
-                    "&zoom=20&size=800x400&maptype=roadmap&markers=color:blue%7Clabel:S%7C" + latLng.latitude + "," + latLng.longitude +
-                    "&key=" + context.getResources().getString(R.string.google_static_maps_key);
+                String urlImage = "https://maps.googleapis.com/maps/api/staticmap?center=" + latLng.latitude + "," + latLng.longitude +
+                        "&zoom=20&size=800x400&maptype=roadmap&markers=color:blue%7Clabel:S%7C" + latLng.latitude + "," + latLng.longitude +
+                        "&key=" + context.getResources().getString(R.string.google_static_maps_key);
 
-            // Get static Map through Async task
-            MyAsync obj = new MyAsync(urlImage, context) {
-                @Override
-                protected void onPostExecute(Bitmap bitmap) {
-                    super.onPostExecute(bitmap);
-                    editFragment.setStaticMap(bitmap);
-                }
-            };
+                // Get static Map through Async task
+                MyAsync obj = new MyAsync(urlImage, context) {
+                    @Override
+                    protected void onPostExecute(Bitmap bitmap) {
+                        super.onPostExecute(bitmap);
+                        editFragment.setStaticMap(bitmap);
+                    }
+                };
 
-            obj.execute();
-        }
-
-        // Get interest points
+                obj.execute();
+            }
+        } else
+            Toast.makeText(context,context.getResources().getString(R.string.error_internet),Toast.LENGTH_LONG).show();
+        
+    // Get interest points
         launchSearchInterestPoints(editFragment,latLng);
     }
 

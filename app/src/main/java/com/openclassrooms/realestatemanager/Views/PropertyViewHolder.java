@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.Views;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,7 +24,9 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.property_location_view) TextView locTextView;
     @BindView(R.id.property_cost_view) TextView costTextView;
     @BindView(R.id.item_property_layout) LinearLayout propertyLayout;
+    private final static String MODE_TABLET = "mode_tablet";
     private Context context;
+    private String modeDevice;
 
     public PropertyViewHolder(View itemView) {
         super(itemView);
@@ -35,8 +38,9 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void configurePropertiesViews(Property property, Context context, BaseActivityListener baseActivityListener){
+    public void configurePropertiesViews(Property property, Context context, String modeDevice, BaseActivityListener baseActivityListener){
         this.context=context;
+        this.modeDevice = modeDevice;
 
         // Main Image
         baseActivityListener.setImage(property.getMainImagePath(), mainImage);
@@ -52,9 +56,24 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
 
         // Location
         if(property.getAddress()!=null){
-            if(property.getAddress().length()>25) {
 
-                String address = property.getAddress().substring(0, 25) + "...";
+            int limit;
+
+            if(modeDevice.equals(MODE_TABLET)) {
+                if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                    limit = 20;
+                else
+                    limit = 35;
+            } else {
+                if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                    limit = 20;
+                else
+                    limit = 30;
+            }
+
+            // remove characters from property address if address is too long
+            if(property.getAddress().length()>limit) {
+                String address = property.getAddress().substring(0, limit) + "...";
                 locTextView.setText(address);
             } else
                 locTextView.setText(property.getAddress());

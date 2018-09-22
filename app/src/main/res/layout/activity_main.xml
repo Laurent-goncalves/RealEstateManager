@@ -93,6 +93,7 @@
             </android.support.v7.widget.Toolbar>
 
             <ScrollView
+                android:id="@+id/fragment_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

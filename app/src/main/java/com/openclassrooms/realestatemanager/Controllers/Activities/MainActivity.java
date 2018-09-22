@@ -20,6 +20,7 @@ public class MainActivity extends BaseActivity  {
 
         // Assign views
         ButterKnife.bind(this);
+        modeSelected = MODE_DISPLAY;
 
         // Configure toolbar
         toolbarManager = new ToolbarManager(this);
@@ -50,18 +51,24 @@ public class MainActivity extends BaseActivity  {
             }
 
         } else { // display init configuration
-            modeSelected = MODE_DISPLAY;
             idProperty=-1;
-            configureAndShowListPropertiesFragment(modeSelected,null);
+            configureAndShowListPropertiesFragment(MODE_DISPLAY);
         }
     }
 
     @Override
     public void onBackPressed(){
         if(fragmentDisplayed.equals(EDIT_FRAG))
-            configureAndShowDisplayFragment(modeSelected, idProperty);
+            askForConfirmationToLeaveEditMode(MODE_DISPLAY, idProperty);
         else if(modeDevice.equals(MODE_PHONE))
-            configureAndShowListPropertiesFragment(MODE_DISPLAY,null);
+            configureAndShowListPropertiesFragment(MODE_DISPLAY);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        SaveAndRestoreDataActivity.SaveDataActivity(MODE_DISPLAY,fragmentDisplayed,idProperty,lastIdPropertyDisplayed, outState);
     }
 }
 

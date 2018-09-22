@@ -39,6 +39,7 @@ public class SearchFragment extends Fragment {
     @BindView(R.id.buttonSearch) Button buttonSearch;
     private static final String MODE_SEARCH = "mode_search";
     private BaseActivityListener baseActivityListener;
+    private LaunchSearchQuery launchSearchQuery;
     private SearchActivity searchActivity;
     private SearchQuery searchQuery;
     private Context context;
@@ -51,7 +52,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Override
@@ -69,8 +69,12 @@ public class SearchFragment extends Fragment {
         // Restore datas
         SaveAndRestoreDataSearchFragment.recoverDatas(getArguments(),savedInstanceState,this);
 
+        // configure buttons add and edit in toolbar
+        baseActivityListener.getToolbarManager().setIconsToolbarSearchPropertiesMode();
+
         // Configure searchFragment fields
         new ConfigureSearchFragment(view,context,this);
+
         return view;
     }
 
@@ -98,13 +102,15 @@ public class SearchFragment extends Fragment {
     // ----------------------------------------------------------------------------------------------------
 
     public void launchSearchProperties(){
-        new LaunchSearchQuery(view, context,this,searchQuery);
+        launchSearchQuery = new LaunchSearchQuery(context,searchQuery);
+        displayResults(launchSearchQuery.getListProperties());
     }
 
     public void displayResults(List<Property> results) {
         if (results.size() > 0){ // if at least one result, show list properties
             searchActivity.setListProperties(results);
-            baseActivityListener.configureAndShowListPropertiesFragment(MODE_SEARCH, results);
+            baseActivityListener.setSearchQuery(searchQuery);
+            baseActivityListener.configureAndShowListPropertiesFragment(MODE_SEARCH);
         } else
             baseActivityListener.displayError(context.getResources().getString(R.string.no_result_found));
     }

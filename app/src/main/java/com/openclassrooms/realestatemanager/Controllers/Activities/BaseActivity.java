@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -15,8 +16,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
@@ -29,6 +35,10 @@ import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ConverterJSON;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataActivity;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataDisplayFragment;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataEditFragment;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataListPropertiesFrag;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataSearchFragment;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.PropertyViewHolder;
 import java.io.File;
@@ -41,26 +51,17 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
 
     protected static int RESULT_LOAD_IMAGE_VIEWHOLDER = 2;
     protected static int RESULT_LOAD_MAIN_IMAGE_ = 3;
-    protected static final String MODE_NEW = "NEW";
-    protected static final String MODE_UPDATE = "UPDATE";
-    protected static final String BUNDLE_FRAG_DISPLAYED = "bundle_frag_displayed";
     protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
-    protected static final String BUNDLE_TYPE_EDIT = "type_edit";
     protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
-    protected static final String BUNDLE_SEARCH_QUERY = "bundle_search_query";
-    protected static final String MODE_SEARCH = "mode_search";
     protected static final String MODE_DISPLAY = "mode_display";
-    protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
-    protected static final String BUNDLE_LIST_PROPERTIES = "bundle_list_properties";
-    protected static final String BUNDLE_ITEM_LIST_SELECTED = "bundle_item_selected_in_the_list";
     protected final static String LIST_FRAG = "fragment_list";
     protected final static String SEARCH_FRAG = "fragment_search";
     protected final static String DISPLAY_FRAG = "fragment_display";
     protected final static String EDIT_FRAG = "fragment_edit";
-    protected final static String MAPS_FRAG = "fragment_maps";
     protected final static String BUNDLE_DEVICE = "bundle_device";
     protected final static String MODE_TABLET = "mode_tablet";
     protected final static String MODE_PHONE = "mode_phone";
+    protected int lastIdPropertyDisplayed;
     @BindView(R.id.activity_main_drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
     protected static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
@@ -75,13 +76,15 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
     protected SearchFragment searchFragment;
     protected ListPropertiesFragment listPropertiesFragment;
     protected int idProperty;
+    protected int itemSelected;
     protected int viewHolderPosition;
     protected String modeDevice;
     protected String modeSelected;
     protected String imagePath;
     protected ImageView imageView;
     protected SearchQuery searchQuery;
-
+    protected LatLng cameraTarget;
+    protected View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,40 +116,36 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
             this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
 
         // show displayFragment
-        configureAndShowEditFragment(propertyId);
+        configureAndShowEditFragment(modeSelected, propertyId);
     }
 
     public void returnToSearchCriteria(){
-
-        // change icons toolbar
-        if(toolbarManager!=null)
-            toolbarManager.setIconsToolbarListPropertiesMode(modeSelected);
 
         // remove the displayFragment
         if(displayFragment!=null)
             this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
 
         searchFragment = new SearchFragment();
+        Utils.colorFragmentList("GRAY", modeDevice,this);
 
-        Bundle bundle = new Bundle();
-        bundle.putString(BUNDLE_SEARCH_QUERY, ConverterJSON.convertSearchQueryToJson(searchQuery));
+        // Create a bundle
+        Bundle bundle = SaveAndRestoreDataSearchFragment.createBundleForSearchFragment(modeDevice,searchQuery);
         searchFragment.setArguments(bundle);
 
         FragmentTransaction fragTransReplace = getFragmentManager().beginTransaction();
         fragTransReplace.replace(R.id.fragment_position, searchFragment);
         fragTransReplace.commit();
 
-        FragmentTransaction fragTransRemove = getFragmentManager().beginTransaction();
-        fragTransRemove.remove(listPropertiesFragment);
-        fragTransRemove.commit();
+        if(listPropertiesFragment!=null) {
+            FragmentTransaction fragTransRemove = getFragmentManager().beginTransaction();
+            fragTransRemove.remove(listPropertiesFragment);
+            fragTransRemove.commit();
+        }
     }
 
     public void configureAndShowDisplayFragment(String modeSelected, int propertyId){
 
-        // change icons toolbar
-        if(toolbarManager!=null)
-            toolbarManager.setIconsToolbarDisplayMode(modeSelected, modeDevice);
-
+        lastIdPropertyDisplayed = propertyId;
         idProperty = propertyId;
         displayFragment = new DisplayFragment();
         fragmentDisplayed = DISPLAY_FRAG;
@@ -155,88 +154,49 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
             listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
 
         // create a bundle
-        Bundle bundle = new Bundle();
-        bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
-        bundle.putString(BUNDLE_DEVICE, modeDevice);
-        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
+        Bundle bundle = SaveAndRestoreDataDisplayFragment.createBundleForDisplayFragment(idProperty,modeDevice,modeSelected);
+        displayFragment.setArguments(bundle);
 
         // configure and show the editFragment
-        displayFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_position, displayFragment, DISPLAY_FRAG);
         fragmentTransaction.commit();
     }
 
-    public void configureAndShowEditFragment(int propertyId){
+    public void configureAndShowEditFragment(String modeSelected, int propertyId) {
 
-        // change icons toolbar
-        toolbarManager.setIconsToolbarEditMode();
-
+        idProperty = propertyId;
         editFragment = new EditFragment();
         fragmentDisplayed = EDIT_FRAG;
-        idProperty = propertyId;
 
-        if(listPropertiesFragment!=null)
+        if (listPropertiesFragment != null){
             listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
 
-        // create a bundle
-        Bundle bundle = new Bundle();
-        bundle.putInt(LAST_PROPERTY_SELECTED, propertyId);
-        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
-        bundle.putString(BUNDLE_DEVICE, modeDevice);
-
-        if(propertyId==-1){
-            bundle.putString(BUNDLE_TYPE_EDIT, MODE_NEW);
-
-            if(listPropertiesFragment!=null && listProperties !=null)
+            if(propertyId==-1 && listProperties !=null) // if new property, unselect the selected item in the list
                 listPropertiesFragment.removeSelectedItemInList();
-
-        } else {
-            bundle.putString(BUNDLE_TYPE_EDIT, MODE_UPDATE);
         }
 
-        // configure and show the editFragment
+        // Create a bundle
+        Bundle bundle = SaveAndRestoreDataEditFragment.createBundleForEditFragment(idProperty, modeDevice, modeSelected);
         editFragment.setArguments(bundle);
+
+        // configure and show the editFragment
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_position, editFragment, EDIT_FRAG);
         fragmentTransaction.commit();
     }
 
-    public void configureAndShowListPropertiesFragment(String modeSelected, List<Property> listProp){
-
-        // change icons toolbar
-        if(toolbarManager!=null)
-            toolbarManager.setIconsToolbarListPropertiesMode(modeSelected);
+    public void configureAndShowListPropertiesFragment(String modeSelected){
 
         listPropertiesFragment = new ListPropertiesFragment();
+        fragmentDisplayed = LIST_FRAG;
+        this.modeSelected = modeSelected;
 
         // Create a bundle
-        Bundle bundle = new Bundle();
+        Bundle bundle = SaveAndRestoreDataListPropertiesFrag.createBundleForListPropertiesFragment(itemSelected,modeDevice,modeSelected,
+                fragmentDisplayed,cameraTarget,searchQuery);
 
-        bundle.putString(BUNDLE_DEVICE, modeDevice);
-
-        /*if(fragmentDisplayed==null)
-            fragmentDisplayed = LIST_FRAG;*/
-
-        bundle.putString(BUNDLE_FRAG_DISPLAYED, LIST_FRAG);
-
-        switch (modeSelected) {
-            case MODE_DISPLAY:
-                bundle.putString(BUNDLE_MODE_SELECTED, MODE_DISPLAY);
-                break;
-            case MODE_SEARCH: {
-                bundle.putString(BUNDLE_MODE_SELECTED, MODE_SEARCH);
-                bundle.putString(BUNDLE_LIST_PROPERTIES, ConverterJSON.convertListPropertyToJson(listProp));
-                break;
-            }
-            case MODE_DISPLAY_MAPS: {
-                bundle.putString(BUNDLE_MODE_SELECTED, MODE_DISPLAY_MAPS);
-                bundle.putString(BUNDLE_LIST_PROPERTIES, ConverterJSON.convertListPropertyToJson(listProp));
-                break;
-            }
-        }
-
-        // configure and show the listPropertiesFragment
+         // configure and show the listPropertiesFragment
         listPropertiesFragment.setArguments(bundle);
 
         if(modeDevice.equals(MODE_TABLET)){ // MODE TABLET
@@ -256,27 +216,6 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
         }
     }
 
-    public void configureAndShowSearchFragment(){
-
-        // change icons toolbar
-        toolbarManager.setIconsToolbarSearchPropertiesMode();
-
-        fragmentDisplayed = SEARCH_FRAG;
-        searchFragment = new SearchFragment();
-
-        if(listPropertiesFragment!=null)
-            listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
-
-        // Create bundle
-        Bundle bundle = new Bundle();
-        bundle.putString(BUNDLE_DEVICE, modeDevice);
-        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
-
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_position, searchFragment, SEARCH_FRAG);
-        fragmentTransaction.commit();
-    }
-
     public void launchMapsActivity(){
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
@@ -291,6 +230,11 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
+
+
+
+
 
     public void displayAlertDeletion(int viewHolderPosition){
 
@@ -311,13 +255,9 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,idProperty,outState);
-    }
-
-    @Override
     public void changeOfPropertySelected(PropertyViewHolder holder, int position, CallbackPropertyAdapter callbackPropertyAdapter) {
+        itemSelected = position;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle(getResources().getString(R.string.warning_title));
@@ -331,16 +271,42 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
     @Override
     public void setSearchQuery(SearchQuery searchQuery) {
         this.searchQuery=searchQuery;
+        if(listPropertiesFragment!=null){
+            listPropertiesFragment.setSearchQuery(searchQuery);
+        }
     }
 
-    @Override
-    public void stopActivity() {
-        finish();
-    }
+
+
+
 
     @Override
     public void showSnackBar(String text) {
         Snackbar.make(this.findViewById(R.id.fragment_position), text, Snackbar.LENGTH_LONG).show();
+    }
+
+    public void askForConfirmationToLeaveEditMode(String modeSelected, int idProp) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(getResources().getString(R.string.warning_title));
+        builder.setMessage(getResources().getString(R.string.leave_edit_mode));
+        builder.setPositiveButton(getResources().getString(R.string.confirm), (dialog, id) -> {
+                    if(idProp!=-1) { // modify existing property
+                        configureAndShowDisplayFragment(modeSelected, idProp);
+                        if(modeDevice.equals(MODE_TABLET))
+                            getListPropertiesFragment().changeSelectedItemInList(idProp,fragmentDisplayed);
+                    } else { // add a new property
+                        if(modeDevice.equals(MODE_TABLET)) {
+                            configureAndShowDisplayFragment(modeSelected, lastIdPropertyDisplayed);
+                            getListPropertiesFragment().changeSelectedItemInList(lastIdPropertyDisplayed, fragmentDisplayed);
+                        } else
+                            configureAndShowListPropertiesFragment(modeSelected);
+                    }
+                }
+            )
+                .setNegativeButton(R.string.cancel, (dialog, id) -> { });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -376,9 +342,11 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
         }
     }
 
+
+
     @Override
-    public String getFragmentDisplayed() {
-        return fragmentDisplayed;
+    public void stopActivity() {
+        finish();
     }
 
     @Override
@@ -480,6 +448,19 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
     // ------------------------------------------ GETTER AND SETTER ------------------------------------------
     // -------------------------------------------------------------------------------------------------------
 
+    @Override
+    public String getFragmentDisplayed() {
+        return fragmentDisplayed;
+    }
+
+    public BaseActivity getBaseActivity(){
+        return this;
+    }
+
+    public SearchQuery getSearchQuery() {
+        return searchQuery;
+    }
+
     public void setListProperties(List<Property> listProperties) {
         this.listProperties = listProperties;
     }
@@ -526,6 +507,20 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
 
     public ToolbarManager getToolbarManager() {
         return toolbarManager;
+    }
+
+    public void setLastIdPropertyDisplayed(int lastIdPropertyDisplayed) {
+        this.lastIdPropertyDisplayed = lastIdPropertyDisplayed;
+    }
+
+    public LatLng getCameraTarget() {
+        return cameraTarget;
+    }
+
+    public void setCameraTarget(LatLng cameraTarget) {
+        this.cameraTarget = cameraTarget;
+        if(listPropertiesFragment!=null)
+            listPropertiesFragment.setCameraTarget(cameraTarget);
     }
 }
 

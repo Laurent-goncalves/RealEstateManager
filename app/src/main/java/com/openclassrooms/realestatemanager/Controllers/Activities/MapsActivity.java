@@ -9,10 +9,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
+import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
@@ -31,7 +31,6 @@ public class MapsActivity extends BaseActivity {
     private SharedPreferences sharedPreferences;
     private ScrollView displayLayout;
     private ConfigureMap mConfigureMap;
-    private LatLng cameraTarget;
     @BindView(R.id.fragment_maps_layout) FrameLayout mapsLayout;
     @BindView(R.id.fragment_layout) ScrollView listPropMap;
     @BindView(R.id.progressBar) ProgressBar progressBar;
@@ -45,6 +44,7 @@ public class MapsActivity extends BaseActivity {
         // Assign views
         ButterKnife.bind(this);
         displayLayout = findViewById(R.id.fragment_layout);
+        modeSelected = MODE_DISPLAY_MAPS;
 
         // Configure toolbar
         toolbarManager = new ToolbarManager(this);
@@ -57,7 +57,7 @@ public class MapsActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,idProperty,cameraTarget,outState);
+        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,idProperty,cameraTarget,lastIdPropertyDisplayed,outState);
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -72,25 +72,46 @@ public class MapsActivity extends BaseActivity {
         if(savedInstanceState!=null){ // restore data (after rotation)
 
             SaveAndRestoreDataActivity.RestoreDataActivity(savedInstanceState,this);
-            mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this);
+            mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this, idProperty);
+
+            if(modeDevice.equals(MODE_TABLET)){
+                listPropertiesFragment = (ListPropertiesFragment) getFragmentManager().findFragmentByTag(LIST_FRAG);
+            }
 
             switch (fragmentDisplayed) {
                 case EDIT_FRAG:
+                    displayDetails();
                     editFragment = (EditFragment) getFragmentManager().findFragmentByTag(EDIT_FRAG);
                     break;
                 case DISPLAY_FRAG:
+                    displayDetails();
                     displayFragment = (DisplayFragment) getFragmentManager().findFragmentByTag(DISPLAY_FRAG);
                     break;
                 case MAPS_FRAG:
-                    mConfigureMap.restoreData(cameraTarget);
+
+                    displayMap(); // hide display and show map layout
+
+                    // Define fragmentDisplayed and send it to listPropertiesFragment if exists (tablet mode)
+                    fragmentDisplayed = MAPS_FRAG;
+                    if(listPropertiesFragment!=null)
+                        listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
+
+                    // update icons in toolbar
+                    toolbarManager.setIconsToolbarMapsMode();
+                    progressBar.setVisibility(View.VISIBLE); // open progressBar
+
+                    mConfigureMap.launchMapConfiguration(true,cameraTarget, savedInstanceState);
+                    getToolbarManager().setIconsToolbarMapsMode();// configure buttons add and edit in toolbar
                     break;
             }
 
         } else { // display init configuration
-            modeSelected = MODE_DISPLAY_MAPS;
             fragmentDisplayed = MAPS_FRAG;
             idProperty=-1;
             configureAndShowMap();
+
+            // configure buttons add and edit in toolbar
+            getToolbarManager().setIconsToolbarMapsMode();
         }
     }
 
@@ -101,10 +122,11 @@ public class MapsActivity extends BaseActivity {
 
         // change icons toolbar
         if(toolbarManager!=null)
-            toolbarManager.setIconsToolbarDisplayMode(modeSelected, modeDevice);
+            toolbarManager.setIconsToolbarDisplayMode(MODE_DISPLAY_MAPS, modeDevice);
 
         displayFragment = new DisplayFragment();
         fragmentDisplayed = DISPLAY_FRAG;
+        lastIdPropertyDisplayed = idProperty;
 
         if(listPropertiesFragment!=null)
             listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
@@ -115,7 +137,7 @@ public class MapsActivity extends BaseActivity {
         // Add the property Id to the bundle
         bundle.putInt(LAST_PROPERTY_SELECTED, idProperty);
         bundle.putString(BUNDLE_DEVICE, modeDevice);
-        bundle.putString(BUNDLE_MODE_SELECTED, modeSelected);
+        bundle.putString(BUNDLE_MODE_SELECTED, MODE_DISPLAY_MAPS);
 
         // configure and show the editFragment
         displayFragment.setArguments(bundle);
@@ -138,8 +160,9 @@ public class MapsActivity extends BaseActivity {
         progressBar.setVisibility(View.VISIBLE); // open progressBar
 
         // Launch map configuration
-        mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this);
-        mConfigureMap.launchMapConfiguration();
+        mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this,idProperty);
+        mConfigureMap.setIdProperty(idProperty);
+        mConfigureMap.launchMapConfiguration(false, cameraTarget, null);
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -165,7 +188,8 @@ public class MapsActivity extends BaseActivity {
         // move camera to property location
         if(property!=null){
             LatLng position = new LatLng(property.getLat(),property.getLng());
-            mConfigureMap.moveCameraToDefinedPosition(position);
+            mConfigureMap.setIdProperty(idProperty);
+            mConfigureMap.launchMapConfiguration(true, position, null);
         }
 
         displayMap();
@@ -176,7 +200,7 @@ public class MapsActivity extends BaseActivity {
         this.idProperty = idProperty;
 
         // Change icons in toolbar
-        toolbarManager.setIconsToolbarDisplayMode(modeSelected,modeDevice);
+        toolbarManager.setIconsToolbarDisplayMode(MODE_DISPLAY_MAPS,modeDevice);
 
         // in Tablet mode, update the list of properties
         Property property = Utils.getPropertyFromList(idProperty,listProperties);
@@ -190,6 +214,7 @@ public class MapsActivity extends BaseActivity {
     }
 
     private void displayMap(){
+        fragmentDisplayed = MAPS_FRAG;
         mapsLayout.setVisibility(View.VISIBLE);
         displayLayout.setVisibility(View.GONE);
     }
@@ -222,10 +247,17 @@ public class MapsActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if(fragmentDisplayed!=null){
-            if(fragmentDisplayed.equals(EDIT_FRAG))
-                configureAndShowDisplayFragment(modeSelected, idProperty);
-            else
-                changeToMapMode(idProperty);
+            switch (fragmentDisplayed) {
+                case EDIT_FRAG:
+                    askForConfirmationToLeaveEditMode(MODE_DISPLAY_MAPS, idProperty);
+                    break;
+                case MAPS_FRAG:
+                    stopActivity();
+                    break;
+                default:
+                    changeToMapMode(idProperty);
+                    break;
+            }
         } else
             configureAndShowMap();
     }
@@ -248,10 +280,6 @@ public class MapsActivity extends BaseActivity {
 
     public void setCameraTarget(LatLng cameraTarget) {
         this.cameraTarget = cameraTarget;
-    }
-
-    public LatLng getCameraTarget() {
-        return cameraTarget;
     }
 }
 

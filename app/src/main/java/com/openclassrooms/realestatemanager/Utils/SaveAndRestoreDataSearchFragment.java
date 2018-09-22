@@ -4,12 +4,27 @@ import android.os.Bundle;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.SearchFragment;
 import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.R;
-
 import java.util.Arrays;
+
 
 public class SaveAndRestoreDataSearchFragment {
 
+    private static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
+    private static final String BUNDLE_DEVICE = "bundle_device";
     private static final String BUNDLE_SEARCH_QUERY = "bundle_search_query";
+    private static final String MODE_SEARCH = "mode_search";
+
+    // ----------------------------------- CREATE BUNDLE
+
+    public static Bundle createBundleForSearchFragment(String modeDevice, SearchQuery searchQuery){
+
+        Bundle bundle = new Bundle();
+        bundle.putString(BUNDLE_DEVICE, modeDevice);
+        bundle.putString(BUNDLE_MODE_SELECTED, MODE_SEARCH);
+        bundle.putString(BUNDLE_SEARCH_QUERY, ConverterJSON.convertSearchQueryToJson(searchQuery));
+
+        return bundle;
+    }
 
     // ----------------------------------- SAVE DATA
 

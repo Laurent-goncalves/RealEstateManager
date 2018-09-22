@@ -16,12 +16,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
-import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
+import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
-import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.SimulationTool;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataDisplayFragment;
 import com.openclassrooms.realestatemanager.Utils.Utils;
 import com.openclassrooms.realestatemanager.Views.ImagesDisplayAdapter;
 import java.text.NumberFormat;
@@ -49,12 +49,10 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     @BindView(R.id.sale_date_text) TextView soldView;
     @BindView(R.id.sold_date_layout) LinearLayout soldDateLayout;
     @BindView(R.id.buttonReturn) Button buttonReturn;
-    private static final String POSITION_IMAGE_SELECTED = "position_image_selected";
+
     private CallbackImageChange callbackImageChange;
     private int positionImageSelected;
-    private int idProp;
     private ImagesDisplayAdapter adapter;
-    private SearchActivity searchActivity;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -72,39 +70,19 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         listImages = new ArrayList<>();
         callbackImageChange = this;
         context = getActivity().getApplicationContext();
-        if(savedInstanceState!=null)
-            positionImageSelected = savedInstanceState.getInt(POSITION_IMAGE_SELECTED,0);
-        else
-            positionImageSelected = 0;
 
-        // We recover the property to be displayed
-        if(getArguments()!=null){
+        SaveAndRestoreDataDisplayFragment.recoverDatas(getArguments(),savedInstanceState,this,context);
 
-            // recover mode selected (search, list, map)
-            recoverModeSelected();
+        // configure buttons add and edit
+        baseActivityListener.getToolbarManager().setIconsToolbarDisplayMode(modeSelected,modeDevice);
 
-            // recover mode of device (phone or tablet)
-            recoverDeviceMode();
+        // configure button return
+        configureButtonReturn();
 
-            // configure button return
-            configureButtonReturn();
-
-            // Recover id of property to display
-            idProp = getArguments().getInt(LAST_PROPERTY_SELECTED);
-
-            // Recover the property datas
-            recoverProperty(idProp);
-
-            // Recover images from the property
-            if(property.getMainImagePath()!=null)
-                listImages.add(new ImageProperty(0, property.getMainImagePath(),null,idProp)); // add main image
-
-            recoverImagesProperty(idProp);
-
-            if(property!=null){
-                configureViews();
-                configureImagesProperty();
-            }
+        // Configure views
+        if (property != null) {
+            configureViews();
+            configureImagesProperty();
         }
 
         return view;
@@ -114,7 +92,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof BaseActivityListener){
+        if (context instanceof BaseActivityListener) {
             baseActivityListener = (BaseActivityListener) context;
         }
     }
@@ -122,7 +100,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(POSITION_IMAGE_SELECTED,positionImageSelected);
+        SaveAndRestoreDataDisplayFragment.saveDatas(outState,idProperty,positionImageSelected,modeSelected,modeDevice);
     }
 
     // ---------------------------------------------------------------------------------------------------
@@ -130,38 +108,36 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     // ---------------------------------------------------------------------------------------------------
 
     @OnClick(R.id.buttonReturn)
-    public void returnToList(){
+    public void returnToList() {
 
-        if(modeDevice.equals(MODE_TABLET)){ // ----------- TABLET MODE
+        if (modeDevice.equals(MODE_TABLET)) { // ----------- TABLET MODE
 
-            switch(modeSelected){
+            switch (modeSelected) {
                 case MODE_SEARCH:
-                    if(modeDevice.equals(MODE_TABLET))
-                        searchActivity.getListFragLayout().setBackgroundColor(context.getResources().getColor(R.color.colorGrey));
                     baseActivityListener.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:
-                    mapsActivity.changeToMapMode(idProp);
+                    mapsActivity.changeToMapMode(idProperty);
                     break;
             }
         } else {     // ----------- PHONE MODE
             switch (modeSelected) {
 
                 case MODE_DISPLAY:
-                    baseActivityListener.configureAndShowListPropertiesFragment(MODE_DISPLAY, null);
+                    baseActivityListener.configureAndShowListPropertiesFragment(MODE_DISPLAY);
                     break;
                 case MODE_SEARCH:
                     baseActivityListener.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:
-                    mapsActivity.changeToMapMode(idProp);
+                    mapsActivity.changeToMapMode(idProperty);
                     break;
             }
         }
     }
 
     @OnClick(R.id.buttonSimulation)
-    public void launchSimulation(){
+    public void launchSimulation() {
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag("dialog");
@@ -179,24 +155,24 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     // ---------------------------------  CONFIGURE VIEWS  -----------------------------------------------
     // ---------------------------------------------------------------------------------------------------
 
-    private void configureButtonReturn(){
+    private void configureButtonReturn() {
 
-        if(modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_DISPLAY))
+        if (modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_DISPLAY))
             buttonReturn.setVisibility(View.GONE);
         else {
             buttonReturn.setVisibility(View.VISIBLE);
             buttonReturn.setText(buttonReturnText);
         }
 
-        if(modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_SEARCH)){
-            searchActivity = (SearchActivity) getActivity();
+        if (modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_DISPLAY_MAPS)) {
+            mapsActivity = (MapsActivity) getActivity();
         }
     }
 
     private void configureViews() {
 
         // set the main image
-        if(property.getMainImagePath()!=null && baseActivityListener!=null)
+        if (property.getMainImagePath() != null && baseActivityListener != null)
             baseActivityListener.setImage(property.getMainImagePath(), mainImageView);
 
         // set the type of property
@@ -207,7 +183,7 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         descriptionView.setText(property.getDescription());
 
         // Remove textview "sold" if property is not sold
-        if(!property.getSold()) {
+        if (!property.getSold()) {
             soldDateLayout.setVisibility(View.GONE);
             soldText.setVisibility(View.GONE);
         } else {
@@ -246,20 +222,18 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         interestView.setText(points);
 
         // set static mapView
-        if(property.getMap()!=null){
+        if (property.getMap() != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(property.getMap(), 0, property.getMap().length);
             mapStaticView.setImageBitmap(bitmap);
         }
     }
 
-    private void configureImagesProperty(){
+    private void configureImagesProperty() {
 
-        if(context!=null){
+        if (context != null) {
 
-            if(listImages.size()==0)
-
+            if (listImages.size() == 0)
                 listImagesView.setVisibility(View.GONE);
-
             else {
 
                 // Set the recyclerView in horizontal direction
@@ -267,8 +241,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                         = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
 
                 // Create adapter passing in the sample user data
-                if(baseActivityListener!=null)
-                    adapter = new ImagesDisplayAdapter(listImages, context,positionImageSelected, callbackImageChange, baseActivityListener);
+                if (baseActivityListener != null)
+                    adapter = new ImagesDisplayAdapter(listImages, context, positionImageSelected, callbackImageChange, baseActivityListener);
                 // Attach the adapter to the recyclerview to populate items
                 listImagesView.setAdapter(adapter);
                 // Set layout manager to position the items
@@ -277,10 +251,13 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         }
     }
 
-    public void changeMainImage(int position){
+    public void changeMainImage(int position) {
         positionImageSelected = position;
-        if(listImages.get(position)!=null && baseActivityListener!=null)
-            baseActivityListener.setImage(listImages.get(position).getImagePath(),mainImageView);
+        if (listImages.get(position) != null && baseActivityListener != null)
+            baseActivityListener.setImage(listImages.get(position).getImagePath(), mainImageView);
     }
 
+    public void setPositionImageSelected(int positionImageSelected) {
+        this.positionImageSelected = positionImageSelected;
+    }
 }

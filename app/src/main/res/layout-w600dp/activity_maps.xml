@@ -98,9 +98,10 @@
 
                 <!-- FRAGMENT LIST -->
                 <ScrollView
+                    android:id="@+id/fragment_list_layout"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="30">
+                    android:layout_weight="35">
 
                     <FrameLayout
                         android:id="@+id/fragment_list"
@@ -113,7 +114,7 @@
                 <FrameLayout
                     android:id="@+id/fragment_maps_layout"
                     android:layout_width="0dp"
-                    android:layout_weight="70"
+                    android:layout_weight="65"
                     android:layout_height="match_parent">
 
                     <fragment
@@ -139,7 +140,7 @@
                 <!-- FRAGMENT OTHER FRAGMENTS -->
                 <ScrollView
                     android:id="@+id/fragment_layout"
-                    android:layout_weight="70"
+                    android:layout_weight="65"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content">
 

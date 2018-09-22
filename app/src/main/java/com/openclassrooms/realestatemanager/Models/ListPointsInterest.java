@@ -35,8 +35,10 @@ public class ListPointsInterest implements Disposable {
 
         if(editFragment!=null && latLng==null)
             editFragment.setInterestPoints(listPointsInterest.toString());
-        else
+        else if(Utils.isInternetAvailable(context))
             getListPlacesNearby(api_key, latLng, radius);
+        else // no internet connection available
+            Toast.makeText(context,context.getResources().getString(R.string.error_internet),Toast.LENGTH_LONG).show();
     }
 
     private void getListPlacesNearby(String api_key, LatLng latLng, String radius) {
@@ -60,7 +62,7 @@ public class ListPointsInterest implements Disposable {
 
             @Override
             public void onComplete() {
-                listPointsInterest.addAll(Utils.removeDuplicates(listPointsInterestTemp));
+                listPointsInterest.addAll(UtilsGoogleMap.removeDuplicates(listPointsInterestTemp));
 
                 dispose();
 

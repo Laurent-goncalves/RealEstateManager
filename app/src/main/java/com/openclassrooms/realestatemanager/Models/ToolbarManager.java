@@ -145,10 +145,6 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
 
     private void configureOnClickListener(MapsActivity mapsActivity){
 
-        addButton.setOnClickListener(v -> {
-            mapsActivity.changeToEditMode(-1); // new property to add to BDD
-        });
-
         editButton.setOnClickListener(v -> {
             int propertyId = mapsActivity.getCurrentPropertyDisplayed();
             mapsActivity.changeToEditMode(propertyId); // edit property currently displayed
@@ -156,10 +152,6 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
     }
 
     private void configureOnClickListener(SearchActivity searchActivity){
-
-        addButton.setOnClickListener(v -> {
-            searchActivity.changeToEditMode(-1); // new property to add to BDD
-        });
 
         editButton.setOnClickListener(v -> {
             int propertyId = searchActivity.getCurrentPropertyDisplayed();
