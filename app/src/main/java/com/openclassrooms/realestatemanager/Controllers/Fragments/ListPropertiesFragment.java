@@ -103,27 +103,29 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
     private void configureFragment(Bundle savedInstanceState){
 
-        if(modeDevice.equals(MODE_TABLET)){ // ------------------ TABLET
+        if(baseActivityListener!=null){
+            if(modeDevice.equals(MODE_TABLET)){ // ------------------ TABLET
 
-            if(itemSelected!=-1){ // if one item is selected in the list
-                listProperties.get(itemSelected).setSelected(true);
+                if(itemSelected!=-1){ // if one item is selected in the list
+                    listProperties.get(itemSelected).setSelected(true);
+                }
+
+                if(!modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(LIST_FRAG) && savedInstanceState == null){ // if no item is selected, select the first one of the list
+                    showDisplayFragment(0);
+                } else if(modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(MAPS_FRAG) && savedInstanceState == null) {
+                    changeMarkerMap(Objects.requireNonNull(listProperties).get(0).getId());
+                }
+
+                // configure list of proporties
+                configureListProperties(itemSelected);
+
+            } else { // --------------------------------------------- PHONE
+                configureListProperties(-1);
             }
 
-            if(!modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(LIST_FRAG) && savedInstanceState == null){ // if no item is selected, select the first one of the list
-                showDisplayFragment(0);
-            } else if(modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(MAPS_FRAG) && savedInstanceState == null) {
-                changeMarkerMap(Objects.requireNonNull(listProperties).get(0).getId());
-            }
-
-            // configure list of proporties
-            configureListProperties(itemSelected);
-
-        } else { // --------------------------------------------- PHONE
-            configureListProperties(-1);
+            // configure buttons add and edit
+            baseActivityListener.getToolbarManager().setIconsToolbarListPropertiesMode(modeSelected);
         }
-
-        // configure buttons add and edit
-        baseActivityListener.getToolbarManager().setIconsToolbarListPropertiesMode(modeSelected);
     }
 
     public void removeSelectedItemInList(){
@@ -158,7 +160,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(listProperties!=null){
             if (listProperties.size() > 0) {
 
-                if(baseActivityListener!=null)
                     Utils.colorFragmentList(WHITE_COLOR,modeDevice, fragmentDisplayed,baseActivityListener.getBaseActivity());
 
                 if (context != null) {
@@ -176,12 +177,10 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
             } else {
                 recyclerView.setAdapter(null); // remove adapter and color in gray the fragment
-                if(baseActivityListener!=null)
                     Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
             }
         } else {
             recyclerView.setAdapter(null); // remove adapter and color in gray the fragment
-            if(baseActivityListener!=null)
                 Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
         }
     }
