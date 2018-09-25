@@ -241,11 +241,13 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     public void setInterestPoints(String interestPoints){
 
         // Enable button save and cancel
-        baseActivity.runOnUiThread(() -> {
-            interestView.setText(Utils.removeHooksFromString(interestPoints));
-            buttonSave.setEnabled(true);
-            buttonCancel.setEnabled(true);
-        });
+        if(baseActivity!=null){
+            baseActivity.runOnUiThread(() -> {
+                interestView.setText(Utils.removeHooksFromString(interestPoints));
+                buttonSave.setEnabled(true);
+                buttonCancel.setEnabled(true);
+            });
+        }
     }
 
     public void setAdapter(ImagesEditAdapter adapter) {

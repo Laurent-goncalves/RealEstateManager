@@ -218,7 +218,9 @@ public class SaveAndRestoreDataListPropertiesFrag {
             fragment.setCameraBounds(camBounds);
         }
 
-        baseActivityListener.setListProperties(listProperties);
+        if(baseActivityListener!=null)
+            baseActivityListener.setListProperties(listProperties);
+
         fragment.setListProperties(listProperties);
     }
 
@@ -233,7 +235,8 @@ public class SaveAndRestoreDataListPropertiesFrag {
               fragment.setSearchQuery(searchQuery);
         }
 
-        baseActivityListener.setListProperties(listProperties);
+        if(baseActivityListener!=null)
+            baseActivityListener.setListProperties(listProperties);
         fragment.setListProperties(listProperties);
     }
 
