@@ -15,6 +15,7 @@ import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 
 import java.util.List;
 
@@ -108,7 +109,7 @@ public class BaseImageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setExtraImage(String imagePath){
-        baseActivityListener.setImage(imagePath, image);
+        UtilsBaseActivity.setImage(imagePath, image, baseActivityListener.getBaseActivity());
         image.setVisibility(View.VISIBLE);
         addPhotoButton.setVisibility(View.GONE);
         imageProperty.setImagePath(imagePath);

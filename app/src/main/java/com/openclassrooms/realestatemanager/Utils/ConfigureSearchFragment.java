@@ -71,15 +71,21 @@ public class ConfigureSearchFragment {
     // ------------------------------------ CONFIGURATION SEARCHFRAGMENT ----------------------------------------
     // ----------------------------------------------------------------------------------------------------------
 
-    private void configureSearchFragment(){
+    public void configureSearchFragment(){
 
         configureDateSelector();
 
         // configure switch sold
-        soldSwitch.setChecked(query.getSoldStatus());
+        if(query.getSoldStatus()==null)
+            soldSwitch.setChecked(false);
+        else
+            soldSwitch.setChecked(query.getSoldStatus());
 
         // configure type property
-        listPropTypes.setSelection(Utils.getIndexFromList(query.getTypeProperty(), Arrays.asList(context.getResources().getStringArray(R.array.type_property))));
+        if(query.getTypeProperty()==null)
+            listPropTypes.setSelection(0);
+        else
+            listPropTypes.setSelection(Utils.getIndexFromList(query.getTypeProperty(), Arrays.asList(context.getResources().getStringArray(R.array.type_property))));
 
         // configure publication date start
         startPublishView.setText(query.getDatePublishStart());
@@ -90,18 +96,26 @@ public class ConfigureSearchFragment {
         // configure price inf
         if(query.getPriceInf()!=0)
             priceInfView.setText(String.valueOf(query.getPriceInf()));
+        else
+            priceInfView.setText(null);
 
         // configure price sup
         if(query.getPriceSup()!=0)
             priceSupView.setText(String.valueOf(query.getPriceSup()));
+        else
+            priceSupView.setText(null);
 
         // configure surface inf
         if(query.getSurfaceInf()!=0)
             surfaceInfView.setText(String.valueOf(query.getSurfaceInf()));
+        else
+            surfaceInfView.setText(null);
 
         // configure surface sup
         if(query.getSurfaceSup()!=0)
             surfaceSupView.setText(String.valueOf(query.getSurfaceSup()));
+        else
+            surfaceSupView.setText(null);
 
         // configure room number
         configureRoomNumberView();
@@ -307,6 +321,11 @@ public class ConfigureSearchFragment {
         new Handler().postDelayed(() -> button.setColorFilter(context.getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN), duration);
     }
 
+    @OnClick(R.id.buttonReset)
+    public void reset(){
+        UtilsBaseActivity.askForConfirmationToResetSearchQuery(searchFragment.getBaseActivityListener().getBaseActivity());
+    }
+
     @OnClick(R.id.buttonSearchCancel)
     public void cancel(){
         searchFragment.stopActivity();
@@ -316,5 +335,9 @@ public class ConfigureSearchFragment {
     public void search(){
         searchFragment.getBaseActivityListener().setSearchQuery(searchFragment.getSearchQuery());
         searchFragment.launchSearchProperties();
+    }
+
+    public void setQuery(SearchQuery query) {
+        this.query = query;
     }
 }

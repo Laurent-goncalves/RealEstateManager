@@ -4,36 +4,39 @@ import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.MapsActivityListener;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ConfigureMap;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataActivity;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MapsActivity extends BaseActivity {
+public class MapsActivity extends BaseActivity implements MapsActivityListener {
 
+    @BindView(R.id.fragment_maps_layout) FrameLayout mapsLayout;
+    @BindView(R.id.fragment_layout) ScrollView listPropMap;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
     private final static String MAPS_FRAG = "fragment_maps";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private static final String SHAREDPREFERENCES = "MAPSPREFERRENCES";
     private SharedPreferences sharedPreferences;
     private ScrollView displayLayout;
     private ConfigureMap mConfigureMap;
-    @BindView(R.id.fragment_maps_layout) FrameLayout mapsLayout;
-    @BindView(R.id.fragment_layout) ScrollView listPropMap;
-    @BindView(R.id.progressBar) ProgressBar progressBar;
 
 
     @Override
@@ -57,7 +60,7 @@ public class MapsActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,idProperty,cameraTarget,lastIdPropertyDisplayed,outState);
+        SaveAndRestoreDataActivity.SaveDataActivity(modeSelected,fragmentDisplayed,idProperty,cameraBounds,lastIdPropertyDisplayed,outState);
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -66,14 +69,16 @@ public class MapsActivity extends BaseActivity {
 
     private void configureFragment(Bundle savedInstanceState){
 
+        // Get sharedpreferences and set mode device
         sharedPreferences = getSharedPreferences(SHAREDPREFERENCES,MODE_PRIVATE);
-        setModeDevice();
+        UtilsBaseActivity.setModeDevice(this);
 
-        if(savedInstanceState!=null){ // restore data (after rotation)
+        if(savedInstanceState!=null){
 
+            // restore data (after rotation)
             SaveAndRestoreDataActivity.RestoreDataActivity(savedInstanceState,this);
-            mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this, idProperty);
 
+            // restore fragments
             if(modeDevice.equals(MODE_TABLET)){
                 listPropertiesFragment = (ListPropertiesFragment) getFragmentManager().findFragmentByTag(LIST_FRAG);
             }
@@ -89,19 +94,14 @@ public class MapsActivity extends BaseActivity {
                     break;
                 case MAPS_FRAG:
 
-                    displayMap(); // hide display and show map layout
+                    mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this, idProperty,true,cameraBounds);
 
                     // Define fragmentDisplayed and send it to listPropertiesFragment if exists (tablet mode)
-                    fragmentDisplayed = MAPS_FRAG;
                     if(listPropertiesFragment!=null)
                         listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
 
-                    // update icons in toolbar
-                    toolbarManager.setIconsToolbarMapsMode();
-                    progressBar.setVisibility(View.VISIBLE); // open progressBar
-
-                    mConfigureMap.launchMapConfiguration(true,cameraTarget, savedInstanceState);
-                    getToolbarManager().setIconsToolbarMapsMode();// configure buttons add and edit in toolbar
+                    // hide display and show map layout
+                    new Handler().postDelayed(this::displayMap, 500);
                     break;
             }
 
@@ -117,8 +117,6 @@ public class MapsActivity extends BaseActivity {
 
     @Override
     public void configureAndShowDisplayFragment(String modeSelected, int idProperty){
-
-        displayDetails(); // hide map and show display layout
 
         // change icons toolbar
         if(toolbarManager!=null)
@@ -144,6 +142,8 @@ public class MapsActivity extends BaseActivity {
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_position, displayFragment);
         fragmentTransaction.commit();
+
+        displayDetails(); // hide map and show display layout
     }
 
     public void configureAndShowMap() {
@@ -160,44 +160,20 @@ public class MapsActivity extends BaseActivity {
         progressBar.setVisibility(View.VISIBLE); // open progressBar
 
         // Launch map configuration
-        mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this,idProperty);
+        mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this, idProperty);
         mConfigureMap.setIdProperty(idProperty);
-        mConfigureMap.launchMapConfiguration(false, cameraTarget, null);
+        mConfigureMap.launchMapConfiguration(false, cameraBounds, null);
     }
 
     // --------------------------------------------------------------------------------------------------------
     // --------------------------------------- SWITCH MODE ----------------------------------------------------
     // --------------------------------------------------------------------------------------------------------
 
-    public void changeToMapMode(int idProperty){
-
-        this.idProperty = idProperty;
-        fragmentDisplayed = MAPS_FRAG;
-
-        // Change icons in toolbar
-        toolbarManager.setIconsToolbarMapsMode();
-
-        // in Tablet mode, update the list of properties
-        Property property = Utils.getPropertyFromList(idProperty,listProperties);
-
-        if(modeDevice.equals(MODE_TABLET)) {
-            getListPropertiesFragment().setFragmentDisplayed(fragmentDisplayed);
-            getListPropertiesFragment().changeSelectedItemInList(property.getId(), MAPS_FRAG);
-        }
-
-        // move camera to property location
-        if(property!=null){
-            LatLng position = new LatLng(property.getLat(),property.getLng());
-            mConfigureMap.setIdProperty(idProperty);
-            mConfigureMap.launchMapConfiguration(true, position, null);
-        }
-
-        displayMap();
-    }
-
     public void changeToDisplayMode(int idProperty){
 
         this.idProperty = idProperty;
+        this.lastIdPropertyDisplayed = idProperty;
+        fragmentDisplayed = DISPLAY_FRAG;
 
         // Change icons in toolbar
         toolbarManager.setIconsToolbarDisplayMode(MODE_DISPLAY_MAPS,modeDevice);
@@ -213,8 +189,9 @@ public class MapsActivity extends BaseActivity {
         configureAndShowDisplayFragment(MODE_DISPLAY_MAPS, idProperty);
     }
 
-    private void displayMap(){
+    public void displayMap(){
         fragmentDisplayed = MAPS_FRAG;
+        toolbarManager.setIconsToolbarMapsMode();
         mapsLayout.setVisibility(View.VISIBLE);
         displayLayout.setVisibility(View.GONE);
     }
@@ -231,13 +208,16 @@ public class MapsActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    configureAndShowMap();
+                    launchMapsActivity();
+                    finish();
                 } else {
-                    displayError(getApplicationContext().getResources().getString(R.string.give_permission));
+                    UtilsBaseActivity.displayError(getApplicationContext(),getApplicationContext().getResources().getString(R.string.give_permission));
                 }
                 break;
             }
@@ -249,13 +229,15 @@ public class MapsActivity extends BaseActivity {
         if(fragmentDisplayed!=null){
             switch (fragmentDisplayed) {
                 case EDIT_FRAG:
-                    askForConfirmationToLeaveEditMode(MODE_DISPLAY_MAPS, idProperty);
+                    UtilsBaseActivity.askForConfirmationToLeaveEditMode(this, MODE_DISPLAY_MAPS, modeDevice, fragmentDisplayed, idProperty);
                     break;
                 case MAPS_FRAG:
+                    launchMainActivity();
                     stopActivity();
                     break;
                 default:
-                    changeToMapMode(idProperty);
+                    mConfigureMap = new ConfigureMap(getApplicationContext(), modeDevice,this, idProperty,true, cameraBounds);
+                    displayMap();
                     break;
             }
         } else
@@ -278,9 +260,17 @@ public class MapsActivity extends BaseActivity {
         return mConfigureMap;
     }
 
-    public void setCameraTarget(LatLng cameraTarget) {
-        this.cameraTarget = cameraTarget;
+    public void setConfigureMap(ConfigureMap configureMap) {
+        mConfigureMap = configureMap;
     }
+
+    public void setCameraBounds(LatLngBounds cameraBounds) {
+        this.cameraBounds = cameraBounds;
+    }
+
+    public MapsActivity getMapsActivity(){
+        return this;
+    }
+
+
 }
-
-

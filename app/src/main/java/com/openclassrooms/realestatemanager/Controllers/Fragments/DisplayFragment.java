@@ -16,13 +16,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackImageChange;
+import com.openclassrooms.realestatemanager.Models.MapsActivityListener;
 import com.openclassrooms.realestatemanager.Models.SimulationTool;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.ConfigureMap;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataDisplayFragment;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 import com.openclassrooms.realestatemanager.Views.ImagesDisplayAdapter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -49,8 +51,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     @BindView(R.id.sale_date_text) TextView soldView;
     @BindView(R.id.sold_date_layout) LinearLayout soldDateLayout;
     @BindView(R.id.buttonReturn) Button buttonReturn;
-
     private CallbackImageChange callbackImageChange;
+    private MapsActivityListener mapsActivityListener;
     private int positionImageSelected;
     private ImagesDisplayAdapter adapter;
 
@@ -95,6 +97,10 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         if (context instanceof BaseActivityListener) {
             baseActivityListener = (BaseActivityListener) context;
         }
+
+        if(context instanceof MapsActivityListener){
+            mapsActivityListener = (MapsActivityListener) context;
+        }
     }
 
     @Override
@@ -117,7 +123,9 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                     baseActivityListener.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:
-                    mapsActivity.changeToMapMode(idProperty);
+                    mapsActivityListener.setConfigureMap(new ConfigureMap(context, modeDevice,mapsActivityListener.getMapsActivity(),
+                            idProperty,true, mapsActivityListener.getCameraBounds()));
+                    mapsActivityListener.displayMap();
                     break;
             }
         } else {     // ----------- PHONE MODE
@@ -130,7 +138,9 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
                     baseActivityListener.returnToSearchCriteria();
                     break;
                 case MODE_DISPLAY_MAPS:
-                    mapsActivity.changeToMapMode(idProperty);
+                    mapsActivityListener.setConfigureMap(new ConfigureMap(context, modeDevice,mapsActivityListener.getMapsActivity(),
+                            idProperty,true, mapsActivityListener.getCameraBounds()));
+                    mapsActivityListener.displayMap();
                     break;
             }
         }
@@ -163,17 +173,13 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
             buttonReturn.setVisibility(View.VISIBLE);
             buttonReturn.setText(buttonReturnText);
         }
-
-        if (modeDevice.equals(MODE_TABLET) && modeSelected.equals(MODE_DISPLAY_MAPS)) {
-            mapsActivity = (MapsActivity) getActivity();
-        }
     }
 
     private void configureViews() {
 
         // set the main image
         if (property.getMainImagePath() != null && baseActivityListener != null)
-            baseActivityListener.setImage(property.getMainImagePath(), mainImageView);
+            UtilsBaseActivity.setImage(property.getMainImagePath(), mainImageView, baseActivityListener.getBaseActivity());
 
         // set the type of property
         String typeProp = property.getType();
@@ -254,8 +260,12 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
     public void changeMainImage(int position) {
         positionImageSelected = position;
         if (listImages.get(position) != null && baseActivityListener != null)
-            baseActivityListener.setImage(listImages.get(position).getImagePath(), mainImageView);
+            UtilsBaseActivity.setImage(listImages.get(position).getImagePath(), mainImageView,baseActivityListener.getBaseActivity());
     }
+
+    // ---------------------------------------------------------------------------------------------------
+    // ---------------------------------  GETTER AND SETTERS  --------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     public void setPositionImageSelected(int positionImageSelected) {
         this.positionImageSelected = positionImageSelected;

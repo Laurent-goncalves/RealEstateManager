@@ -26,7 +26,15 @@
     <string name="apartment">Apartment</string>
     <string name="write_a_description">Write a description</string>
     <string name="add_a_photo">Add a photo</string>
-
+    <string name="to">to</string>
+    <string name="number_of_pictures_min">Number of pictures (min):</string>
+    <string name="number_of_rooms_min">Number of rooms (min):</string>
+    <string name="search">SEARCH</string>
+    <string name="search_properties">SEARCH PROPERTIES</string>
+    <string name="maison_pictures">maison_pictures</string>
+    <string name="go_back_to_main_page">Go back to main page</string>
+    <string name="simulation_loan">Simulation loan</string>
+    <string name="button_simulation">button simulation</string>
     <string name="error_internet">No internet connection available</string>
 
     <string-array name="type_property">
@@ -85,7 +93,7 @@
     <string name="ok">OK</string>
     <string name="warning_title">Warning!</string>
     <string name="change_item_list">Are you sure to change of property ? All changes will be discarded</string>
-    <string name="leave_edit_mode">Are you sure to edit mode ? All changes will be discarded</string>
+    <string name="leave_edit_mode">Are you sure to leave edit mode ? All changes will be discarded</string>
     <string name="error_address_not_found">Address not found</string>
     <string name="error_image_recovering">Image cannot be recovered.</string>
     <string name="give_permission">Please give your permission</string>
@@ -97,7 +105,6 @@
     <string name="check_main_image">Please select a main image for the property.</string>
     <string name="check_sold_date">As the property has been sold, please enter a date of sale.</string>
     <string name="check_sold_status">A date of sale is indicated but the property has not the status "sold". Please check the status.</string>
-
     <string name="snackbar_sucess_add">New property successfully saved</string>
     <string name="snackbar_sucess_update">Property successfully updated</string>
 
@@ -119,24 +126,12 @@
     <string name="radius_camera">1000</string>
     <string name="return_to_the_search">Return to search query</string>
     <string name="no_result_found">No result found for these criteria.</string>
+    <string name="reset">Reset</string>
+    <string name="reset_confirmation">Are you sure that you want to reset all criteria?</string>
 
     <!-- MAPS -->
     <string name="error_geolocalization">Error geolocalization</string>
     <string name="error_current_location">Error to get current location</string>
     <string name="error_map_init">Problem to initialize the map</string>
-
-
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="to">to</string>
-    <string name="number_of_pictures_min">Number of pictures (min):</string>
-    <string name="number_of_rooms_min">Number of rooms (min):</string>
-    <string name="search">SEARCH</string>
-    <string name="search_properties">SEARCH PROPERTIES</string>
-    <string name="maison_pictures">maison_pictures</string>
-    <string name="go_back_to_main_page">Go back to main page</string>
-    <string name="simulation_loan">Simulation loan</string>
-    <string name="button_simulation">button simulation</string>
 
 </resources>

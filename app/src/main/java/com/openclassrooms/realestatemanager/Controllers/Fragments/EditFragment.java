@@ -27,6 +27,7 @@ import com.openclassrooms.realestatemanager.Utils.CheckAndSaveEdit;
 import com.openclassrooms.realestatemanager.Utils.ConfigureEditFragment;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataEditFragment;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 import com.openclassrooms.realestatemanager.Views.ImageUpdateViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesAddViewHolder;
 import com.openclassrooms.realestatemanager.Views.ImagesEditAdapter;
@@ -44,6 +45,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     @BindView(R.id.main_image_selected) ImageView mainImage;
     @BindView(R.id.buttonCancel) Button buttonCancel;
     @BindView(R.id.buttonSave) Button buttonSave;
+    private final static String EDIT_FRAG = "fragment_edit";
     private TextView datePublish;
     private TextView dateSold;
     private CallbackImageSelect mCallbackImageSelect;
@@ -104,7 +106,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @OnClick(R.id.buttonCancel)
     public void onClickListenerButtonCancel() {
-        baseActivityListener.askForConfirmationToLeaveEditMode(modeSelected,idProperty);
+        UtilsBaseActivity.askForConfirmationToLeaveEditMode(baseActivityListener.getBaseActivity(), modeSelected, modeDevice, EDIT_FRAG, idProperty);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -129,7 +131,6 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     }
 
     private void configureViews(){
-
         configFragment = new ConfigureEditFragment(view,this,context,property,listImages,baseActivityListener);
     }
 
@@ -145,7 +146,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permissionAccessStorage = true;
-                    baseActivityListener.getMainImage();
+                    UtilsBaseActivity.getMainImage(baseActivityListener.getBaseActivity());
                 } else {
                     Toast.makeText(context, context.getResources().getString(R.string.give_permission), Toast.LENGTH_LONG).show();
                 }
@@ -156,7 +157,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permissionAccessStorage = true;
-                    baseActivityListener.getExtraImage(viewHolderPosition);
+                    UtilsBaseActivity.getExtraImage(baseActivityListener.getBaseActivity(),viewHolderPosition);
                 } else {
                     Toast.makeText(context, context.getResources().getString(R.string.give_permission), Toast.LENGTH_LONG).show();
                 }
@@ -167,18 +168,18 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
 
     @OnClick(R.id.main_image_selector)
     public void onClickListener(){
-        baseActivityListener.getMainImage();
+        UtilsBaseActivity.getMainImage(baseActivityListener.getBaseActivity());
     }
 
     @Override
     public void getExtraImageFromGallery(int viewHolderPosition) {
         this.viewHolderPosition = viewHolderPosition;
-        baseActivityListener.getExtraImage(viewHolderPosition);
+        UtilsBaseActivity.getExtraImage(baseActivityListener.getBaseActivity(),viewHolderPosition);
     }
 
     @Override
     public void alertDeleteImage(int viewHolderPosition) {
-        baseActivityListener.displayAlertDeletion(viewHolderPosition);
+        UtilsBaseActivity.askForConfirmationToDeleteImage(baseActivityListener.getBaseActivity(), viewHolderPosition);
     }
 
     public void proceedToDeletion(int viewHolderPosition){
@@ -230,7 +231,7 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
     public void setMainImage(String imagePath){
         mainImagePath = imagePath;
         property.setMainImagePath(mainImagePath);
-        baseActivityListener.setImage(imagePath,mainImage);
+        UtilsBaseActivity.setImage(imagePath,mainImage,baseActivityListener.getBaseActivity());
     }
 
     public void setMainImagePath(String mainImagePath) {

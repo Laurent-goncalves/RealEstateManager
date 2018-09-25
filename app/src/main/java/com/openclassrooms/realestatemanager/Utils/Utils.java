@@ -10,22 +10,18 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.provider.MediaStore;
 import android.widget.ScrollView;
-
 import com.openclassrooms.realestatemanager.Controllers.Activities.BaseActivity;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
-
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+
 
 /**
  * Created by Philippe on 21/02/2018.
@@ -33,6 +29,7 @@ import java.util.Set;
 
 public class Utils {
 
+    private final static String LIST_FRAG = "fragment_list";
     private final static String MODE_TABLET = "mode_tablet";
 
     // -------------------------------------------------------------------------------------------------
@@ -272,21 +269,23 @@ public class Utils {
         return newText;
     }
 
-    public static void colorFragmentList(String color, String modeDevice, BaseActivity baseActivity){
+    public static void colorFragmentList(String color, String modeDevice, String fragmentDisplayed, BaseActivity baseActivity){
 
-        ScrollView viewToColor;
+        ScrollView viewToColor = null;
 
         // Find fragment to color
         if(modeDevice.equals(MODE_TABLET))
             viewToColor = baseActivity.findViewById(R.id.fragment_list_layout);
-        else
+        else if(fragmentDisplayed.equals(LIST_FRAG))
             viewToColor = baseActivity.findViewById(R.id.fragment_layout);
 
         // Color the fragment
-        if(color.equals("GRAY")){
-            viewToColor.setBackgroundColor(baseActivity.getApplicationContext().getResources().getColor(R.color.colorPrimaryDark));
-        } else {
-            viewToColor.setBackgroundColor(Color.WHITE);
+        if(viewToColor!=null){
+            if(color.equals("GRAY")){
+                viewToColor.setBackgroundColor(baseActivity.getApplicationContext().getResources().getColor(R.color.colorPrimaryDark));
+            } else {
+                viewToColor.setBackgroundColor(Color.WHITE);
+            }
         }
     }
 }

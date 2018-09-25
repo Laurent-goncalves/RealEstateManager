@@ -8,6 +8,8 @@ import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import static android.view.View.GONE;
@@ -29,7 +31,7 @@ public class ImagesDisplayViewHolder extends RecyclerView.ViewHolder {
     public void configureImagesViews(ImageProperty imageProperty, BaseActivityListener baseActivityListener, int positionSelected) {
 
         // set image
-        baseActivityListener.setImage(imageProperty.getImagePath(),image);
+        UtilsBaseActivity.setImage(imageProperty.getImagePath(),image, baseActivityListener.getBaseActivity());
 
         // set title and layout
         finalizeLayoutImage(imageProperty, positionSelected);

@@ -4,12 +4,15 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
+import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,19 +20,21 @@ import java.util.List;
 
 public class CheckAndSaveEdit {
 
-    private EditFragment editFragment;
-    private List<ImageProperty> newlistImages;
-    private List<ImageProperty> oldlistImages;
+    private final static String DISPLAY_FRAG = "fragment_display";
     private static final String MODE_UPDATE = "UPDATE";
     private static final String MODE_DISPLAY = "mode_display";
     private final static String MODE_TABLET = "mode_tablet";
-    private Context context;
-    private Property propertyToSave;
-    private int idProp;
     private BaseActivityListener baseActivityListener;
     private PropertyContentProvider propertyContentProvider;
     private ImageContentProvider imageContentProvider;
+    private EditFragment editFragment;
+    private List<ImageProperty> newlistImages;
+    private List<ImageProperty> oldlistImages;
+    private Context context;
+    private Property propertyToSave;
+    private int idProp;
     private String typeEdit;
+
 
     public CheckAndSaveEdit(EditFragment editFragment, Context context, BaseActivityListener baseActivityListener, String typeEdit) {
         this.editFragment = editFragment;
@@ -62,23 +67,23 @@ public class CheckAndSaveEdit {
                                         if(propertyToSave.getMainImagePath().length()> 0)
                                             answer1=true;
                                         else
-                                            baseActivityListener.displayError(context.getResources().getString(R.string.check_main_image));
+                                            UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_main_image));
                                     } else
-                                        baseActivityListener.displayError(context.getResources().getString(R.string.check_main_image));
+                                        UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_main_image));
                                 } else
-                                    baseActivityListener.displayError(context.getResources().getString(R.string.check_description));
+                                    UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_description));
                             } else
-                                baseActivityListener.displayError(context.getResources().getString(R.string.check_description));
+                                UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_description));
                         } else
-                            baseActivityListener.displayError(context.getResources().getString(R.string.check_room_number));
+                            UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_room_number));
                     } else
-                        baseActivityListener.displayError(context.getResources().getString(R.string.check_date_publish));
+                        UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_date_publish));
                 } else
-                    baseActivityListener.displayError(context.getResources().getString(R.string.check_date_publish));
+                    UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_date_publish));
             } else
-                baseActivityListener.displayError(context.getResources().getString(R.string.check_surface));
+                UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_surface));
         } else
-            baseActivityListener.displayError(context.getResources().getString(R.string.check_price));
+            UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_price));
 
         // Check if the property has been sold, but information are missing
         Boolean answer2 = true;
@@ -87,16 +92,16 @@ public class CheckAndSaveEdit {
             if(propertyToSave.getDateSold()!=null){
                 if(propertyToSave.getDateSold().length() == 0 ){ // if property sold but no date indicated, inform user
                     answer2=false;
-                    baseActivityListener.displayError(context.getResources().getString(R.string.check_sold_date));
+                    UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_sold_date));
                 }
             } else {
                 answer2=false;
-                baseActivityListener.displayError(context.getResources().getString(R.string.check_sold_date));
+                UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_sold_date));
             }
         } else if(propertyToSave.getDateSold()!=null){
             if(propertyToSave.getDateSold().length() > 0 && !propertyToSave.getSold()){ // if date of sale indicated but property not set to "sold", inform user
                 answer2=false;
-                baseActivityListener.displayError(context.getResources().getString(R.string.check_sold_status));
+                UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.check_sold_status));
             }
         }
 
@@ -122,12 +127,12 @@ public class CheckAndSaveEdit {
             // display property and refresh the list of properties
             baseActivityListener.changeToDisplayMode(idProp);
 
-            // In tablet mode, change property selected in the list
-            if(editFragment.getModeSelected().equals(MODE_DISPLAY) && editFragment.getModeDevice().equals(MODE_TABLET))
-                baseActivityListener.changePropertySelectedInList(idProp);
+            // In tablet mode, update list of properties
+            if(editFragment.getModeDevice().equals(MODE_TABLET))
+                launchRefreshListProperties(idProp,editFragment.getModeSelected());
 
             // Message to the user
-            baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_update));
+            UtilsBaseActivity.showSnackBar(baseActivityListener.getBaseActivity(), context.getResources().getString(R.string.snackbar_sucess_update));
 
         } else { // --------------------------- NEW PROPERTY -------------------------------------------------
             // insert new property
@@ -144,11 +149,12 @@ public class CheckAndSaveEdit {
             if(editFragment.getModeSelected().equals(MODE_DISPLAY) && editFragment.getModeDevice().equals(MODE_TABLET))
                 baseActivityListener.changePropertySelectedInList((int) ContentUris.parseId(uri));
 
-            /*if(editFragment.getModeDevice().equals(MODE_TABLET))
-                baseActivityListener.getListPropertiesFragment().;*/
+            // In tablet mode, update list of properties
+            if(editFragment.getModeDevice().equals(MODE_TABLET))
+                launchRefreshListProperties((int) ContentUris.parseId(uri), editFragment.getModeSelected());
 
             // Message to the user
-            baseActivityListener.showSnackBar(context.getResources().getString(R.string.snackbar_sucess_add));
+            UtilsBaseActivity.showSnackBar(baseActivityListener.getBaseActivity(),context.getResources().getString(R.string.snackbar_sucess_add));
         }
     }
 
@@ -274,5 +280,23 @@ public class CheckAndSaveEdit {
                 }
             }
         }
+    }
+
+    // ------------------------------------------------------------------------------------------------------------
+    // ---------------------------- 5. REFRESH LIST PROPERTIES (TABLET MODE) --------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+
+    private void launchRefreshListProperties(int idProperty, String modeSelected){
+        Bundle bundle = createBundleForListPropertiesFragment(idProperty, modeSelected);
+        baseActivityListener.refreshListPropertiesFragment(bundle,modeSelected);
+    }
+
+    private Bundle createBundleForListPropertiesFragment(int idProperty, String modeSelected){
+
+        String modeDevice = editFragment.getModeDevice();
+        SearchQuery searchQuery=baseActivityListener.getSearchQuery();
+        LatLngBounds cameraBounds = baseActivityListener.getCameraBounds();
+
+        return SaveAndRestoreDataListPropertiesFrag.createBundleForListPropertiesFragment(idProperty,modeDevice,modeSelected,DISPLAY_FRAG,cameraBounds,searchQuery);
     }
 }

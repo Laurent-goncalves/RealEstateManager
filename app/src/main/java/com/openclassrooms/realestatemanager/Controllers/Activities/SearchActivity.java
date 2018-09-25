@@ -11,13 +11,14 @@ import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataActivity;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataSearchFragment;
 import com.openclassrooms.realestatemanager.Utils.Utils;
-
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 import butterknife.ButterKnife;
 
 
 public class SearchActivity extends BaseActivity {
 
     private static final String MODE_SEARCH = "mode_search";
+    private final static String GRAY_COLOR = "GRAY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +39,21 @@ public class SearchActivity extends BaseActivity {
 
     private void configureFragment(Bundle savedInstanceState){
 
-        setModeDevice();
+        //set device mode
+        UtilsBaseActivity.setModeDevice(this);
 
         if(savedInstanceState!=null){ // restore data
             SaveAndRestoreDataActivity.RestoreDataActivity(savedInstanceState,this);
 
             if(modeDevice.equals(MODE_TABLET)){ // in tablet mode, we restore listPropertiesFragment
                 listPropertiesFragment = (ListPropertiesFragment) getFragmentManager().findFragmentByTag(LIST_FRAG);
+
+                if(listPropertiesFragment==null){
+                    configureAndShowListPropertiesFragment(modeSelected);
+                }
             }
 
-            switch (fragmentDisplayed) { // the
+            switch (fragmentDisplayed) {
                 case EDIT_FRAG:
                     editFragment = (EditFragment) getFragmentManager().findFragmentByTag(EDIT_FRAG);
                     break;
@@ -55,6 +61,7 @@ public class SearchActivity extends BaseActivity {
                     displayFragment = (DisplayFragment) getFragmentManager().findFragmentByTag(DISPLAY_FRAG);
                     break;
                 case SEARCH_FRAG:
+                    Utils.colorFragmentList(GRAY_COLOR,modeDevice,fragmentDisplayed,this);
                     searchFragment = (SearchFragment) getFragmentManager().findFragmentByTag(SEARCH_FRAG);
                     searchFragment.setSearchQuery(searchQuery);
                     break;
@@ -62,6 +69,7 @@ public class SearchActivity extends BaseActivity {
 
         } else { // display init configuration
             idProperty=-1;
+            Utils.colorFragmentList(GRAY_COLOR,modeDevice,SEARCH_FRAG,this);
             configureAndShowSearchFragment();
         }
     }
@@ -70,7 +78,6 @@ public class SearchActivity extends BaseActivity {
 
         fragmentDisplayed = SEARCH_FRAG;
         searchFragment = new SearchFragment();
-        Utils.colorFragmentList("GRAY",modeDevice,this);
 
         if(listPropertiesFragment!=null)
             listPropertiesFragment.setFragmentDisplayed(fragmentDisplayed);
@@ -91,7 +98,7 @@ public class SearchActivity extends BaseActivity {
     @Override
     public void onBackPressed(){
         if(fragmentDisplayed.equals(EDIT_FRAG))
-            askForConfirmationToLeaveEditMode(MODE_SEARCH, idProperty);
+            UtilsBaseActivity.askForConfirmationToLeaveEditMode(this,MODE_SEARCH,modeDevice,fragmentDisplayed, idProperty);
         else if(fragmentDisplayed.equals(DISPLAY_FRAG) && modeDevice.equals(MODE_PHONE))
             configureAndShowListPropertiesFragment(MODE_SEARCH);
         else
@@ -103,9 +110,4 @@ public class SearchActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
         SaveAndRestoreDataActivity.SaveDataActivity(MODE_SEARCH, fragmentDisplayed, idProperty, lastIdPropertyDisplayed, searchQuery, outState);
     }
-
-    // --------------------------------------------------------------------------------------------------------
-    // ------------------------------------ GETTER AND SETTERS ------------------------------------------------
-    // --------------------------------------------------------------------------------------------------------
-
 }

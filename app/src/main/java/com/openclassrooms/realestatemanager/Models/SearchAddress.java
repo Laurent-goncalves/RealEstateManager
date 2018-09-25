@@ -21,6 +21,7 @@ import com.openclassrooms.realestatemanager.Models.SuggestionsLatLng.Suggestions
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ApiStream;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -186,11 +187,15 @@ public class SearchAddress implements Disposable{
     }
 
     public void displayListPredictions(Boolean submit) {
+
+        // recover list suggestions in array table
         String[] listSuggArray = listSuggestions.toArray(new String[listSuggestions.size()]);
 
+        // create an array adapter and fill it with table of suggestions
         ArrayAdapter<String> autocompleteAdapter = new ArrayAdapter<>(baseActivity, android.R.layout.simple_dropdown_item_1line, listSuggArray);
         searchAutoComplete.setAdapter(autocompleteAdapter);
 
+        // if the user has clicked on submit button from keyboard, select the first suggestion of the list (if exists)
         if(submit && listSuggestions.size()>=1){
             searchAutoComplete.setText(listSuggestions.get(0));
 
@@ -201,7 +206,7 @@ public class SearchAddress implements Disposable{
 
             launchLatLngSearch(listSuggArray[0]);
         } else if(submit)
-            baseActivity.displayError(context.getResources().getString(R.string.error_address_not_found));
+            UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.error_address_not_found));
     }
 
     private void buildListSuggestions(Suggestions suggestions){
@@ -225,7 +230,7 @@ public class SearchAddress implements Disposable{
         if(editFragment!=null) {
             editFragment.getBaseActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
         } else if(searchFragment!=null){
-            searchFragment.getSearchActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
+            searchFragment.getBaseActivityListener().getBaseActivity().runOnUiThread(() -> searchAutoComplete.setText(address));
         }
 
         // the button save is disabled
@@ -330,7 +335,7 @@ public class SearchAddress implements Disposable{
     // --------------------------------------------------------------------------------------------------------
 
     private void launchSearchInterestPoints(EditFragment editFragment, LatLng latLng){
-        new ListPointsInterest(apiKeyPredic,latLng,"1000",context, editFragment);
+        new ListPointsInterest(apiKeyPredic,latLng,context.getResources().getString(R.string.radius),context, editFragment);
     }
 
     // -------------------------------------------------------------------------------------------------------
@@ -363,11 +368,11 @@ public class SearchAddress implements Disposable{
                 return null;
             }
         }
-    }
 
-    public static void displayError(String exception, Context context){
-        String text = context.getResources().getString(R.string.error_static_map_address) + "\n" + exception;
-        Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
-        toast.show();
+        public static void displayError(String exception, Context context){
+            String text = context.getResources().getString(R.string.error_static_map_address) + "\n" + exception;
+            Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 }

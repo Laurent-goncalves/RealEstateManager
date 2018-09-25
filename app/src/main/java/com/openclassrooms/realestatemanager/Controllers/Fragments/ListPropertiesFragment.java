@@ -1,7 +1,6 @@
 package com.openclassrooms.realestatemanager.Controllers.Fragments;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,14 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ScrollView;
-
-import com.google.android.gms.maps.model.LatLng;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
+import com.openclassrooms.realestatemanager.Models.MapsActivityListener;
 import com.openclassrooms.realestatemanager.Models.SearchQuery;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataListPropertiesFrag;
 import com.openclassrooms.realestatemanager.Utils.Utils;
@@ -24,32 +19,35 @@ import com.openclassrooms.realestatemanager.Views.PropertiesRecyclerViewAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
 import java.util.List;
+import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
 public class ListPropertiesFragment extends Fragment implements CallbackListProperties {
 
-    private List<Property> listProperties;
-    private CallbackListProperties callbackListProperties;
-    private MapsActivity mapsActivity;
-    private SearchActivity searchActivity;
-    private PropertiesRecyclerViewAdapter adapter;
-    private Context context;
-    private String modeDevice;
-    private String fragmentDisplayed;
-    private BaseActivityListener baseActivityListener;
+    @BindView(R.id.list_properties_recycler_view) RecyclerView recyclerView;
     private final static String LIST_FRAG = "fragment_list";
     private final static String MODE_TABLET = "mode_tablet";
     private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
     private static final String MODE_SEARCH = "mode_search";
     private static final String MODE_DISPLAY = "mode_display";
     private final static String DISPLAY_FRAG = "fragment_display";
+    private final static String MAPS_FRAG = "fragment_maps";
+    private final static String GRAY_COLOR = "GRAY";
+    private final static String WHITE_COLOR = "WHITE";
+    private CallbackListProperties callbackListProperties;
+    private BaseActivityListener baseActivityListener;
+    private MapsActivityListener mapsActivityListener;
+    private PropertiesRecyclerViewAdapter adapter;
+    private Context context;
+    private String modeDevice;
+    private String fragmentDisplayed;
+    private List<Property> listProperties;
     private String modeSelected;
     private int itemSelected;
-    @BindView(R.id.list_properties_recycler_view) RecyclerView recyclerView;
     private SearchQuery searchQuery;
-    private LatLng cameraTarget;
+    private LatLngBounds cameraBounds;
 
 
     public ListPropertiesFragment() {
@@ -77,8 +75,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                 SaveAndRestoreDataListPropertiesFrag.recoverDatasSearchActivity(getArguments(),savedInstanceState,this,context,baseActivityListener);
                 break;
         }
-
-        recoverActivities();
     }
 
     @Override
@@ -92,11 +88,11 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         // Configure fragment
         if(listProperties!=null){
             if(listProperties.size()>0)
-                configureFragment();
+                configureFragment(savedInstanceState);
             else
-                Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
+                Utils.colorFragmentList(GRAY_COLOR,modeDevice,fragmentDisplayed, baseActivityListener.getBaseActivity());
         } else
-            Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
+            Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
 
         return view;
     }
@@ -105,7 +101,7 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
     // --------------------------------------  CONFIGURE FRAGMENT  ------------------------------------------
     // ------------------------------------------------------------------------------------------------------
 
-    private void configureFragment(){
+    private void configureFragment(Bundle savedInstanceState){
 
         if(modeDevice.equals(MODE_TABLET)){ // ------------------ TABLET
 
@@ -113,10 +109,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                 listProperties.get(itemSelected).setSelected(true);
             }
 
-            if(!modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(LIST_FRAG)){ // if no item is selected, select the first one of the list
+            if(!modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(LIST_FRAG) && savedInstanceState == null){ // if no item is selected, select the first one of the list
                 showDisplayFragment(0);
+            } else if(modeSelected.equals(MODE_DISPLAY_MAPS) && fragmentDisplayed.equals(MAPS_FRAG) && savedInstanceState == null) {
+                changeMarkerMap(Objects.requireNonNull(listProperties).get(0).getId());
             }
 
+            // configure list of proporties
             configureListProperties(itemSelected);
 
         } else { // --------------------------------------------- PHONE
@@ -124,7 +123,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         }
 
         // configure buttons add and edit
-        //if(!modeDevice.equals(MODE_TABLET))
         baseActivityListener.getToolbarManager().setIconsToolbarListPropertiesMode(modeSelected);
     }
 
@@ -146,24 +144,12 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
         this.fragmentDisplayed=fragmentDisplayed;
 
-        int counter = 0;
-
-        if(listProperties!=null && adapter!=null){
-            if(listProperties.size()>0){
-                for(Property property : listProperties){
-                    if(property.getId()==idProperty) {
-                        property.setSelected(true);
-                        itemSelected = counter;
-                        break;
-                    } else
-                        property.setSelected(false);
-
-                    counter++;
-                }
-            }
-
+        if(idProperty!=-1 && listProperties!=null){
+            itemSelected = Utils.getIndexPropertyFromList(idProperty, listProperties);
+            listProperties.get(itemSelected).setSelected(true);
             configureListProperties(itemSelected);
-        }
+        } else
+            configureListProperties(-1);
     }
 
     public void configureListProperties(int position){
@@ -172,12 +158,15 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(listProperties!=null){
             if (listProperties.size() > 0) {
 
-                Utils.colorFragmentList("WHITE",modeDevice,baseActivityListener.getBaseActivity());
+                Utils.colorFragmentList(WHITE_COLOR,modeDevice, fragmentDisplayed,baseActivityListener.getBaseActivity());
 
                 if (context != null) {
 
+                    if(position>=0)
+                        listProperties.get(position).setSelected(true);
+
                     // Create adapter passing in the sample user data
-                    adapter = new PropertiesRecyclerViewAdapter(this,listProperties, context, position, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
+                    adapter = new PropertiesRecyclerViewAdapter(this, listProperties, context, position, callbackListProperties, baseActivityListener, modeSelected, modeDevice);
                     // Attach the adapter to the recyclerview to populate items
                     recyclerView.setAdapter(adapter);
                     // Set layout manager to position the items
@@ -185,10 +174,12 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                 }
 
             } else {
-                Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
+                recyclerView.setAdapter(null); // remove adapter and color in gray the fragment
+                Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
             }
         } else {
-            Utils.colorFragmentList("GRAY",modeDevice,baseActivityListener.getBaseActivity());
+            recyclerView.setAdapter(null); // remove adapter and color in gray the fragment
+            Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
         }
     }
 
@@ -207,9 +198,11 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         baseActivityListener.setCurrentPositionDisplayed(idProp);
 
         if(modeSelected.equals(MODE_DISPLAY_MAPS)){
-            mapsActivity.getConfigureMap().centerToMarker(idProp);
-            mapsActivity.getConfigureMap().setIdProperty(idProp);
+            mapsActivityListener.getConfigureMap().selectMarker(idProp); // select marker in the map
+            mapsActivityListener.getConfigureMap().setIdProperty(idProp);
         }
+
+        changeSelectedItemInList(idProp,fragmentDisplayed); // change item selected in the list
 
         if(fragmentDisplayed.equals(DISPLAY_FRAG))
             showDisplayFragment(Utils.getIndexPropertyFromList(idProp,listProperties));
@@ -222,35 +215,56 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(context instanceof BaseActivityListener){
             baseActivityListener = (BaseActivityListener) context;
         }
+
+        if(context instanceof MapsActivityListener){
+            mapsActivityListener = (MapsActivityListener) context;
+        }
     }
 
     // ------------------------------------------------------------------------------------------------------
     // --------------------------------------  SAVE & RESTORE DATAS  ----------------------------------------
     // ------------------------------------------------------------------------------------------------------
 
-    private void recoverActivities(){
-        if(getModeSelected().equals(MODE_SEARCH) && getModeDevice().equals(MODE_TABLET))
-            setSearchActivity((SearchActivity) getActivity());
+    public void refreshListProperties(Bundle bundle, String modeSelected){
 
-        if(getModeSelected().equals(MODE_DISPLAY_MAPS) && getModeDevice().equals(MODE_TABLET))
-            setMapsActivity((MapsActivity) getActivity());
+        this.modeSelected = modeSelected;
+
+        switch(modeSelected){
+            case MODE_DISPLAY_MAPS:
+                SaveAndRestoreDataListPropertiesFrag.recoverDatasMapsActivity(bundle,null,this, context, baseActivityListener);
+                break;
+            case MODE_DISPLAY:
+                SaveAndRestoreDataListPropertiesFrag.recoverDatasMainActivity(bundle, null,this, context, baseActivityListener);
+                break;
+            case MODE_SEARCH:
+                SaveAndRestoreDataListPropertiesFrag.recoverDatasSearchActivity(bundle, null,this, context, baseActivityListener);
+                break;
+        }
+        configureListProperties(itemSelected);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        int idToSave;
+
+        if(itemSelected<listProperties.size() && itemSelected>=0)
+            idToSave = listProperties.get(itemSelected).getId();
+        else
+            idToSave = -1;
+
         switch(modeSelected){
             case MODE_DISPLAY_MAPS:
-                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice, cameraTarget);
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, idToSave, modeSelected, fragmentDisplayed, modeDevice, cameraBounds);
                 break;
             case MODE_DISPLAY:
-                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice);
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, idToSave, modeSelected, fragmentDisplayed,modeDevice);
                 break;
             case MODE_SEARCH:
-                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, itemSelected, modeSelected, fragmentDisplayed,modeDevice,searchQuery);
+                SaveAndRestoreDataListPropertiesFrag.saveDatas(outState, idToSave, modeSelected, fragmentDisplayed,modeDevice,searchQuery);
                 break;
         }
-
     }
 
     // --------------------------------------------------------------------------------------------------------
@@ -281,14 +295,6 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         this.itemSelected = itemSelected;
     }
 
-    public void setMapsActivity(MapsActivity mapsActivity) {
-        this.mapsActivity = mapsActivity;
-    }
-
-    public void setSearchActivity(SearchActivity searchActivity) {
-        this.searchActivity = searchActivity;
-    }
-
     public void setFragmentDisplayed(String fragmentDisplayed) {
         this.fragmentDisplayed = fragmentDisplayed;
     }
@@ -297,7 +303,15 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         this.searchQuery = searchQuery;
     }
 
-    public void setCameraTarget(LatLng cameraTarget) {
-        this.cameraTarget = cameraTarget;
+    public void setCameraBounds(LatLngBounds cameraBounds) {
+        this.cameraBounds = cameraBounds;
+    }
+
+    public List<Property> getListProperties() {
+        return listProperties;
+    }
+
+    public String getFragmentDisplayed() {
+        return fragmentDisplayed;
     }
 }

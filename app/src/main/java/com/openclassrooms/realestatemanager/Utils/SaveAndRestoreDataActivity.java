@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.Utils;
 
 import android.os.Bundle;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
@@ -14,8 +15,10 @@ public class SaveAndRestoreDataActivity {
     private static final String BUNDLE_FRAG_DISPLAYED = "bundle_frag_displayed";
     private static final String BUNDLE_ID_PROPERTY_SELECTED = "bundle_id_property_selected";
     private static final String BUNDLE_LAST_ID_PROPERTY_DISPLAYED = "bundle_last_id_property_displayed";
-    private static final String BUNDLE_CAMERA_TARGET_LAT = "bundle_camera_target_lat";
-    private static final String BUNDLE_CAMERA_TARGET_LNG = "bundle_camera_target_lng";
+    private static final String BUNDLE_CAMERA_TARGET_NE_LAT = "bundle_camera_target_north_east_lat";
+    private static final String BUNDLE_CAMERA_TARGET_NE_LNG = "bundle_camera_target_north_east_lng";
+    private static final String BUNDLE_CAMERA_TARGET_SW_LAT = "bundle_camera_target_south_west_lat";
+    private static final String BUNDLE_CAMERA_TARGET_SW_LNG = "bundle_camera_target_south_west_lng";
     private static final String BUNDLE_SEARCH_QUERY = "bundle_search_query";
 
     // ----------------------------------- SAVE DATA
@@ -35,20 +38,23 @@ public class SaveAndRestoreDataActivity {
         savedInstanceState.putInt(BUNDLE_LAST_ID_PROPERTY_DISPLAYED,lastIdPropertyDisplayed);
     }
 
-    public static void SaveDataActivity(String modeSelected, String fragmentDisplayed, int idProperty, LatLng cameraTarget, int lastIdPropertyDisplayed, Bundle savedInstanceState) {
+    public static void SaveDataActivity(String modeSelected, String fragmentDisplayed, int idProperty, LatLngBounds cameraBounds, int lastIdPropertyDisplayed, Bundle savedInstanceState) {
         savedInstanceState.putString(BUNDLE_MODE_SELECTED,modeSelected);
         savedInstanceState.putString(BUNDLE_FRAG_DISPLAYED,fragmentDisplayed);
         savedInstanceState.putInt(BUNDLE_ID_PROPERTY_SELECTED,idProperty);
         savedInstanceState.putInt(BUNDLE_LAST_ID_PROPERTY_DISPLAYED,lastIdPropertyDisplayed);
 
-        if(cameraTarget==null){
-            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_LAT,0d);
-            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_LNG,0d);
+        if(cameraBounds==null){
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_NE_LAT,0d);
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_NE_LNG,0d);
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_SW_LAT,0d);
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_SW_LNG,0d);
         } else {
-            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_LAT,cameraTarget.latitude);
-            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_LNG,cameraTarget.longitude);
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_NE_LAT,cameraBounds.northeast.latitude);
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_NE_LNG,cameraBounds.northeast.longitude);
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_SW_LAT,cameraBounds.southwest.latitude);
+            savedInstanceState.putDouble(BUNDLE_CAMERA_TARGET_SW_LNG,cameraBounds.southwest.longitude);
         }
-
     }
 
     // ----------------------------------- RESTORE DATA
@@ -62,9 +68,11 @@ public class SaveAndRestoreDataActivity {
 
     public static void RestoreDataActivity(Bundle savedInstanceState, MapsActivity mapsActivity){
 
-        LatLng cameraTarget = new LatLng(savedInstanceState.getDouble(BUNDLE_CAMERA_TARGET_LAT),
-                                         savedInstanceState.getDouble(BUNDLE_CAMERA_TARGET_LNG));
-        mapsActivity.setCameraTarget(cameraTarget);
+        LatLng camBoundsNE = new LatLng(savedInstanceState.getDouble(BUNDLE_CAMERA_TARGET_NE_LAT),savedInstanceState.getDouble(BUNDLE_CAMERA_TARGET_NE_LNG));
+        LatLng camBoundsSW= new LatLng(savedInstanceState.getDouble(BUNDLE_CAMERA_TARGET_SW_LAT),savedInstanceState.getDouble(BUNDLE_CAMERA_TARGET_SW_LNG));
+        LatLngBounds camBounds = new LatLngBounds(camBoundsSW,camBoundsNE);
+
+        mapsActivity.setCameraBounds(camBounds);
         mapsActivity.setCurrentPositionDisplayed(savedInstanceState.getInt(BUNDLE_ID_PROPERTY_SELECTED));
         mapsActivity.setFragmentDisplayed(savedInstanceState.getString(BUNDLE_FRAG_DISPLAYED));
         mapsActivity.setModeSelected(savedInstanceState.getString(BUNDLE_MODE_SELECTED));

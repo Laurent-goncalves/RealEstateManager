@@ -31,6 +31,8 @@ import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.Utils.Utils;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
+import com.openclassrooms.realestatemanager.Utils.UtilsGoogleMap;
 
 import junit.framework.Assert;
 
@@ -110,9 +112,9 @@ public class ApiRequestsTest {
 
         List<String> listTypes = new ArrayList<>(Arrays.asList("electronics_store", "art_gallery", "shoe_store","parking"));
 
-        List<String> listInterestTemp = new ArrayList<>(Utils.getInterestPoints(listTypes, mActivityTestRule.getActivity().getApplicationContext()));
+        List<String> listInterestTemp = new ArrayList<>(UtilsGoogleMap.getInterestPoints(listTypes, mActivityTestRule.getActivity().getApplicationContext()));
 
-        List<String> listInterest = new ArrayList<>(Utils.removeDuplicates(listInterestTemp));
+        List<String> listInterest = new ArrayList<>(UtilsGoogleMap.removeDuplicates(listInterestTemp));
 
         Assert.assertTrue(listInterest.size()==3);
     }
@@ -134,41 +136,38 @@ public class ApiRequestsTest {
     @Test
     public void TEST_latLngRequest(){
 
-        mActivityTestRule.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        mActivityTestRule.getActivity().runOnUiThread(() -> {
 
-                mActivityTestRule.getActivity().configureAndShowListPropertiesFragment("mode_display");
+            mActivityTestRule.getActivity().configureAndShowListPropertiesFragment("mode_display");
 
-                waiting_time(3000);
+            waiting_time(3000);
 
-                mActivityTestRule.getActivity().configureAndShowDisplayFragment("mode_display",idProp);
+            mActivityTestRule.getActivity().configureAndShowDisplayFragment("mode_display",idProp);
 
-                waiting_time(3000);
+            waiting_time(3000);
 
-                mActivityTestRule.getActivity().setCurrentPositionDisplayed(-1);
+            mActivityTestRule.getActivity().setCurrentPositionDisplayed(-1);
 
-                mActivityTestRule.getActivity().configureAndShowEditFragment(idProp);
+            mActivityTestRule.getActivity().configureAndShowEditFragment("mode_display",idProp);
 
-                waiting_time(2000);
+            waiting_time(2000);
 
-                editFragment = mActivityTestRule.getActivity().getEditFragment();
+            editFragment = mActivityTestRule.getActivity().getEditFragment();
 
-                waiting_time(2000);
+            waiting_time(2000);
 
-                editFragment.getSearchView().setQuery("rue Saint-Nicolas, Paris, France",true);
+            editFragment.getSearchView().setQuery("rue Saint-Nicolas, Paris, France",true);
 
-                waiting_time(3000);
+            waiting_time(3000);
 
-                Assert.assertTrue(editFragment.getLatLngAddress().latitude!=0d);
-                Assert.assertTrue(editFragment.getLatLngAddress().longitude!=0d);
-                Assert.assertTrue(editFragment.getStaticMap()!=null);
-                Assert.assertTrue(editFragment.getInterestPoints()!=null);
-            }
+            Assert.assertTrue(editFragment.getProperty().getLat()!=0d);
+            Assert.assertTrue(editFragment.getProperty().getLng()!=0d);
+            Assert.assertTrue(editFragment.getProperty().getMap()!=null);
+            Assert.assertTrue(editFragment.getProperty().getInterestPoints()!=null);
         });
     }
 
-    @Test
+
     public void Test_Internet_Connection(){
 
         Context context = mActivityTestRule.getActivity().getApplicationContext();
@@ -179,12 +178,7 @@ public class ApiRequestsTest {
         wifiManager.setWifiEnabled(false);
 
 
-        mActivityTestRule.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context,"You have 15 seconds to desactivate internet",Toast.LENGTH_LONG).show();
-            }
-        });
+        mActivityTestRule.getActivity().runOnUiThread(() -> Toast.makeText(context,"You have 15 seconds to desactivate internet",Toast.LENGTH_LONG).show());
 
         waiting_time(15000);
 
@@ -199,50 +193,9 @@ public class ApiRequestsTest {
         // Check that internet is available
         Assert.assertTrue(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
 
-        mActivityTestRule.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context,"Please restore internet connection",Toast.LENGTH_LONG).show();
-            }
-        });
+        mActivityTestRule.getActivity().runOnUiThread(() -> Toast.makeText(context,"Please restore internet connection",Toast.LENGTH_LONG).show());
 
     }
-
-
-
-
-
-    @Test
-    public void testtt(){
-
-
-
-
-        mActivityTestRule.getActivity().setMobileDataEnabled(false);
-        //setMobileDataEnabled(mActivityTestRule.getActivity().getApplicationContext(), true);
-
-        //Assert.assertFalse(Utils.isInternetAvailable(mActivityTestRule.getActivity().getApplicationContext()));
-    }
-
-    public void ShowAvailable()
-    {
-        ConnectivityManager connectivityMgr = (ConnectivityManager)
-                mActivityTestRule.getActivity().getApplicationContext()
-                        .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] nwInfos = connectivityMgr.getAllNetworkInfo();
-        for (NetworkInfo nwInfo : nwInfos)
-        {
-            System.out.println("eee " + "Network Type Name: " +nwInfo.getTypeName());
-            System.out.println("eee " +  "Network available: " + nwInfo.isAvailable());
-            System.out.println("eee " +"Network c_or-c: " + nwInfo.isConnectedOrConnecting());
-            System.out.println("eee " + "Network connected: " + nwInfo.isConnected());
-            System.out.println("eee " + "---------------------------------------------------------- ");
-        }
-
-    }
-
-
-
 
     private void waiting_time(int time){
         try {

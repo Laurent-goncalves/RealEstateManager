@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 import java.text.NumberFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +44,7 @@ public class PropertyViewHolder extends RecyclerView.ViewHolder {
         this.modeDevice = modeDevice;
 
         // Main Image
-        baseActivityListener.setImage(property.getMainImagePath(), mainImage);
+        UtilsBaseActivity.setImage(property.getMainImagePath(), mainImage,baseActivityListener.getBaseActivity());
 
         // Finalize layout
         finalizeLayout(property);

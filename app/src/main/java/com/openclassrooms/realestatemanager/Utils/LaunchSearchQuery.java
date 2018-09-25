@@ -20,7 +20,9 @@ public class LaunchSearchQuery {
         this.context = context;
         this.searchQuery = searchQuery;
         this.listProperties = new ArrayList<>();
-        launchSearchProperties();
+
+        if(searchQuery!=null)
+            launchSearchProperties();
     }
 
     // -------------------------------------------------------------------------------------------------------

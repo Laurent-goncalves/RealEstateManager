@@ -6,26 +6,25 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleableRes;
-
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.SphericalUtil;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.Provider.MapsContentProvider;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 public class UtilsGoogleMap {
 
     private final static String EXTRA_LAT_CURRENT = "latitude_current_location";
     private final static String EXTRA_LONG_CURRENT = "longitude_current_location";
-    private final static Double RADIUS_MAPS = 2000d;
 
     public static List<Property> getAllProperties(Context context){
         List<Property> fullListProperties = new ArrayList<>();
@@ -47,7 +46,7 @@ public class UtilsGoogleMap {
         return fullListProperties;
     }
 
-    public static List<Property> filterListPropertiesByLocation(LatLng cameraTarget, List<Property> fullListProperties){
+    public static List<Property> filterListPropertiesByLocation(LatLngBounds cameraBounds, List<Property> fullListProperties){
 
         List<Property> listProperties = new ArrayList<>();
 
@@ -55,7 +54,7 @@ public class UtilsGoogleMap {
 
             LatLng propLatLng = new LatLng(property.getLat(),property.getLng());
 
-            if(isLocationInsideBounds(cameraTarget, propLatLng,RADIUS_MAPS)){
+            if(isLocationInsideCameraProjection(propLatLng,cameraBounds)){
                 listProperties.add(property);
             }
         }
@@ -65,6 +64,10 @@ public class UtilsGoogleMap {
 
     public static Boolean isLocationInsideBounds(LatLng searchLoc, LatLng propertyLoc, Double radius){
         return SphericalUtil.computeDistanceBetween(searchLoc, propertyLoc) <= radius;
+    }
+
+    public static Boolean isLocationInsideCameraProjection(LatLng searchLoc, LatLngBounds cameraBounds){
+        return cameraBounds.contains(searchLoc);
     }
 
     public static List<String> getInterestPoints(List<String> listTypes, Context context) {

@@ -2,13 +2,9 @@ package com.openclassrooms.realestatemanager.Utils;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-
-import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
-import com.openclassrooms.realestatemanager.Models.SearchQuery;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +12,7 @@ import java.util.List;
 public class SaveAndRestoreDataEditFragment {
 
     private static final String MODE_NEW = "NEW";
-    private final static String BUNDLE_DEVICE = "bundle_device";
+    private static final String BUNDLE_DEVICE = "bundle_device";
     private static final String BUNDLE_TYPE_EDIT = "type_edit";
     private static final String BUNDLE_PROPERTY = "bundle_property";
     private static final String BUNDLE_LIST_IMAGES_PROPERTY = "bundle_list_images_property";

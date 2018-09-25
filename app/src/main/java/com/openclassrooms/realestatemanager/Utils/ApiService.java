@@ -43,6 +43,4 @@ public interface ApiService {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(httpClient.build())
             .build();
-
-//https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.613032,2.482217&radius=1000&key=AIzaSyCAzX1ILkJlqSsTMkRJHSGEMAQWuqxSxKA
 }

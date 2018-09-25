@@ -10,8 +10,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
-import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.Property;
@@ -19,33 +17,27 @@ import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
 import java.util.List;
-import java.util.Objects;
 
 
 public class BasePropertyFragment extends Fragment {
 
+    protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_MAIN_IMAGE = 77;
+    protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_EXTRA_IMAGE = 88;
+    protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
+    protected static final String MODE_DISPLAY = "mode_display";
+    protected static final String MODE_SEARCH = "mode_search";
+    protected final static String MODE_TABLET = "mode_tablet";
     protected Property property;
     protected Context context;
     protected List<ImageProperty> listImages;
-    protected SearchActivity searchActivity;
-    protected MapsActivity mapsActivity;
     protected String buttonReturnText;
     protected String modeSelected;
     protected String typeEdit;
     protected int idProperty;
     protected BaseActivityListener baseActivityListener;
-    protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_MAIN_IMAGE = 77;
-    protected static final int PERMISSIONS_REQUEST_ACCESS_EXTERNAL_STORAGE_EXTRA_IMAGE = 88;
-    protected final static String BUNDLE_DEVICE = "bundle_device";
-    protected static final String BUNDLE_MODE_SELECTED = "bundle_mode_selected";
-    protected static final String LAST_PROPERTY_SELECTED = "last_property_selected";
-    protected static final String MODE_DISPLAY_MAPS = "mode_maps_display";
-    protected static final String MODE_DISPLAY = "mode_display";
-    protected static final String MODE_SEARCH = "mode_search";
     protected String modeDevice;
-    protected final static String MODE_TABLET = "mode_tablet";
-    protected final static String MODE_PHONE = "mode_phone";
     protected Boolean permissionAccessStorage;
+
 
     public BasePropertyFragment() {
         // Required empty public constructor
@@ -54,7 +46,6 @@ public class BasePropertyFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setRetainInstance(true);
     }
 
     @Override
@@ -67,43 +58,6 @@ public class BasePropertyFragment extends Fragment {
     // -----------------------------------------------------------------------------------------
     // ----------------------------------- RECOVER DATAS ---------------------------------------
     // -----------------------------------------------------------------------------------------
-
-    protected void recoverModeSelected(){
-
-        if(getArguments()!=null) {
-
-            // if the mode of display is for mapsActivity, remove button return and icons in toolbar
-            if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY_MAPS)) {
-                mapsActivity = (MapsActivity) getActivity();
-                modeSelected = MODE_DISPLAY_MAPS;
-                buttonReturnText = context.getResources().getString(R.string.return_to_the_map);
-            } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_DISPLAY)) {
-                modeSelected = MODE_DISPLAY;
-                buttonReturnText = context.getResources().getString(R.string.return_to_the_list);
-            } else if (Objects.equals(getArguments().getString(BUNDLE_MODE_SELECTED), MODE_SEARCH)) {
-                searchActivity = (SearchActivity) getActivity();
-                modeSelected = MODE_SEARCH;
-                buttonReturnText = context.getResources().getString(R.string.return_to_search_criteria);
-            }
-        }
-    }
-
-    protected void recoverDeviceMode(){
-
-        if(getArguments()!=null) {
-            if (getArguments().getString(BUNDLE_DEVICE)!=null){
-                if (Objects.equals(getArguments().getString(BUNDLE_DEVICE), MODE_TABLET)) {
-                    modeDevice = MODE_TABLET;
-                } else {
-                    modeDevice = MODE_PHONE;
-                }
-            } else {
-                modeDevice = MODE_PHONE;
-            }
-        } else {
-            modeDevice = MODE_PHONE;
-        }
-    }
 
     public void recoverProperty(int idProp){
 
@@ -202,5 +156,9 @@ public class BasePropertyFragment extends Fragment {
 
     public void setTypeEdit(String typeEdit) {
         this.typeEdit = typeEdit;
+    }
+
+    public int getIdProperty() {
+        return idProperty;
     }
 }

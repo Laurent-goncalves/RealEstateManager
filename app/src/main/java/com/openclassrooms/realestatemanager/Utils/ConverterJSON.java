@@ -29,23 +29,6 @@ public class ConverterJSON {
             return gson.fromJson(propertyJson,PropType);
     }
 
-    // --------------------------------------- LIST PROPERTIES -----------------------------------------------------
-
-    public static String convertListPropertyToJson(List<Property> listProperty){
-        Gson gson = new Gson();
-        return gson.toJson(listProperty);
-    }
-
-    public static List<Property> convertJsonToListProperty(String listPropertyJson){
-        Gson gson = new Gson();
-        Type listPropType = new TypeToken<ArrayList<Property>>(){}.getType();
-
-        if(listPropertyJson==null)
-            return null;
-        else
-            return gson.fromJson(listPropertyJson,listPropType);
-    }
-
     // ------------------------------------- LIST IMAGES PROPERTY -------------------------------------------------
 
     public static String convertListImagesPropertyToJson(List<ImageProperty> listImages){

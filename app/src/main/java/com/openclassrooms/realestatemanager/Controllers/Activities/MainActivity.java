@@ -7,6 +7,7 @@ import com.openclassrooms.realestatemanager.Controllers.Fragments.ListProperties
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataActivity;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 import butterknife.ButterKnife;
 
 
@@ -32,7 +33,8 @@ public class MainActivity extends BaseActivity  {
 
     private void configureFragment(Bundle savedInstanceState){
 
-        setModeDevice();
+        // set device mode
+        UtilsBaseActivity.setModeDevice(this);
 
         if(savedInstanceState!=null){ // restore data
             SaveAndRestoreDataActivity.RestoreDataActivity(savedInstanceState,this);
@@ -59,7 +61,7 @@ public class MainActivity extends BaseActivity  {
     @Override
     public void onBackPressed(){
         if(fragmentDisplayed.equals(EDIT_FRAG))
-            askForConfirmationToLeaveEditMode(MODE_DISPLAY, idProperty);
+            UtilsBaseActivity.askForConfirmationToLeaveEditMode(this, MODE_DISPLAY,modeDevice,fragmentDisplayed, idProperty);
         else if(modeDevice.equals(MODE_PHONE))
             configureAndShowListPropertiesFragment(MODE_DISPLAY);
     }

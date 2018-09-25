@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
-import com.openclassrooms.realestatemanager.Controllers.Activities.SearchActivity;
 import com.openclassrooms.realestatemanager.Models.BaseActivityListener;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.SearchQuery;
@@ -21,6 +20,8 @@ import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.ConfigureSearchFragment;
 import com.openclassrooms.realestatemanager.Utils.LaunchSearchQuery;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataSearchFragment;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
+import java.util.Arrays;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,11 +40,9 @@ public class SearchFragment extends Fragment {
     @BindView(R.id.buttonSearch) Button buttonSearch;
     private static final String MODE_SEARCH = "mode_search";
     private BaseActivityListener baseActivityListener;
-    private LaunchSearchQuery launchSearchQuery;
-    private SearchActivity searchActivity;
+    private ConfigureSearchFragment configSearchFrag;
     private SearchQuery searchQuery;
     private Context context;
-    private View view;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -58,11 +57,10 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_search, container, false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        ButterKnife.bind(this, view);
 
         // Assign variables
-        searchActivity= (SearchActivity) getActivity();
         this.context = getActivity().getApplicationContext();
         searchQuery = new SearchQuery();
 
@@ -73,7 +71,7 @@ public class SearchFragment extends Fragment {
         baseActivityListener.getToolbarManager().setIconsToolbarSearchPropertiesMode();
 
         // Configure searchFragment fields
-        new ConfigureSearchFragment(view,context,this);
+        configSearchFrag = new ConfigureSearchFragment(view,context,this);
 
         return view;
     }
@@ -102,19 +100,29 @@ public class SearchFragment extends Fragment {
     // ----------------------------------------------------------------------------------------------------
 
     public void launchSearchProperties(){
-        launchSearchQuery = new LaunchSearchQuery(context,searchQuery);
+        LaunchSearchQuery launchSearchQuery = new LaunchSearchQuery(context, searchQuery);
         displayResults(launchSearchQuery.getListProperties());
     }
 
     public void displayResults(List<Property> results) {
         if (results.size() > 0){ // if at least one result, show list properties
-            searchActivity.setListProperties(results);
+            baseActivityListener.setListProperties(results);
             baseActivityListener.setSearchQuery(searchQuery);
             baseActivityListener.configureAndShowListPropertiesFragment(MODE_SEARCH);
         } else
-            baseActivityListener.displayError(context.getResources().getString(R.string.no_result_found));
+            UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.no_result_found));
     }
 
+    public void resetSearchQuery(){
+        searchQuery = new SearchQuery(false,
+                Arrays.asList(context.getResources().getStringArray(R.array.type_property)).get(0),
+                null,null,0d,0d,0d,0d,0,
+                0d,0d,null, Integer.parseInt(context.getResources().getString(R.string.radius)));
+        configSearchFrag.setQuery(searchQuery);
+
+        configSearchFrag.configureSearchFragment();
+        getBaseActivityListener().setSearchQuery(searchQuery);
+    }
 
     // ----------------------------------------------------------------------------------------------------
     // -------------------------------------- GETTERS & SETTERS -------------------------------------------
@@ -130,7 +138,7 @@ public class SearchFragment extends Fragment {
         searchQuery.setSearchLocLng(latLng.longitude);
 
         // Enable button save and cancel
-        searchActivity.runOnUiThread(() -> {
+        baseActivityListener.getBaseActivity().runOnUiThread(() -> {
             buttonSearch.setEnabled(true);
             buttonCancel.setEnabled(true);
         });
@@ -158,10 +166,6 @@ public class SearchFragment extends Fragment {
 
     public TextView getEndPublishView() {
         return endPublishView;
-    }
-
-    public SearchActivity getSearchActivity() {
-        return searchActivity;
     }
 
     public EditText getPriceInfView() {

@@ -54,7 +54,9 @@ public class ConfigureEditFragment {
     @BindView(R.id.interest_points_editview) EditText interestView;
     @BindView(R.id.buttonCancel) Button buttonCancel;
     @BindView(R.id.buttonSave) Button buttonSave;
-
+    private static final String PUBLISH_DATE = "publish_date";
+    private static final String SOLD_DATE = "sold_date";
+    private BaseActivityListener baseActivityListener;
     private TextView dateSold;
     private View view;
     private int roomNb;
@@ -62,11 +64,9 @@ public class ConfigureEditFragment {
     private Context context;
     private Property property;
     private EditFragment editFragment;
-    private BaseActivityListener baseActivityListener;
     private List<ImageProperty> listImages;
     private LinearLayoutManager layoutManager;
-    private static final String PUBLISH_DATE = "publish_date";
-    private static final String SOLD_DATE = "sold_date";
+
 
     public ConfigureEditFragment(View view, EditFragment editFragment, Context context, Property property, List<ImageProperty> listImages, BaseActivityListener baseActivityListener) {
         ButterKnife.bind(this, view);
@@ -140,7 +140,7 @@ public class ConfigureEditFragment {
     }
 
     private void configureMainImage(){
-        baseActivityListener.setImage(property.getMainImagePath(), mainImage);
+        UtilsBaseActivity.setImage(property.getMainImagePath(), mainImage, baseActivityListener.getBaseActivity());
         editFragment.setMainImagePath(property.getMainImagePath());
     }
 

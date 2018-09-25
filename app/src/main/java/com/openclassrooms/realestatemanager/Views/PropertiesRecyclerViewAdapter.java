@@ -12,6 +12,8 @@ import com.openclassrooms.realestatemanager.Models.CallbackListProperties;
 import com.openclassrooms.realestatemanager.Models.CallbackPropertyAdapter;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -19,17 +21,19 @@ import java.util.Objects;
 public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<PropertyViewHolder> implements CallbackPropertyAdapter {
 
     private final static String MODE_TABLET = "mode_tablet";
-    private static final String MODE_DISPLAY_MAPS = "mode_maps_display";
-    private List<Property> listProperties;
-    private Context context;
+    private final static String MODE_DISPLAY_MAPS = "mode_maps_display";
+    private final static String MAPS_FRAG = "fragment_maps";
+    private final static String EDIT_FRAG = "fragment_edit";
     private CallbackListProperties callbackListProperties;
     private CallbackPropertyAdapter callbackPropertyAdapter;
     private BaseActivityListener baseActivityListener;
-    private final static String EDIT_FRAG = "fragment_edit";
+    private ListPropertiesFragment listPropertiesFragment;
+    private List<Property> listProperties;
+    private Context context;
     private int propertySelected;
     private String modeSelected;
     private String modeDevice;
-    private ListPropertiesFragment listPropertiesFragment;
+
 
     public PropertiesRecyclerViewAdapter(ListPropertiesFragment listPropertiesFragment, List<Property> listProperties, Context context, int position, CallbackListProperties callbackListProperties, BaseActivityListener baseActivityListener, String modeSelected, String modeDevice) {
         this.listProperties = listProperties;
@@ -61,7 +65,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
 
             // in case of tablet mode and the property selected
                 if(modeDevice.equals(MODE_TABLET) && baseActivityListener.getFragmentDisplayed().equals(EDIT_FRAG) && holder.getAdapterPosition()!= propertySelected && propertySelected!=-1 && listProperties!=null){
-                    baseActivityListener.changeOfPropertySelected(holder, holder.getAdapterPosition(), callbackPropertyAdapter);
+                    UtilsBaseActivity.askToChangeOfPropertyToSelect(baseActivityListener.getBaseActivity(),holder, holder.getAdapterPosition(), callbackPropertyAdapter);
                 } else {
                     proceedToChangeOfPropertySelection(holder,holder.getAdapterPosition());
                 }
@@ -73,7 +77,7 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
     public void proceedToChangeOfPropertySelection(PropertyViewHolder holder, int position){
 
         // if maps mode, change marker. If not, show displayFragment
-        if(modeSelected.equals(MODE_DISPLAY_MAPS)) {
+        if(modeSelected.equals(MODE_DISPLAY_MAPS) && callbackListProperties.getFragmentDisplayed().equals(MAPS_FRAG)) {
             callbackListProperties.changeMarkerMap(Objects.requireNonNull(listProperties).get(position).getId());
         } else {
             callbackListProperties.showDisplayFragment(position);
@@ -100,15 +104,9 @@ public class PropertiesRecyclerViewAdapter extends RecyclerView.Adapter<Property
                             setAsSelected(holder,false);
                         }
                     }
-                } else if(holder.getAdapterPosition()==0 && modeDevice.equals(MODE_TABLET) && !baseActivityListener.getFragmentDisplayed().equals(EDIT_FRAG)){ // if no item selected in the list
-
+                } else if(holder.getAdapterPosition()==0 && modeDevice.equals(MODE_TABLET) && !baseActivityListener.getFragmentDisplayed().equals(EDIT_FRAG) && !baseActivityListener.getFragmentDisplayed().equals(MAPS_FRAG)){ // if no item selected in the list
                     propertySelected = 0;
                     setAsSelected(holder,true);
-
-                    if(modeSelected.equals(MODE_DISPLAY_MAPS))
-                        callbackListProperties.changeMarkerMap(Objects.requireNonNull(listProperties).get(0).getId());
-                    else
-                        callbackListProperties.showDisplayFragment(holder.getAdapterPosition());
                 } else {
                     setAsSelected(holder,false);
                 }

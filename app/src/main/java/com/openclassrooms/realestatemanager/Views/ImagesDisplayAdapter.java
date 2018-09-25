@@ -44,6 +44,9 @@ public class ImagesDisplayAdapter extends RecyclerView.Adapter<ImagesDisplayView
                 holder.configureImagesViews(listImages.get(holder.getAdapterPosition()), baseActivityListener, positionSelected);
         }
 
+        if(holder.getAdapterPosition() == positionSelected)
+            callbackImageChange.changeMainImage(positionSelected);
+
         holder.itemView.setOnClickListener(v -> {
             positionSelected = holder.getAdapterPosition();
             callbackImageChange.changeMainImage(holder.getAdapterPosition());
