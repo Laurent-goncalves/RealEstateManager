@@ -194,8 +194,11 @@ public class SaveAndRestoreDataListPropertiesFrag {
             }
         }
 
-        baseActivityListener.setListProperties(listProperties);
-        fragment.setListProperties(listProperties);
+        if(baseActivityListener!=null)
+            baseActivityListener.setListProperties(listProperties);
+
+        if(fragment!=null)
+            fragment.setListProperties(listProperties);
     }
 
     public static void recoverListPropertiesMapsActivity(Bundle bundle, ListPropertiesFragment fragment, Context context, BaseActivityListener baseActivityListener){
