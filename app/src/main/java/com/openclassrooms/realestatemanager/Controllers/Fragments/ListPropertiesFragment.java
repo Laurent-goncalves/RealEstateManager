@@ -158,7 +158,8 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         if(listProperties!=null){
             if (listProperties.size() > 0) {
 
-                Utils.colorFragmentList(WHITE_COLOR,modeDevice, fragmentDisplayed,baseActivityListener.getBaseActivity());
+                if(baseActivityListener!=null)
+                    Utils.colorFragmentList(WHITE_COLOR,modeDevice, fragmentDisplayed,baseActivityListener.getBaseActivity());
 
                 if (context != null) {
 
@@ -175,11 +176,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
             } else {
                 recyclerView.setAdapter(null); // remove adapter and color in gray the fragment
-                Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
+                if(baseActivityListener!=null)
+                    Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
             }
         } else {
             recyclerView.setAdapter(null); // remove adapter and color in gray the fragment
-            Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
+            if(baseActivityListener!=null)
+                Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
         }
     }
 

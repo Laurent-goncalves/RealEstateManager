@@ -119,7 +119,7 @@ public class ApiRequestsTest {
         Assert.assertTrue(listInterest.size()==3);
     }
 
-    /*
+
     @Test
     public void TEST_API_interestPoints(){
 
@@ -130,7 +130,7 @@ public class ApiRequestsTest {
 
         Assert.assertTrue(listPointsInterest.getListPointsInterest().size() > 0);
 
-    }*/
+    }
 
     private EditFragment editFragment;
 
