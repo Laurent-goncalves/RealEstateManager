@@ -134,28 +134,38 @@ public class ApiRequestsTest {
 
     private EditFragment editFragment;
 
-    @Test
+    /*@Test
     public void TEST_latLngRequest(){
+
+
+
+            ViewInteraction recyclerView = onView(
+                    allOf(withId(R.id.list_properties_recycler_view),
+                            childAtPosition(
+                                    withId(R.id.fragment_list_properties),
+                                    0)));
+            recyclerView.perform(actionOnItemAtPosition(0, click()));
+
+            waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
+
+            ViewInteraction appCompatImageButton = onView(
+                    allOf(withId(R.id.edit_property_button), withContentDescription("button edit"),
+                            childAtPosition(
+                                    childAtPosition(
+                                            withId(R.id.toolbar_relativelayout),
+                                            2),
+                                    1),
+                            isDisplayed()));
+            appCompatImageButton.perform(click());
 
         mActivityTestRule.getActivity().runOnUiThread(() -> {
 
-            mActivityTestRule.getActivity().configureAndShowListPropertiesFragment("mode_display");
-
-            waiting_time(3000);
-
-            mActivityTestRule.getActivity().configureAndShowDisplayFragment("mode_display",idProp);
-
-            waiting_time(3000);
-
-            mActivityTestRule.getActivity().setCurrentPositionDisplayed(-1);
 
             mActivityTestRule.getActivity().configureAndShowEditFragment("mode_display",idProp);
 
-            waiting_time(2000);
+            waiting_time(10000);
 
             editFragment = mActivityTestRule.getActivity().getEditFragment();
-
-            waiting_time(5000);
 
             if(editFragment.getSearchView()!=null)
                 editFragment.getSearchView().setQuery("rue Saint-Nicolas, Paris, France",true);
@@ -167,7 +177,7 @@ public class ApiRequestsTest {
             Assert.assertTrue(editFragment.getProperty().getMap()!=null);
             Assert.assertTrue(editFragment.getProperty().getInterestPoints()!=null);
         });
-    }
+    }*/
 
 
     public void Test_Internet_Connection(){
@@ -207,4 +217,22 @@ public class ApiRequestsTest {
         }
     }
 
+    private static Matcher<View> childAtPosition(
+            final Matcher<View> parentMatcher, final int position) {
+
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Child at position " + position + " in parent ");
+                parentMatcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                ViewParent parent = view.getParent();
+                return parent instanceof ViewGroup && parentMatcher.matches(parent)
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
+            }
+        };
+    }
 }
