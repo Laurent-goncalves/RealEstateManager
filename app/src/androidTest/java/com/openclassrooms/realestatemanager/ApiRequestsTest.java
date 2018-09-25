@@ -155,11 +155,12 @@ public class ApiRequestsTest {
 
             editFragment = mActivityTestRule.getActivity().getEditFragment();
 
-            waiting_time(2000);
+            waiting_time(5000);
 
-            editFragment.getSearchView().setQuery("rue Saint-Nicolas, Paris, France",true);
+            if(editFragment.getSearchView()!=null)
+                editFragment.getSearchView().setQuery("rue Saint-Nicolas, Paris, France",true);
 
-            waiting_time(3000);
+            waiting_time(5000);
 
             Assert.assertTrue(editFragment.getProperty().getLat()!=0d);
             Assert.assertTrue(editFragment.getProperty().getLng()!=0d);
