@@ -28,6 +28,7 @@ public class SearchRequests {
 
     private Property PROPERTY_DEMO = new Property(0, "Apartment", 125000d,30.25d,1,
             "description","address",null,false,"01/06/2018","02/06/2018",48.848819d,2.342349d,"Eric",null,null);
+
     int idProp;
     PropertyContentProvider propertyContentProvider;
     Uri uriInsert;
@@ -88,7 +89,7 @@ public class SearchRequests {
             throwable.printStackTrace();
         }
 
-        waiting_time(2000);
+        waiting_time(8000);
 
         // Recover results
         List<Property> listProperties = mSearchActivityTestRule.getActivity().getListProperties();
@@ -122,7 +123,7 @@ public class SearchRequests {
             throwable.printStackTrace();
         }
 
-        waiting_time(2000);
+        waiting_time(8000);
 
         // Recover results
         listProperties = mSearchActivityTestRule.getActivity().getListProperties();
