@@ -86,13 +86,15 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
         ButterKnife.bind(this, view);
 
         // Configure fragment
-        if(listProperties!=null){
-            if(listProperties.size()>0)
-                configureFragment(savedInstanceState);
-            else
-                Utils.colorFragmentList(GRAY_COLOR,modeDevice,fragmentDisplayed, baseActivityListener.getBaseActivity());
-        } else
-            Utils.colorFragmentList(GRAY_COLOR,modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
+        if(baseActivityListener!=null) {
+            if (listProperties != null) {
+                if (listProperties.size() > 0)
+                    configureFragment(savedInstanceState);
+                else
+                    Utils.colorFragmentList(GRAY_COLOR, modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
+            } else
+                Utils.colorFragmentList(GRAY_COLOR, modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
+        }
 
         return view;
     }

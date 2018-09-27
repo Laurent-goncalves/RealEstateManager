@@ -132,8 +132,6 @@ public class ApiRequestsTest {
 
     }
 
-    private EditFragment editFragment;
-
     /*@Test
     public void TEST_latLngRequest(){
 
