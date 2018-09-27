@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -36,11 +37,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
-//@LargeTest
-//@RunWith(AndroidJUnit4.class)
+@LargeTest
+@RunWith(AndroidJUnit4.class)
 public class MapsActivityTest {
 
-    /*@Rule
+    @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     // FOR DATA
@@ -52,7 +53,8 @@ public class MapsActivityTest {
     private Property PROPERTY_DEMO = new Property(0, "Apartment", 125000d,30.25d,1,
             "description","address",null,false,"01/06/2018","02/06/2018",48.866298, 2.383746,"Eric",null,null);
 
-    @Rule public GrantPermissionRule runtimePermissionRule3 = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE);
+    @Rule public GrantPermissionRule runtimePermissionRule1 = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE);
+    @Rule public GrantPermissionRule runtimePermissionRule2 = GrantPermissionRule.grant(ACCESS_FINE_LOCATION);
 
     @Before
     public void setUp() {
@@ -132,5 +134,5 @@ public class MapsActivityTest {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
-    }*/
+    }
 }

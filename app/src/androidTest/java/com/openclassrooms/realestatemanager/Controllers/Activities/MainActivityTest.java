@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.arch.persistence.room.Room;
 import android.content.ContentUris;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
@@ -88,11 +89,24 @@ public class MainActivityTest {
 
         mActivityTestRule.getActivity().configureAndShowDisplayFragment(MODE_DISPLAY,idProp);
 
+        waiting_time(2000); // WAITING TIME /////////////////////////////////////////////////
+
+        // CHANGE SCREEN ORIENTATION ////////////
+        mActivityTestRule.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
         waiting_time(3000); // WAITING TIME /////////////////////////////////////////////////
 
         mActivityTestRule.getActivity().configureAndShowEditFragment(MODE_DISPLAY,idProp);
 
         waiting_time(3000); // WAITING TIME /////////////////////////////////////////////////
+
+        // CHANGE SCREEN ORIENTATION ////////////
+        mActivityTestRule.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        waiting_time(2000); // WAITING TIME /////////////////////////////////////////////////
+
+        mActivityTestRule.getActivity().configureAndShowListPropertiesFragment(MODE_DISPLAY);
+
     }
 
     private static Matcher<View> childAtPosition(

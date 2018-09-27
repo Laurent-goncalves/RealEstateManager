@@ -3,6 +3,7 @@ package com.openclassrooms.realestatemanager.Controllers.Activities;
 
 import android.arch.persistence.room.Room;
 import android.content.ContentUris;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
@@ -108,6 +109,11 @@ public class SearchActivityTest {
                         3),
                         isDisplayed()));
         navigationMenuItemView.perform(click());
+
+        waiting_time(2000); // WAITING TIME /////////////////////////////////////////////////
+
+        // CHANGE SCREEN ORIENTATION ////////////
+        mActivityTestRule.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         waiting_time(5000);
 
