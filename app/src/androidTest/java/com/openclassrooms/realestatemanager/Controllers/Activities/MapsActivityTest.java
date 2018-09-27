@@ -40,7 +40,7 @@ import static org.hamcrest.Matchers.allOf;
 @RunWith(AndroidJUnit4.class)
 public class MapsActivityTest {
 
-    @Rule
+    /*@Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     // FOR DATA
@@ -132,5 +132,5 @@ public class MapsActivityTest {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
-    }
+    }*/
 }

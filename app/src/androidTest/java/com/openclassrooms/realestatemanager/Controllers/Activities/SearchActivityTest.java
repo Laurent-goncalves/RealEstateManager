@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.is;
 @RunWith(AndroidJUnit4.class)
 public class SearchActivityTest {
 
-    @Rule
+    /*@Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     // FOR DATA
@@ -146,5 +146,5 @@ public class SearchActivityTest {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
-    }
+    }*/
 }

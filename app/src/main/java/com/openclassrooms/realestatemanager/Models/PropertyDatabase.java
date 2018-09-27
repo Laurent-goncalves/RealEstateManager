@@ -11,7 +11,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 
-@Database(entities = {Property.class, ImageProperty.class}, version = 17, exportSchema = false)
+@Database(entities = {Property.class, ImageProperty.class}, version = 18, exportSchema = false)
 public abstract class PropertyDatabase extends RoomDatabase {
 
     private static volatile PropertyDatabase INSTANCE;
