@@ -68,18 +68,19 @@ public class SearchRequests {
 
         searchFragment = mSearchActivityTestRule.getActivity().getSearchFragment();
 
-        // set criteria
-        searchFragment.getPriceInfView().setText("120000");
-        searchFragment.getPriceSupView().setText("130000");
-        searchFragment.getSurfaceInfView().setText("30");
-        searchFragment.getSurfaceSupView().setText("35");
-
-        // click on search button
 
         try {
             mSearchActivityTestRule.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
+                    // set criteria
+                    searchFragment.getPriceInfView().setText("120000");
+                    searchFragment.getPriceSupView().setText("130000");
+                    searchFragment.getSurfaceInfView().setText("30");
+                    searchFragment.getSurfaceSupView().setText("35");
+
+                    // click on search button
                     searchFragment.getButtonSearch().performClick();
                 }
             });
@@ -102,17 +103,18 @@ public class SearchRequests {
 
         searchFragment = mSearchActivityTestRule.getActivity().getSearchFragment();
 
-        // set criteria by changing surface inf
-        searchFragment.getPriceInfView().setText("120000");
-        searchFragment.getPriceSupView().setText("121000");
-        searchFragment.getSurfaceInfView().setText("34");
-        searchFragment.getSurfaceSupView().setText("35");
-
-        // click on search button
         try {
             mSearchActivityTestRule.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
+                    // set criteria by changing surface inf
+                    searchFragment.getPriceInfView().setText("120000");
+                    searchFragment.getPriceSupView().setText("121000");
+                    searchFragment.getSurfaceInfView().setText("34");
+                    searchFragment.getSurfaceSupView().setText("35");
+
+                    // click on search button
                     searchFragment.getButtonSearch().performClick();
                 }
             });

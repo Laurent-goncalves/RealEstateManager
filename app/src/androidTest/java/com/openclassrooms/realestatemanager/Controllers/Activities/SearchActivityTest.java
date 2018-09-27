@@ -40,8 +40,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
-@LargeTest
-@RunWith(AndroidJUnit4.class)
+//@LargeTest
+//@RunWith(AndroidJUnit4.class)
 public class SearchActivityTest {
 
     /*@Rule
