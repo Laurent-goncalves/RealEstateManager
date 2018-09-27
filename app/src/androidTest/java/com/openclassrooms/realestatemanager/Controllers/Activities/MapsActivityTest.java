@@ -37,11 +37,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
-@LargeTest
-@RunWith(AndroidJUnit4.class)
+//@LargeTest
+//@RunWith(AndroidJUnit4.class)
 public class MapsActivityTest {
 
-    @Rule
+    /*@Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     // FOR DATA
@@ -134,5 +134,5 @@ public class MapsActivityTest {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
-    }
+    }*/
 }
