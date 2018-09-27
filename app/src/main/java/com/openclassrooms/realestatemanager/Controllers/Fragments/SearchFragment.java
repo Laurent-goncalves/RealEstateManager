@@ -68,7 +68,8 @@ public class SearchFragment extends Fragment {
         SaveAndRestoreDataSearchFragment.recoverDatas(getArguments(),savedInstanceState,this);
 
         // configure buttons add and edit in toolbar
-        baseActivityListener.getToolbarManager().setIconsToolbarSearchPropertiesMode();
+        if(baseActivityListener!=null)
+            baseActivityListener.getToolbarManager().setIconsToolbarSearchPropertiesMode();
 
         // Configure searchFragment fields
         configSearchFrag = new ConfigureSearchFragment(view,context,this);
@@ -91,8 +92,10 @@ public class SearchFragment extends Fragment {
     }
 
     public void stopActivity() {
-        baseActivityListener.launchMainActivity();
-        baseActivityListener.stopActivity();
+        if(baseActivityListener!=null) {
+            baseActivityListener.launchMainActivity();
+            baseActivityListener.stopActivity();
+        }
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -105,7 +108,7 @@ public class SearchFragment extends Fragment {
     }
 
     public void displayResults(List<Property> results) {
-        if (results.size() > 0){ // if at least one result, show list properties
+        if (results.size() > 0 && baseActivityListener!=null){ // if at least one result, show list properties
             baseActivityListener.setListProperties(results);
             baseActivityListener.setSearchQuery(searchQuery);
             baseActivityListener.configureAndShowListPropertiesFragment(MODE_SEARCH);
@@ -121,7 +124,9 @@ public class SearchFragment extends Fragment {
         configSearchFrag.setQuery(searchQuery);
 
         configSearchFrag.configureSearchFragment();
-        getBaseActivityListener().setSearchQuery(searchQuery);
+
+        if(baseActivityListener!=null)
+            baseActivityListener.setSearchQuery(searchQuery);
     }
 
     // ----------------------------------------------------------------------------------------------------
@@ -138,10 +143,12 @@ public class SearchFragment extends Fragment {
         searchQuery.setSearchLocLng(latLng.longitude);
 
         // Enable button save and cancel
-        baseActivityListener.getBaseActivity().runOnUiThread(() -> {
-            buttonSearch.setEnabled(true);
-            buttonCancel.setEnabled(true);
-        });
+        if(baseActivityListener!=null){
+            baseActivityListener.getBaseActivity().runOnUiThread(() -> {
+                buttonSearch.setEnabled(true);
+                buttonCancel.setEnabled(true);
+            });
+        }
     }
 
     public SearchQuery getSearchQuery() {

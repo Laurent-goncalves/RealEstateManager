@@ -76,7 +76,8 @@ public class DisplayFragment extends BasePropertyFragment implements CallbackIma
         SaveAndRestoreDataDisplayFragment.recoverDatas(getArguments(),savedInstanceState,this,context);
 
         // configure buttons add and edit
-        baseActivityListener.getToolbarManager().setIconsToolbarDisplayMode(modeSelected,modeDevice);
+        if(baseActivityListener!=null)
+            baseActivityListener.getToolbarManager().setIconsToolbarDisplayMode(modeSelected,modeDevice);
 
         // configure button return
         configureButtonReturn();

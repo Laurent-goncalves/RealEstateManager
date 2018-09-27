@@ -126,8 +126,10 @@ public class EditFragment extends BasePropertyFragment implements CallbackImageS
         listImages = new ArrayList<>();
 
         // configure buttons add and edit in toolbar
-        baseActivityListener.setCurrentPositionDisplayed(idProperty);
-        baseActivityListener.getToolbarManager().setIconsToolbarEditMode();
+        if(baseActivityListener!=null) {
+            baseActivityListener.setCurrentPositionDisplayed(idProperty);
+            baseActivityListener.getToolbarManager().setIconsToolbarEditMode();
+        }
     }
 
     private void configureViews(){

@@ -143,7 +143,8 @@ public class BasePropertyFragment extends Fragment {
 
     public void setIdProperty(int idProperty) {
         this.idProperty = idProperty;
-        baseActivityListener.setCurrentPositionDisplayed(idProperty);
+        if(baseActivityListener!=null)
+            baseActivityListener.setCurrentPositionDisplayed(idProperty);
     }
 
     public Property getProperty() {
