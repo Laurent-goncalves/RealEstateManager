@@ -59,6 +59,7 @@ public class MainActivityTest {
     // Property for demo
     private Property PROPERTY_DEMO = new Property(0, "Apartment", 125000d,30.25d,1,
             "description","address",null,false,"01/06/2018","02/06/2018",48.866298, 2.383746,"Eric",null,null);
+    private static final String MODE_DISPLAY = "mode_display";
 
     @Rule public GrantPermissionRule runtimePermissionRule3 = GrantPermissionRule.grant(READ_EXTERNAL_STORAGE);
 
@@ -78,15 +79,10 @@ public class MainActivityTest {
         PROPERTY_DEMO.setId(idProp);
     }
 
-    @After
-    public void deleteProperty(){
-        // Delete property
-        Uri uriDelete = ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
-        propertyContentProvider.delete(uriDelete,null,null);
-    }
-
     @Test
     public void mainActivityTest() {
+
+        mActivityTestRule.getActivity().configureAndShowListPropertiesFragment(MODE_DISPLAY);
 
         waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
 
@@ -150,5 +146,12 @@ public class MainActivityTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @After
+    public void deleteProperty(){
+        // Delete property
+        Uri uriDelete = ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
+        propertyContentProvider.delete(uriDelete,null,null);
     }
 }

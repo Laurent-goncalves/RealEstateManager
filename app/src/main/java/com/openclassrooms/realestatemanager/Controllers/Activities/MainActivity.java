@@ -4,6 +4,7 @@ import android.os.Bundle;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.DisplayFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
 import com.openclassrooms.realestatemanager.Controllers.Fragments.ListPropertiesFragment;
+import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.Models.ToolbarManager;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.Utils.SaveAndRestoreDataActivity;
@@ -75,9 +76,11 @@ public class MainActivity extends BaseActivity  {
 }
 
 
-        /*PropertyDatabase db = PropertyDatabase.getInstance(getApplicationContext());
+/*
 
-        db.imageDao().deleteAllImage();
-        db.propertyDao().deleteAllProperties();*/
+PropertyDatabase db = PropertyDatabase.getInstance(getApplicationContext());
 
-                    /**/
+db.imageDao().deleteAllImage();
+db.propertyDao().deleteAllProperties();
+
+*/
