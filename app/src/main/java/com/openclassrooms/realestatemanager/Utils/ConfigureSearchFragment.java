@@ -132,7 +132,8 @@ public class ConfigureSearchFragment {
         configureViewsToHideKeyboard();
 
         // Initialize searchQuery
-        searchFragment.getBaseActivityListener().setSearchQuery(null);
+        if(searchFragment.getBaseActivityListener()!=null)
+            searchFragment.getBaseActivityListener().setSearchQuery(null);
     }
 
     private void configureRoomNumberView(){
@@ -323,7 +324,8 @@ public class ConfigureSearchFragment {
 
     @OnClick(R.id.buttonReset)
     public void reset(){
-        UtilsBaseActivity.askForConfirmationToResetSearchQuery(searchFragment.getBaseActivityListener().getBaseActivity());
+        if(searchFragment.getBaseActivityListener()!=null)
+            UtilsBaseActivity.askForConfirmationToResetSearchQuery(searchFragment.getBaseActivityListener().getBaseActivity());
     }
 
     @OnClick(R.id.buttonSearchCancel)
@@ -333,7 +335,8 @@ public class ConfigureSearchFragment {
 
     @OnClick(R.id.buttonSearch)
     public void search(){
-        searchFragment.getBaseActivityListener().setSearchQuery(searchFragment.getSearchQuery());
+        if(searchFragment.getBaseActivityListener()!=null)
+            searchFragment.getBaseActivityListener().setSearchQuery(searchFragment.getSearchQuery());
         searchFragment.launchSearchProperties();
     }
 

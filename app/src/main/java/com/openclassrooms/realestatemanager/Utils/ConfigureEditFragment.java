@@ -140,7 +140,8 @@ public class ConfigureEditFragment {
     }
 
     private void configureMainImage(){
-        UtilsBaseActivity.setImage(property.getMainImagePath(), mainImage, baseActivityListener.getBaseActivity());
+        if(baseActivityListener!=null)
+            UtilsBaseActivity.setImage(property.getMainImagePath(), mainImage, baseActivityListener.getBaseActivity());
         editFragment.setMainImagePath(property.getMainImagePath());
     }
 
