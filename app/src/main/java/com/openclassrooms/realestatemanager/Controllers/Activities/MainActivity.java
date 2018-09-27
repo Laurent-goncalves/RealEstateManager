@@ -20,6 +20,12 @@ public class MainActivity extends BaseActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        PropertyDatabase db = PropertyDatabase.getInstance(getApplicationContext());
+
+        db.imageDao().deleteAllImage();
+        db.propertyDao().deleteAllProperties();
+
+
         // Assign views
         ButterKnife.bind(this);
         modeSelected = MODE_DISPLAY;

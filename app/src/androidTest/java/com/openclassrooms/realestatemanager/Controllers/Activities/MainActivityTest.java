@@ -84,41 +84,15 @@ public class MainActivityTest {
 
         mActivityTestRule.getActivity().configureAndShowListPropertiesFragment(MODE_DISPLAY);
 
-        waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
+        waiting_time(3000); // WAITING TIME /////////////////////////////////////////////////
 
-        ViewInteraction recyclerView = onView(
-                allOf(withId(R.id.list_properties_recycler_view),
-                        childAtPosition(
-                                withId(R.id.fragment_list_properties),
-                                0)));
-        recyclerView.perform(actionOnItemAtPosition(0, click()));
+        mActivityTestRule.getActivity().configureAndShowDisplayFragment(MODE_DISPLAY,idProp);
 
-        waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
+        waiting_time(3000); // WAITING TIME /////////////////////////////////////////////////
 
-        ViewInteraction appCompatImageButton = onView(
-                allOf(withId(R.id.edit_property_button), withContentDescription("button edit"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.toolbar_relativelayout),
-                                        2),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton.perform(click());
+        mActivityTestRule.getActivity().configureAndShowEditFragment(MODE_DISPLAY,idProp);
 
-        waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
-
-        pressBack();
-
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(android.R.id.button1), withText("Confirm"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                3)));
-        appCompatButton.perform(scrollTo(), click());
-
-        pressBack();
+        waiting_time(3000); // WAITING TIME /////////////////////////////////////////////////
     }
 
     private static Matcher<View> childAtPosition(
@@ -155,3 +129,40 @@ public class MainActivityTest {
         propertyContentProvider.delete(uriDelete,null,null);
     }
 }
+
+
+
+        /*
+        ViewInteraction recyclerView = onView(
+                allOf(withId(R.id.list_properties_recycler_view),
+                        childAtPosition(
+                                withId(R.id.fragment_list_properties),
+                                0)));
+        recyclerView.perform(actionOnItemAtPosition(0, click()));
+
+        waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
+
+        ViewInteraction appCompatImageButton = onView(
+                allOf(withId(R.id.edit_property_button), withContentDescription("button edit"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.toolbar_relativelayout),
+                                        2),
+                                1),
+                        isDisplayed()));
+        appCompatImageButton.perform(click());
+
+        waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
+
+        pressBack();
+
+        ViewInteraction appCompatButton = onView(
+                allOf(withId(android.R.id.button1), withText("Confirm"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                3)));
+        appCompatButton.perform(scrollTo(), click());
+
+        pressBack();*/
