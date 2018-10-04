@@ -92,7 +92,7 @@ public class MainActivityTest {
         waiting_time(2000); // WAITING TIME /////////////////////////////////////////////////
 
         // CHANGE SCREEN ORIENTATION ////////////
-        mActivityTestRule.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        //mActivityTestRule.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         waiting_time(3000); // WAITING TIME /////////////////////////////////////////////////
 
@@ -101,7 +101,7 @@ public class MainActivityTest {
         waiting_time(3000); // WAITING TIME /////////////////////////////////////////////////
 
         // CHANGE SCREEN ORIENTATION ////////////
-        mActivityTestRule.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //mActivityTestRule.getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         waiting_time(2000); // WAITING TIME /////////////////////////////////////////////////
 

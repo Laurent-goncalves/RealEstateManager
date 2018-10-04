@@ -6,25 +6,3 @@
     android:layout_height="40dp"
     android:textSize="16sp">
 </TextView>
-
-<!--
-<LinearLayout
-
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:orientation="vertical">
-
-
-
-      LINE SEPARATOR
-    <View
-        android:id="@+id/line_separator"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginTop="5dp"
-        android:background="#c0c0c0"/>
-
-</LinearLayout>
-
-
--->
