@@ -4,65 +4,32 @@ package com.openclassrooms.realestatemanager;
 import android.arch.persistence.room.Room;
 import android.content.ContentUris;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.rule.ActivityTestRule;
-import android.support.v7.widget.SearchView;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MainActivity;
-import com.openclassrooms.realestatemanager.Controllers.Fragments.EditFragment;
-import com.openclassrooms.realestatemanager.Models.ImageProperty;
 import com.openclassrooms.realestatemanager.Models.ListPointsInterest;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
-import com.openclassrooms.realestatemanager.Models.Provider.ImageContentProvider;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.Utils.Utils;
-import com.openclassrooms.realestatemanager.Utils.UtilsBaseActivity;
 import com.openclassrooms.realestatemanager.Utils.UtilsGoogleMap;
-
 import junit.framework.Assert;
-
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import static android.Manifest.permission.CHANGE_NETWORK_STATE;
 import static android.Manifest.permission.CHANGE_WIFI_STATE;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.allOf;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -73,7 +40,6 @@ public class ApiRequestsTest {
 
     // FOR DATA
     private PropertyContentProvider propertyContentProvider;
-    private int idProp;
     private Uri uriInsert;
 
     // Property for demo
@@ -96,7 +62,7 @@ public class ApiRequestsTest {
 
         // Insert new property in database
         uriInsert = propertyContentProvider.insert(PropertyContentProvider.URI_ITEM, Property.createContentValuesFromPropertyInsert(PROPERTY_DEMO));
-        idProp = (int) ContentUris.parseId(uriInsert);
+        int idProp = (int) ContentUris.parseId(uriInsert);
         PROPERTY_DEMO.setId(idProp);
     }
 
@@ -116,7 +82,7 @@ public class ApiRequestsTest {
 
         List<String> listInterest = new ArrayList<>(UtilsGoogleMap.removeDuplicates(listInterestTemp));
 
-        Assert.assertTrue(listInterest.size()==3);
+        Assert.assertEquals(3, listInterest.size());
     }
 
 
@@ -131,52 +97,6 @@ public class ApiRequestsTest {
         Assert.assertTrue(listPointsInterest.getListPointsInterest().size() > 0);
 
     }
-
-    /*@Test
-    public void TEST_latLngRequest(){
-
-
-
-            ViewInteraction recyclerView = onView(
-                    allOf(withId(R.id.list_properties_recycler_view),
-                            childAtPosition(
-                                    withId(R.id.fragment_list_properties),
-                                    0)));
-            recyclerView.perform(actionOnItemAtPosition(0, click()));
-
-            waiting_time(5000); // WAITING TIME /////////////////////////////////////////////////
-
-            ViewInteraction appCompatImageButton = onView(
-                    allOf(withId(R.id.edit_property_button), withContentDescription("button edit"),
-                            childAtPosition(
-                                    childAtPosition(
-                                            withId(R.id.toolbar_relativelayout),
-                                            2),
-                                    1),
-                            isDisplayed()));
-            appCompatImageButton.perform(click());
-
-        mActivityTestRule.getActivity().runOnUiThread(() -> {
-
-
-            mActivityTestRule.getActivity().configureAndShowEditFragment("mode_display",idProp);
-
-            waiting_time(10000);
-
-            editFragment = mActivityTestRule.getActivity().getEditFragment();
-
-            if(editFragment.getSearchView()!=null)
-                editFragment.getSearchView().setQuery("rue Saint-Nicolas, Paris, France",true);
-
-            waiting_time(5000);
-
-            Assert.assertTrue(editFragment.getProperty().getLat()!=0d);
-            Assert.assertTrue(editFragment.getProperty().getLng()!=0d);
-            Assert.assertTrue(editFragment.getProperty().getMap()!=null);
-            Assert.assertTrue(editFragment.getProperty().getInterestPoints()!=null);
-        });
-    }*/
-
 
     public void Test_Internet_Connection(){
 
@@ -213,24 +133,5 @@ public class ApiRequestsTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
     }
 }

@@ -101,7 +101,10 @@ public class SearchActivity extends BaseActivity {
             UtilsBaseActivity.askForConfirmationToLeaveEditMode(this,MODE_SEARCH,modeDevice,fragmentDisplayed, idProperty);
         else if(fragmentDisplayed.equals(DISPLAY_FRAG) && modeDevice.equals(MODE_PHONE))
             configureAndShowListPropertiesFragment(MODE_SEARCH);
-        else
+        else if(fragmentDisplayed.equals(SEARCH_FRAG)){
+            launchMainActivity();
+            stopActivity();
+        } else
             returnToSearchCriteria();
     }
 

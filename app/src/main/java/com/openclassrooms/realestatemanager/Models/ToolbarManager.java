@@ -330,4 +330,8 @@ public class ToolbarManager implements NavigationView.OnNavigationItemSelectedLi
         }
         baseActivity.stopActivity();
     }
+
+    public void removeIconEdit() {
+        editButton.setVisibility(View.GONE);
+    }
 }

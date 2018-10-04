@@ -94,6 +94,13 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
                     Utils.colorFragmentList(GRAY_COLOR, modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
             } else
                 Utils.colorFragmentList(GRAY_COLOR, modeDevice, fragmentDisplayed, baseActivityListener.getBaseActivity());
+
+            // Remove edit icon in toolbar if no property in the list
+            if(listProperties!=null){
+                if(listProperties.size()==0)
+                    baseActivityListener.getToolbarManager().removeIconEdit();
+            } else
+                baseActivityListener.getToolbarManager().removeIconEdit();
         }
 
         return view;
@@ -127,6 +134,10 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
             // configure buttons add and edit
             baseActivityListener.getToolbarManager().setIconsToolbarListPropertiesMode(modeSelected);
+            if(listProperties!=null){
+                if(listProperties.size()==0)
+                    baseActivityListener.getToolbarManager().removeIconEdit();
+            }
         }
     }
 
@@ -150,8 +161,11 @@ public class ListPropertiesFragment extends Fragment implements CallbackListProp
 
         if(idProperty!=-1 && listProperties!=null){
             itemSelected = Utils.getIndexPropertyFromList(idProperty, listProperties);
-            listProperties.get(itemSelected).setSelected(true);
-            configureListProperties(itemSelected);
+            if(itemSelected!=-1){
+                listProperties.get(itemSelected).setSelected(true);
+                configureListProperties(itemSelected);
+            } else
+                configureListProperties(-1);
         } else
             configureListProperties(-1);
     }

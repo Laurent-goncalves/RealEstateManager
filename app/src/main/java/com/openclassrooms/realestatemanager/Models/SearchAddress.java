@@ -186,7 +186,7 @@ public class SearchAddress implements Disposable{
 
     }
 
-    public void displayListPredictions(Boolean submit) {
+    private void displayListPredictions(Boolean submit) {
 
         // recover list suggestions in array table
         String[] listSuggArray = listSuggestions.toArray(new String[listSuggestions.size()]);
@@ -348,7 +348,7 @@ public class SearchAddress implements Disposable{
         @SuppressLint("StaticFieldLeak")
         private static Context context;
 
-        public MyAsync(String urlImage, Context context) {
+        MyAsync(String urlImage, Context context) {
             this.urlImage = urlImage;
             MyAsync.context = context;
         }
@@ -369,7 +369,7 @@ public class SearchAddress implements Disposable{
             }
         }
 
-        public static void displayError(String exception, Context context){
+        static void displayError(String exception, Context context){
             String text = context.getResources().getString(R.string.error_static_map_address) + "\n" + exception;
             Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
             toast.show();

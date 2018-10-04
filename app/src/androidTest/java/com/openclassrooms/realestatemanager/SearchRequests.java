@@ -34,31 +34,6 @@ public class SearchRequests {
     Uri uriInsert;
     SearchFragment searchFragment;
 
-/*    @Before
-    public void setUp() {
-
-        Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getTargetContext(),
-                PropertyDatabase.class)
-                .allowMainThreadQueries()
-                .build();
-
-
-        propertyContentProvider = new PropertyContentProvider();
-        propertyContentProvider.setUtils(InstrumentationRegistry.getTargetContext(),false);
-
-        // Insert new property in database
-        uriInsert = propertyContentProvider.insert(PropertyContentProvider.URI_ITEM, Property.createContentValuesFromPropertyInsert(PROPERTY_DEMO));
-        idProp = (int) ContentUris.parseId(uriInsert);
-        PROPERTY_DEMO.setId(idProp);
-    }
-
-    @After
-    public void deleteProperty(){
-        // Delete property
-        Uri uriDelete = ContentUris.withAppendedId(PropertyContentProvider.URI_ITEM, ContentUris.parseId(uriInsert));
-        propertyContentProvider.delete(uriDelete,null,null);
-    }
-*/
 
     //@Test
     public void TestSearch(){

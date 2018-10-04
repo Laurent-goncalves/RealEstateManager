@@ -14,12 +14,10 @@ import android.test.suitebuilder.annotation.LargeTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.Models.PropertyDatabase;
 import com.openclassrooms.realestatemanager.Models.Provider.PropertyContentProvider;
 import com.openclassrooms.realestatemanager.R;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -28,7 +26,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -41,6 +38,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
+
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class SearchActivityTest {
@@ -50,7 +48,6 @@ public class SearchActivityTest {
 
     // FOR DATA
     private PropertyContentProvider propertyContentProvider;
-    private int idProp;
     private Uri uriInsert;
 
     // Property for demo
@@ -71,7 +68,7 @@ public class SearchActivityTest {
 
         // Insert new property in database
         uriInsert = propertyContentProvider.insert(PropertyContentProvider.URI_ITEM, Property.createContentValuesFromPropertyInsert(PROPERTY_DEMO));
-        idProp = (int) ContentUris.parseId(uriInsert);
+        int idProp = (int) ContentUris.parseId(uriInsert);
         PROPERTY_DEMO.setId(idProp);
     }
 

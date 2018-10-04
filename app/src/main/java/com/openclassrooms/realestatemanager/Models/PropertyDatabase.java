@@ -53,7 +53,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues1.put("interestPoints", "Swimming pool, gardens, Theater");
                 contentValues1.put("sold", false);
                 contentValues1.put("dateStart", "01/07/2018");
-                contentValues1.put("estateAgent", "José");
+                contentValues1.put("estateAgent", "Paul");
                 contentValues1.put("lat", "48.866646");
                 contentValues1.put("lng", "2.3865631");
 
@@ -85,7 +85,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues3.put("interestPoints", "Forrest, Lake, High school, Theater");
                 contentValues3.put("sold", false);
                 contentValues3.put("dateStart", "03/07/2018");
-                contentValues3.put("estateAgent", "José");
+                contentValues3.put("estateAgent", "Paul");
                 contentValues3.put("lat", "48.86682558");
                 contentValues3.put("lng", "2.391105379");
 
@@ -101,7 +101,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues4.put("interestPoints", "Church, Subway, College, Swimming pool");
                 contentValues4.put("sold", false);
                 contentValues4.put("dateStart", "04/07/2018");
-                contentValues4.put("estateAgent", "Xavier");
+                contentValues4.put("estateAgent", "Paul");
                 contentValues4.put("lat", "48.8725592");
                 contentValues4.put("lng", "2.3781437");
 
@@ -118,7 +118,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 contentValues5.put("sold", true);
                 contentValues5.put("dateStart", "05/07/2018");
                 contentValues5.put("dateSold", "28/07/2018");
-                contentValues5.put("estateAgent", "Michel");
+                contentValues5.put("estateAgent", "Paul");
                 contentValues5.put("lat", "48.8690686");
                 contentValues5.put("lng", "2.3809132");
 
