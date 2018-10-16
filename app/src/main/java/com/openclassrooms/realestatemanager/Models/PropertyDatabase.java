@@ -44,7 +44,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 ContentValues contentValues1 = new ContentValues();
 
                 contentValues1.put("id", 1);
-                contentValues1.put("type", "Appartement");
+                contentValues1.put("type", "Apartement");
                 contentValues1.put("price", "361000");
                 contentValues1.put("surface", "38.25");
                 contentValues1.put("roomNumber", "2");
@@ -60,7 +60,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 ContentValues contentValues2 = new ContentValues();
 
                 contentValues2.put("id", 2);
-                contentValues2.put("type", "Appartement");
+                contentValues2.put("type", "Apartement");
                 contentValues2.put("price", "400000");
                 contentValues2.put("surface", "37.57");
                 contentValues2.put("roomNumber", "1");
@@ -76,7 +76,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 ContentValues contentValues3 = new ContentValues();
 
                 contentValues3.put("id", 3);
-                contentValues3.put("type", "Appartement");
+                contentValues3.put("type", "Apartement");
                 contentValues3.put("price", "545000");
                 contentValues3.put("surface", "60.62");
                 contentValues3.put("roomNumber", "3");
@@ -92,7 +92,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 ContentValues contentValues4 = new ContentValues();
 
                 contentValues4.put("id", 4);
-                contentValues4.put("type", "Appartement");
+                contentValues4.put("type", "Apartement");
                 contentValues4.put("price", "660000");
                 contentValues4.put("surface", "60.44");
                 contentValues4.put("roomNumber", "3");
@@ -108,7 +108,7 @@ public abstract class PropertyDatabase extends RoomDatabase {
                 ContentValues contentValues5 = new ContentValues();
 
                 contentValues5.put("id", 5);
-                contentValues5.put("type", "Appartement");
+                contentValues5.put("type", "Apartement");
                 contentValues5.put("price", "720000");
                 contentValues5.put("surface", "60");
                 contentValues5.put("roomNumber", "4");

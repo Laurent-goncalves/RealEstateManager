@@ -22,10 +22,10 @@ public class ExampleUnitTest {
     public void TestConversionMoney() {
 
         // Test conversion Dollar -> Euro
-        Assert.assertEquals(1, Utils.convertDollarToEuro(1));
+        Assert.assertEquals(86, Utils.convertDollarToEuro(100));
 
         // Test conversion Euro -> Dollar
-        Assert.assertEquals(1, Utils.convertEuroToDollar(1));
+        Assert.assertEquals(117, Utils.convertEuroToDollar(100));
     }
 
     @Test
