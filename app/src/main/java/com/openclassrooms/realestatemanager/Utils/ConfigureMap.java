@@ -1,14 +1,17 @@
 package com.openclassrooms.realestatemanager.Utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Toast;
+
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
@@ -18,6 +21,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -26,12 +31,12 @@ import com.google.android.gms.tasks.Task;
 import com.openclassrooms.realestatemanager.Controllers.Activities.MapsActivity;
 import com.openclassrooms.realestatemanager.Models.Property;
 import com.openclassrooms.realestatemanager.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-
-public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReadyCallback {
+public class ConfigureMap implements GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private final static String MODE_TABLET = "mode_tablet";
@@ -56,26 +61,30 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
     public ConfigureMap(Context context, String modeDevice, MapsActivity mapsActivity, int idProperty) {
         this.context = context;
-        this.modeDevice=modeDevice;
-        this.mapsActivity=mapsActivity;
-        this.idProperty=idProperty;
+        this.modeDevice = modeDevice;
+        this.mapsActivity = mapsActivity;
+        this.idProperty = idProperty;
         CameraMove = true;
         getLocationPermission();
     }
 
     public ConfigureMap(Context context, String modeDevice, MapsActivity mapsActivity, int idProperty, Boolean restore, LatLngBounds cameraBounds) {
         this.context = context;
-        this.modeDevice=modeDevice;
-        this.mapsActivity=mapsActivity;
-        this.idProperty=idProperty;
+        this.modeDevice = modeDevice;
+        this.mapsActivity = mapsActivity;
+        this.idProperty = idProperty;
         this.restore = restore;
-        this.cameraBounds=cameraBounds;
+        this.cameraBounds = cameraBounds;
         CameraMove = false;
         initialization();
     }
 
-    public void initialization(){
+    public void initialization() {
         sharedPreferences = mapsActivity.getSharedPreferences();
+
+        UtilsGoogleMap.saveLastCurrentLocation(sharedPreferences, new LatLng(48.867267,2.385343));
+
+
         SupportMapFragment mapFragment = (SupportMapFragment) mapsActivity.getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
@@ -83,7 +92,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
             MapsInitializer.initialize(context);
         } catch (Exception e) {
             String text = context.getResources().getString(R.string.error_map_init) + "\n" + e.toString();
-            Toast toast = Toast.makeText(context,text,Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
             toast.show();
         }
 
@@ -103,7 +112,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
         mMap = googleMap;
         mMap.setOnCameraIdleListener(this);
 
-        if(restore)
+        if (restore)
             finalizeMapConfiguration();
         else {
             if (permissionGranted) { // if permission for geolocalization
@@ -116,10 +125,10 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
     // ---------------------------------------- GET PROPERTIES ------------------------------------------------
     // --------------------------------------------------------------------------------------------------------
 
-    public void launchMapConfiguration(Boolean restore, LatLngBounds cameraBounds, Bundle savedInstantState){
+    public void launchMapConfiguration(Boolean restore, LatLngBounds cameraBounds, Bundle savedInstantState) {
         this.restore = restore;
-        this.cameraBounds=cameraBounds;
-        this.savedInstantState=savedInstantState;
+        this.cameraBounds = cameraBounds;
+        this.savedInstantState = savedInstantState;
         initialization();
     }
 
@@ -132,7 +141,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
         cameraBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 
-        if(CameraMove) {
+        if (CameraMove) {
 
             // get properties close to cameraTarget
             getPropertiesCloseToTarget(cameraBounds, fullListProperties);
@@ -143,15 +152,15 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
             // If tablet mode, refresh list of properties
             if (modeDevice.equals(MODE_TABLET)) {
 
-                if(mapsActivity.getListPropertiesFragment()==null)
+                if (mapsActivity.getListPropertiesFragment() == null)
                     mapsActivity.configureAndShowListPropertiesFragment(MODE_DISPLAY_MAPS);
                 else {
 
-                    Bundle bundle = SaveAndRestoreDataListPropertiesFrag.createBundleForListPropertiesFragment(idProperty,modeDevice,MODE_DISPLAY_MAPS,
-                            mapsActivity.getFragmentDisplayed(),cameraBounds,null);
+                    Bundle bundle = SaveAndRestoreDataListPropertiesFrag.createBundleForListPropertiesFragment(idProperty, modeDevice, MODE_DISPLAY_MAPS,
+                            mapsActivity.getFragmentDisplayed(), cameraBounds, null);
 
                     mapsActivity.getListPropertiesFragment().setListProperties(listProperties);
-                    mapsActivity.refreshListPropertiesFragment(bundle,MODE_DISPLAY_MAPS);
+                    mapsActivity.refreshListPropertiesFragment(bundle, MODE_DISPLAY_MAPS);
                 }
                 mapsActivity.setFragmentDisplayed(MAPS_FRAG);
             }
@@ -165,7 +174,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
     private void getLocationPermission() {
 
-        if(context!=null && mapsActivity!=null){
+        if (context != null && mapsActivity != null) {
             if (ContextCompat.checkSelfPermission(context,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -188,7 +197,7 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
 
         if (permissionGranted) {
 
-            if(Utils.isInternetAvailable(context)){
+            if (Utils.isInternetAvailable(context)) {
 
                 try {
 
@@ -202,18 +211,16 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
                             currentLatLng = UtilsGoogleMap.findPlaceHighestLikelihood(task);
 
                             // Save currentLatLng in sharedpreferrences
-                            UtilsGoogleMap.saveLastCurrentLocation(sharedPreferences,currentLatLng);
+                            UtilsGoogleMap.saveLastCurrentLocation(sharedPreferences, currentLatLng);
 
-                            if(currentLatLng.longitude>=-123 && currentLatLng.longitude<=-122
-                                    && currentLatLng.latitude>=37 && currentLatLng.latitude<=38) // for Travis integration tests
-                                currentLatLng=new LatLng(48.866298, 2.383746); // for Travis integration tests
+                            if (currentLatLng.longitude >= -123 && currentLatLng.longitude <= -122
+                                    && currentLatLng.latitude >= 37 && currentLatLng.latitude <= 38) // for Travis integration tests
+                                currentLatLng = new LatLng(48.867267,2.385343); // for Travis integration tests
 
                         } else {
-
                             // ----------------------------- CURRENT LOCATION NOT FOUND -----------------------------
-
                             // Warn user
-                            Toast.makeText(context,context.getResources().getString(R.string.error_current_location),Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, context.getResources().getString(R.string.error_current_location), Toast.LENGTH_LONG).show();
                         }
 
                         // Move camera to currentLatLng
@@ -221,19 +228,18 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
                     });
 
                 } catch (SecurityException e) {
-                    Toast.makeText(context,context.getResources().getString(R.string.error_current_location)+ "\n" + e.toString() ,Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, context.getResources().getString(R.string.error_current_location) + "\n" + e.toString(), Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(context,context.getResources().getString(R.string.error_internet),Toast.LENGTH_LONG).show();
+                Toast.makeText(context, context.getResources().getString(R.string.error_internet), Toast.LENGTH_LONG).show();
                 finalizeMapConfiguration();
             }
         } else
-            UtilsBaseActivity.displayError(context,context.getResources().getString(R.string.give_permission));
-
+            UtilsBaseActivity.displayError(context, context.getResources().getString(R.string.give_permission));
     }
 
-    public void moveCameraToCurrentPosition(LatLng currentLatLng){
-        if(currentLatLng!=null) {
+    public void moveCameraToCurrentPosition(LatLng currentLatLng) {
+        if (currentLatLng != null) {
             // Show the initial position
             CameraMove = false;
             mMap.moveCamera(CameraUpdateFactory
@@ -241,24 +247,24 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
         }
 
         // Finalize Map configuration
-        new Handler().postDelayed(this::finalizeMapConfiguration,500);
+        new Handler().postDelayed(this::finalizeMapConfiguration, 500);
     }
 
     // --------------------------------------------------------------------------------------------------------
     // ---------------------------------- FINALIZE MAP CONFIGURATION ------------------------------------------
     // --------------------------------------------------------------------------------------------------------
 
-    public void finalizeMapConfiguration(){
+    public void finalizeMapConfiguration() {
 
-        if(cameraBounds==null)
+        if (cameraBounds == null)
             cameraBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 
         // get properties close to current location
         getPropertiesCloseToTarget(cameraBounds, fullListProperties);
 
         // configure markers on each property
-        if(listProperties!=null){
-            if(listProperties.size()>0)
+        if (listProperties != null) {
+            if (listProperties.size() > 0)
                 configureMapWithMarkers(cameraBounds, idProperty);
         }
 
@@ -277,6 +283,12 @@ public class ConfigureMap implements GoogleMap.OnCameraIdleListener , OnMapReady
                 mapsActivity.refreshListPropertiesFragment(bundle,MODE_DISPLAY_MAPS);
                 mapsActivity.setFragmentDisplayed(MAPS_FRAG);
             }
+        }
+
+        // Put a blue dot on current location
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
         }
     }
 

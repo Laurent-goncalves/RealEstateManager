@@ -219,7 +219,7 @@ public class CheckAndSaveEdit {
 
             for(ImageProperty image : newlistImages) {
 
-                if (counter < newlistImages.size() - 1) { // if it's NOT the last item of the list
+                if (counter <= newlistImages.size() - 1) { // if it's NOT the last item of the list
 
                     int idProperty = (int) ContentUris.parseId(uri);
 

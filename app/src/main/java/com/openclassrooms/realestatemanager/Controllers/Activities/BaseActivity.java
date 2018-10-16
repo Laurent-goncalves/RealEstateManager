@@ -104,7 +104,9 @@ public class BaseActivity extends AppCompatActivity implements BaseActivityListe
             this.getFragmentManager().beginTransaction().remove(displayFragment).commit();
 
         searchFragment = new SearchFragment();
-        Utils.colorFragmentList(GRAY_COLOR, modeDevice,fragmentDisplayed, this);
+
+        if(modeDevice.equals(MODE_TABLET))
+            Utils.colorFragmentList(GRAY_COLOR, modeDevice,fragmentDisplayed, this);
 
         // Create a bundle
         Bundle bundle = SaveAndRestoreDataSearchFragment.createBundleForSearchFragment(modeDevice,searchQuery);
